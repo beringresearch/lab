@@ -1,0 +1,4 @@
+
+        [console_scripts]
+        lab=lab.cli:cli
+        
