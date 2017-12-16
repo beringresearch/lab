@@ -6,9 +6,8 @@ import shutil
 import datetime
 import subprocess
 from train import train_r
-from pathlib import Path
 from pymongo import MongoClient
-from terminaltables import AsciiTable
+from terminaltables import SingleTable
 
 
 @click.group()
@@ -26,7 +25,7 @@ def project():
 @click.argument('name')
 def create_project(name):
     timestamp = str(datetime.datetime.utcnow())
-    projectid = str(uuid.uuid4())
+    projectid = str(uuid.uuid4())[:8]
 
     project = {}
     project['name'] = name
@@ -69,13 +68,13 @@ def ls_project():
 
     project = []
     for iteration in listing: 
-        project.append([iteration['_id'], iteration['name'], iteration['timestamp']])
+        project.append([iteration['_id'], iteration['name'], iteration['timestamp'], os.path.split(iteration['ewd'])[0]])
    
-    table = [['id', 'name', 'timestamp']]
+    table = [['id', 'name', 'timestamp', 'directory']]
     for n in range(0, len(project)):
         table.append(project[n])
     
-    click.echo(AsciiTable(table).table)
+    click.echo(SingleTable(table).table)
 
 @click.command('rm')
 @click.argument('identifier')
@@ -105,9 +104,9 @@ def expr():
 # Create a new Experiment 
 @click.command('create')
 @click.argument('method')
-def create_expr(method):
+def create_experiment(method):
     timestamp = str(datetime.datetime.utcnow())
-    exprid = str(uuid.uuid4())
+    exprid = str(uuid.uuid4())[:8]
 
     experiment = {}
     experiment['_id'] = exprid
@@ -130,15 +129,10 @@ def create_expr(method):
     search['rounds'] = 100
     search['optimise'] = 'macroF1'
     search['maximise'] = 'TRUE'
-    experiment['search'] = search
-
-    experiment['results'] = 'results/'
+    experiment['search'] = search 
 
     os.makedirs(experiment['ewd'])
-        
-    resultsdir = os.path.join(experiment['ewd'], 'results')
-    os.makedirs(resultsdir)
-
+         
     with open(os.path.join(experiment['ewd'], 'experiment.json'), 'w') as f:
         json.dump(experiment, f, sort_keys = False, indent=2)
 
@@ -152,7 +146,7 @@ def create_expr(method):
 
     click.echo('Experiment created {id=' + exprid + '}') 
 
-# List existing lab projects
+# List existing lab experiments
 @click.command('ls')
 def ls_experiment():
     client = MongoClient()
@@ -163,13 +157,44 @@ def ls_experiment():
 
     experiment = []
     for iteration in listing: 
-        experiment.append([iteration['_id'], iteration['method'], iteration['y'], len(iteration['x'])])
+        experiment.append([iteration['_id'], iteration['method'], iteration['y'],
+            os.path.split(iteration['ewd'])[0]])
    
-    table = [['id', 'method', 'y', 'x']]
+    table = [['id', 'method', 'response', 'directory']]
     for n in range(0, len(experiment)):
         table.append(experiment[n])
     
-    click.echo(AsciiTable(table).table)
+    click.echo(SingleTable(table).table)
+
+# Duplicate a specific experiment
+@click.command('duplicate')
+@click.argument('identifier')
+def duplicate_experiment(identifier):
+    timestamp = str(datetime.datetime.utcnow())
+    exprid = str(uuid.uuid4())[:8]
+  
+    client = MongoClient()
+    db = client.lab
+    experiments = db.experiments
+    experiment = experiments.find_one({"_id": identifier})
+
+    ewd = experiment['ewd']
+    experiment['_id'] = exprid
+    experiment['timestamp'] = timestamp
+    experiment['ewd'] = os.path.join(os.getcwd(), exprid)
+
+    experiments.insert_one(experiment).inserted_id
+    
+    os.makedirs(experiment['ewd'])
+    shutil.copy2(os.path.join(ewd, 'experiment.json'), experiment['ewd'])
+    shutil.copy2(os.path.join(ewd, experiment['learner']), experiment['ewd'])
+
+    with open(os.path.join(experiment['ewd'], 'experiment.json'), 'w') as f:
+        json.dump(experiment, f, sort_keys = False, indent=2)
+
+    click.echo("Created experiment {id=%s}" % exprid)
+
+
 
 @click.command('rm')
 @click.argument('identifier')
@@ -195,7 +220,7 @@ def rm_experiment(identifier):
 @click.command('run')
 @click.argument('expid', default='', required=False)
 def run_experiment(expid): 
-    jobid = str(uuid.uuid4())
+    jobid = str(uuid.uuid4())[:8]
 
     client = MongoClient()
     db = client.lab
@@ -203,27 +228,29 @@ def run_experiment(expid):
 
     if expid == '':
         with open('experiment.json', 'r') as f:
-            experiment = json.load(f)
-            experiments.update({'_id': experiment['_id']}, {"$set": experiment}, upsert=False)
+            experiment = json.load(f) 
     else:
-        experiment = experiments.find_one({"_id": expid})
+        listing = experiments.find_one({"_id": expid})
+        with open(os.path.join(listing['ewd'], 'experiment.json'), 'r') as f:
+            experiment = json.load(f) 
 
 
+    experiments.update({'_id': experiment['_id']}, {"$set": experiment}, upsert=False)
+    
     ewd = experiment['ewd'] 
     experimentjson = os.path.join(ewd, 'experiment.json')
-    
+    learner = os.path.join(ewd, experiment['learner']) 
    
-    cmd = [experiment['command'], experiment['args'], experiment['learner'], '--experiment='+experimentjson,'--jobid='+jobid]
+    cmd = [experiment['command'], experiment['args'], learner,  '--experiment='+experimentjson,'--jobid='+jobid]
     click.echo('Job started {id=%s}' % jobid) 
     subprocess.check_output(cmd)
     click.echo('Job completed')
 
 
 
-expr.add_command(create_expr)
-expr.add_command(ls_experiment)
-expr.add_command(run_experiment)
+expr.add_command(create_experiment)
 expr.add_command(rm_experiment)
+expr.add_command(duplicate_experiment)
 
 project.add_command(create_project)
 project.add_command(ls_project)
@@ -231,6 +258,8 @@ project.add_command(rm_project)
 
 cli.add_command(project)
 cli.add_command(expr)
+cli.add_command(ls_experiment)
+cli.add_command(run_experiment)
 
 
 if __name__ == '__main__':

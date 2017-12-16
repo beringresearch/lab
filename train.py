@@ -23,7 +23,7 @@ seed <- experiment$seed
 metric <- experiment$search$optimise
 options <- experiment$options
 
-data <- read.csv(experiment$data, header = TRUE)
+data <- read.csv(experiment$data, header = TRUE, check.names = FALSE)
 
 performance <- function(actual, predicted){
 	cm = as.matrix(table(Actual = actual, Predicted = predicted))
@@ -111,14 +111,16 @@ for (iteration in 1:length(seed)){
   lbl <- factor(lbl, levels = levels(y_train))
 
   result <- list()
+  result$"_id" <- jobid
+  result$ewd <- experiment["ewd"]
   result$parameters <- p
   result$performance <- performance(y_test, lbl)
- 
-  resultsdir <- dir.create(file.path(experiment$results, jobid), showWarnings = FALSE) 
-  fname <- file.path(experiment$results, jobid, paste0(experiment["_id"], "_", seed[iteration], "_model.rds"))
+  
+  resultsdir <- dir.create(file.path(experiment["ewd"], jobid), showWarnings = FALSE)
+  fname <- file.path(experiment["ewd"], jobid, paste0(seed[iteration], "_model.rds"))
   m$save_model(fname)
-
+  
   json <- toJSON(result, auto_unbox = TRUE, pretty = TRUE)
-  write(json, file.path(experiment$results, jobid, paste0(experiment["_id"], "_", seed[iteration], "_results.json")))
-}"""
+  write(json, file.path(experiment["ewd"], jobid, paste0(seed[iteration], "_results.json")))
+  }"""
     return(res)
