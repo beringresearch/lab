@@ -1,5 +1,9 @@
+''' R template function '''
+
 def train_r():
-    res="""#!/usr/bin/env Rscript
+    ''' Default train module template '''
+
+    res = """#!/usr/bin/env Rscript
 library(jsonlite)
 library(braveml)
 library(RandomParameterSearch)
@@ -115,4 +119,5 @@ for (iteration in 1:length(seed)){
   json <- toJSON(result, auto_unbox = TRUE, pretty = TRUE)
   write(json, file.path(experiment["ewd"], output, paste0(seed[iteration], "_results.json")))
   }"""
-    return(res)
+
+    return res
