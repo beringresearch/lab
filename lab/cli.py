@@ -260,7 +260,7 @@ def run_experiment(identifier):
 # Compare experiments
 @click.command('perf')
 @click.argument('identifier', required=True)
-@click.argument('identifier', required=False, default='accuracy')
+@click.argument('metric', required=False, default='accuracy')
 def perf_experiment(identifier, metric): 
     '''Show performance by exp IDENTIFIER and METRIC'''
     client = MongoClient()
