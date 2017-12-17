@@ -6,7 +6,7 @@ setup(
         py_modules=['lab'],
         install_requires=[
             'Click',
-            'terminaltables',
+            'tabulate',
             'pymongo' 
         ],
         entry_points='''
