@@ -1,20 +1,11 @@
 def train_r():
     res="""#!/usr/bin/env Rscript
 library(jsonlite)
-library(argparse)
 library(braveml)
 library(RandomParameterSearch)
 
 args = commandArgs(trailingOnly=TRUE)
-
-parser <- ArgumentParser()
-parser$add_argument("--experiment", "character")
-parser$add_argument("--jobid", "character")
-
-args <- parser$parse_args(args)
-
-experiment <- fromJSON(args[["experiment"]])
-jobid <- args[["jobid"]]
+experiment <- fromJSON(args[1])
 
 method <- experiment$method
 predictors <- experiment$x
@@ -22,6 +13,7 @@ response <- experiment$y
 seed <- experiment$seed
 metric <- experiment$search$optimise
 options <- experiment$options
+output <- experiment$results
 
 data <- read.csv(experiment$data, header = TRUE, check.names = FALSE)
 
@@ -57,6 +49,7 @@ performance <- function(actual, predicted){
 func <- function(...){
   m <- model(X = x_train, Y = y_train, method = method)
   m$fit(...)
+  
   yh <- m$predict(x_validate)
   lbl <- factor(colnames(yh)[apply(yh, 1, which.max)], levels = levels(y_validate))  
   
@@ -111,16 +104,15 @@ for (iteration in 1:length(seed)){
   lbl <- factor(lbl, levels = levels(y_train))
 
   result <- list()
-  result$"_id" <- jobid
   result$ewd <- experiment["ewd"]
   result$parameters <- p
   result$performance <- performance(y_test, lbl)
   
-  resultsdir <- dir.create(file.path(experiment["ewd"], jobid), showWarnings = FALSE)
-  fname <- file.path(experiment["ewd"], jobid, paste0(seed[iteration], "_model.rds"))
+  resultsdir <- dir.create(file.path(experiment["ewd"], output), showWarnings = FALSE)
+  fname <- file.path(experiment["ewd"], output, paste0(seed[iteration], "_model.rds"))
   m$save_model(fname)
   
   json <- toJSON(result, auto_unbox = TRUE, pretty = TRUE)
-  write(json, file.path(experiment["ewd"], jobid, paste0(seed[iteration], "_results.json")))
+  write(json, file.path(experiment["ewd"], output, paste0(seed[iteration], "_results.json")))
   }"""
     return(res)
