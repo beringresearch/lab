@@ -75,7 +75,7 @@ def create_project(name):
         client = MongoClient()
         mongodb = client.lab
         projects = mongodb.projects
-        projects.insert_one(project)
+        projects.insert_one(project_list)
 
         click.echo('Project created {id=' + projectid + '}')
 
@@ -272,7 +272,7 @@ def perf_experiment(identifier, metric):
                 experiment = json.load(file)
                 row.append(experiment['performance'][metric])
         table = [performances, row]
-        click.echo('\n'+str(i)+' performance metric: %s' % metric)
+        click.echo('\n* '+str(i)+': %s' % metric)
         click.echo(tabulate(table, tablefmt='presto', headers='firstrow'))
     click.echo('\n')
 
