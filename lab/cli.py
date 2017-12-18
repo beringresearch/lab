@@ -29,6 +29,7 @@ def execute_learner(identifier=''):
     experimentjson = os.path.join(ewd, 'experiment.json')
     learner = os.path.join(ewd, experiment['learner'])
     cmd = [experiment['command'], experiment['args'], learner, experimentjson]
+    cmd = filter(None, cmd)
     stdout = open(os.path.join(ewd, 'stdout.log'), 'w')
     stderr = open(os.path.join(ewd, 'stderr.log'), 'w')
     subprocess.call(cmd, shell=False, stdout=stdout, stderr=stderr)
