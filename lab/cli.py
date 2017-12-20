@@ -150,6 +150,7 @@ def create_experiment():
     search = {}
     search['n_iter'] = 100
     search['cv'] = 5
+    search['optimise'] = 'accuracy'
     search['maximise'] = 'TRUE'
     experiment['RandomSearchCV'] = search
     experiment['results'] = 'output'
