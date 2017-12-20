@@ -1,0 +1,30 @@
+{
+  "_id": "ce2a6ac8",
+  "timestamp": "2017-12-20 11:36:20.387595",
+  "ewd": "/Users/ignat/Desktop/iris/experiments/ce2a6ac8",
+  "command": "python",
+  "args": "",
+  "data": "/Users/ignat/Desktop/iris/data/iris.csv",
+  "x": ["sepal_len", "sepal_wid", "petal_len", "petal_wid"],
+  "y": "class",
+  "learner": "train.py",
+  "seed": [
+    123,
+    234,
+    345,
+    456
+  ],
+  "train": 0.8,
+  "validate": 0.1,
+  "test": 0.1,
+  "method": "python-RandomForestClassifier",
+  "options": {
+    "n_estimators": 50
+  },
+  "search": {
+    "rounds": 100,
+    "optimise": "macroF1",
+    "maximise": "TRUE"
+  },
+  "results": "output"
+}
