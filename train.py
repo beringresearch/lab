@@ -6,7 +6,6 @@ def train_r():
     res = """#!/usr/bin/env Rscript
 library(jsonlite)
 library(braveml)
-library(RandomParameterSearch)
 
 args = commandArgs(trailingOnly=TRUE)
 experiment <- fromJSON(args[1])
@@ -15,7 +14,7 @@ method <- experiment$method
 predictors <- experiment$x
 response <- experiment$y
 seed <- experiment$seed
-metric <- experiment$search$optimise
+metric <- experiment$RandomSearchCV$optimise
 options <- experiment$options
 output <- experiment$results
 
@@ -50,14 +49,8 @@ performance <- function(actual, predicted){
 }
 
 # Prameter Optimisation Function
-func <- function(...){
-  m <- model(X = x_train, Y = y_train, method = method)
-  m$fit(...)
-  
-  yh <- m$predict(x_validate)
-  lbl <- factor(colnames(yh)[apply(yh, 1, which.max)], levels = levels(y_validate))  
-  
-  perf <- performance(y_validate, lbl)
+scoring <- function(actual, predicted){
+  perf <- performance(actual, predicted)
   perf[[metric]]
 }
 
@@ -70,31 +63,24 @@ for (iteration in 1:length(seed)){
   
   ## Train-Validate-Test splits
   train_fraction <- experiment$train
-  validation_fraction <- experiment$validate
-  testing_fraction <- experiment$test
-
-  spec <- c(train = train_fraction,
-            test = testing_fraction,
-            validate = validation_fraction)
-  g <- sample(cut(seq(nrow(data)),
-              nrow(data)*cumsum(c(0, spec)),
-              labels = names(spec)))
-  res <- split(data, g)
-
-  x_train <- res$train[, predictors]
-  y_train <- res$train[, response]
-  x_validate <- res$validate[, predictors]
-  y_validate <- res$validate[, response]
-  x_test <- res$test[, predictors]
-  y_test <- res$test[, response]
-
-  ## Random HyperparameterSearch
-  grid <- create_random_grid(nrounds = experiment$search$rounds,
-                             params = experiment$options, seed = seed[iteration])
-
-  s <- random_search(grid, func)
   
-  ifelse(as.logical(experiment$search$maximise),
+  trainIndex <- sample(1:nrow(data), round(train_fraction * nrow(data)),
+                       replace = FALSE)
+
+  x_train <- data[trainIndex, predictors]
+  x_test <- data[-trainIndex, predictors]
+  y_train <- data[trainIndex, response]
+  y_test <- data[-trainIndex, response]
+  
+  estimator <- model(X = x_train, Y = y_train, method = method)
+
+  s <- RandomizedSearchCV(estimator, param_distributions = experiment$options,
+                          scoring = scoring,
+                          n_iter = experiment$RandomSearchCV$n_iter,
+                          cv = experiment$RandomSearchCV$cv,
+                          seed = seed[iteration])
+  
+  ifelse(as.logical(experiment$RandomSearchCV$maximise),
          p <- s[which.max(s$.output),],
          p <- s[which.min(s$.output),]
   )

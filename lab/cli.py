@@ -142,16 +142,16 @@ def create_experiment():
     experiment['learner'] = 'train.R'
     experiment['seed'] = [123, 234, 345, 456]
     experiment['train'] = 0.8
-    experiment['validate'] = 0.1
-    experiment['test'] = 0.1
+    experiment['validate'] = 0
+    experiment['test'] = 0.2
     experiment['method'] = ''
     experiment['options'] = {}
 
     search = {}
-    search['rounds'] = 100
-    search['optimise'] = 'macroF1'
+    search['n_iter'] = 100
+    search['cv'] = 5
     search['maximise'] = 'TRUE'
-    experiment['search'] = search
+    experiment['RandomSearchCV'] = search
     experiment['results'] = 'output'
 
     os.makedirs(experiment['ewd'])
