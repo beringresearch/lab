@@ -125,13 +125,18 @@ def expr():
 
 # Create a new Experiment
 @click.command('create')
-def create_experiment():
+@click.argument('name', default='', required=False)
+def create_experiment(name):
     '''Create a new experiment'''
     timestamp = str(datetime.datetime.utcnow())
     exprid = str(uuid.uuid4())[:8]
 
+    if name == "":
+        name = exprid
+
     experiment = {}
     experiment['_id'] = exprid
+    experiment['name'] = name
     experiment['timestamp'] = timestamp
     experiment['ewd'] = os.path.join(os.getcwd(), exprid)
     experiment['command'] = 'Rscript'
@@ -182,10 +187,11 @@ def ls_experiment():
 
     experiment = []
     for iteration in listing:
-        experiment.append([iteration['_id'], iteration['method'], iteration['y'],
+        experiment.append([iteration['_id'], iteration['name'], iteration['method'],
+                           iteration['y'],
                            os.path.split(iteration['ewd'])[0]])
 
-    table = [['id', 'method', 'response', 'directory']]
+    table = [['id', 'name', 'method', 'response', 'directory']]
     for element in range(0, len(experiment)):
         table.append(experiment[element])
 
