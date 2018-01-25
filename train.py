@@ -5,6 +5,7 @@ def train_r():
 
     res = """#!/usr/bin/env Rscript
 library(jsonlite)
+library(ModelMetrics)
 library(braveml)
 
 args = commandArgs(trailingOnly=TRUE)
@@ -13,12 +14,14 @@ experiment <- fromJSON(args[1])
 method <- experiment$method
 predictors <- experiment$x
 response <- experiment$y
-seed <- experiment$seed
-metric <- experiment$RandomSearchCV$optimise
 options <- experiment$options
 output <- experiment$results
+seed <- experiment$seed
 
 data <- read.csv(experiment$data, header = TRUE, check.names = FALSE)
+
+# Any data transformations need to go here
+##
 
 performance <- function(actual, predicted){
 	cm = as.matrix(table(Actual = actual, Predicted = predicted))
@@ -49,61 +52,45 @@ performance <- function(actual, predicted){
 }
 
 # Prameter Optimisation Function
-scoring <- function(actual, predicted){
-  perf <- performance(actual, predicted)
-  perf[[metric]]
-}
 
 # Training Procedure
-for (iteration in 1:length(seed)){
-  cat("Training iteration", iteration, "of", length(seed), "
-")
+set.seed(seed)
+  
+## Train-Validate-Test splits
+trainIndex <- train_test_split(data[, response], p = 0.75, stratified = TRUE, seed = seed)
 
-  set.seed(seed[iteration])
+x_train <- data[trainIndex, predictors]
+x_test <- data[-trainIndex, predictors]
+y_train <- data[trainIndex, response]
+y_test <- data[-trainIndex, response]
   
-  ## Train-Validate-Test splits
-  train_fraction <- experiment$train
-  
-  trainIndex <- sample(1:nrow(data), round(train_fraction * nrow(data)),
-                       replace = FALSE)
+estimator <- model(X = x_train, Y = y_train, method = method)
 
-  x_train <- data[trainIndex, predictors]
-  x_test <- data[-trainIndex, predictors]
-  y_train <- data[trainIndex, response]
-  y_test <- data[-trainIndex, response]
+Rand_Res <- RandomizedSearchCV(estimator, param_distributions = experiment$options,
+                        scoring = auc,
+                        init_points = 100,
+                        n_iter = 5,
+                        cv = 10,
+                        seed = seed)
   
-  estimator <- model(X = x_train, Y = y_train, method = method)
+best_par <- Rand_Res$Best_Par[[which.max(Rand_Res$Best_Score)]]
+xgb <- model(X = x_train, Y = y_train, method = method)
+do.call(xgb$fit, best_par)
+yh <- xgb$predict(x_test)
+lbl <- factor(colnames(yh)[apply(yh, 1, which.max)], levels = levels(y_train))
 
-  s <- RandomizedSearchCV(estimator, param_distributions = experiment$options,
-                          scoring = scoring,
-                          n_iter = experiment$RandomSearchCV$n_iter,
-                          cv = experiment$RandomSearchCV$cv,
-                          seed = seed[iteration])
-  
-  ifelse(as.logical(experiment$RandomSearchCV$maximise),
-         p <- s[which.max(s$.output),],
-         p <- s[which.min(s$.output),]
-  )
-  
-  p <- p[, !names(p) %in% ".output"]
 
-  m <- model(X = x_train, Y = y_train, method = method)
-  do.call(m$fit, as.list(p))
-  yh <- m$predict(x_test)
-  lbl <- colnames(yh)[apply(yh, 1, which.max)] 
-  lbl <- factor(lbl, levels = levels(y_train))
-
-  result <- list()
-  result$ewd <- experiment["ewd"]
-  result$parameters <- p
-  result$performance <- performance(y_test, lbl)
+result <- list()
+result$ewd <- experiment["ewd"]
+result$parameters <- best_par
+result$performance <- performance(y_test, lbl)
   
-  resultsdir <- dir.create(file.path(experiment["ewd"], output), showWarnings = FALSE)
-  fname <- file.path(experiment["ewd"], output, paste0(seed[iteration], "_model.rds"))
-  m$save_model(fname)
+resultsdir <- dir.create(file.path(experiment["ewd"], output), showWarnings = FALSE)
+fname <- file.path(experiment["ewd"], output, paste0(make.names(Sys.time()), "_model.rds"))
+xgb$save_model(fname)
   
-  json <- toJSON(result, auto_unbox = TRUE, pretty = TRUE)
-  write(json, file.path(experiment["ewd"], output, paste0(seed[iteration], "_results.json")))
-  }"""
+json <- toJSON(result, auto_unbox = TRUE, pretty = TRUE)
+write(json, file.path(experiment["ewd"], output, paste0(make.names(Sys.time()), "_results.json")))
+}"""
 
     return res
