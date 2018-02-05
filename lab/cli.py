@@ -14,7 +14,7 @@ from pkg_resources import Requirement, resource_filename
 from .alerts import EmailAlerter
 
 try:
-    email_settings_filepath = resource_filename(Requirement.parse("lab"), "email_config_testing.json")
+    email_settings_filepath = resource_filename(Requirement.parse("lab"), "email_config.json")
 except:
     print('Could not load email settings config file.')
 finally:

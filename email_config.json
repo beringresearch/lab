@@ -1,11 +1,12 @@
 {
-    "email_alerts_enabled": true,
-    "sender_email_server_address" : "beringresearch.com",
+    "email_alerts_enabled": false,
+    "sender_email_server_address" : "YOUR EMAIL SERVER ADDRESS HERE",
     "sender_email_server_port" : 25,
-    "sender_email_address" : "idrozdov@beringresearch.com",
-    "sender_email_password": "Taikos655",
+    "sender_email_address" : "YOUR EMAIL ADDRESS HERE",
+    "sender_email_password": "YOUR EMAIL PASSWORD HERE",
     "recipient_email_address_list" : [
-        "idrozdov@beringresearch.com"        
+        "RECIPIENT EMAIL 1",
+        "RECIPIENT EMAIL 2"
     ],
     "email_subect_line": "Job {job_id} {job_status} {timestamp}",
     "email_attachments": [
