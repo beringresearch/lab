@@ -9,6 +9,17 @@ import click
 from tabulate import tabulate
 from train import train_r
 from pymongo import MongoClient
+from pkg_resources import Requirement, resource_filename
+
+from .alerts import EmailAlerter
+
+try:
+    email_settings_filepath = resource_filename(Requirement.parse("lab"),"email_config_testing.json")
+except:
+    print('Could not load email settings config file.')
+finally:
+    email_alerter = EmailAlerter.from_filepath(email_settings_filepath)
+
 
 def execute_learner(identifier=''):
     '''Main function that executes shell script'''
@@ -32,7 +43,15 @@ def execute_learner(identifier=''):
     cmd = filter(None, cmd)
     stdout = open(os.path.join(ewd, 'stdout.log'), 'w')
     stderr = open(os.path.join(ewd, 'stderr.log'), 'w')
-    subprocess.call(cmd, shell=False, stdout=stdout, stderr=stderr)
+    
+    try:
+        subprocess.check_call(cmd, shell=False, stdout=stdout, stderr=stderr)
+        print('Completed running {}'.format(ewd))
+        email_alerter.send_message(experiment['name'], ewd, success=True)
+    except Exception as e:
+        print('Error encountered running experiment {}.'.format(ewd))
+        print(e.output)
+        email_alerter.send_message(experiment['name'], ewd, success=False)
 
 @click.group()
 def cli():
