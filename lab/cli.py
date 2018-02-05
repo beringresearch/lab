@@ -100,6 +100,7 @@ def ls_project():
         table.append(project_list[element])
     click.echo(tabulate(table, tablefmt='presto', headers='firstrow'))
 
+# Remove a lab project
 @click.command('rm')
 @click.argument('identifier')
 def rm_project(identifier):
@@ -116,6 +117,23 @@ def rm_project(identifier):
     projects.remove({"_id": identifier})
 
     click.echo('Removed project {id=%s}' % identifier)
+
+# Run all experiments in a project
+@click.command('run')
+@click.argument('identifier')
+def run_project(identifier):
+    ''' Run all experiments associated with the project IDENTIFIER'''
+    client = MongoClient()
+    mongodb = client.lab
+    projects = mongodb.projects
+
+    listing = projects.find_one({"_id": identifier})
+    ewd = listing['ewd']
+
+    for experiment_id in os.listdir(ewd):
+        execute_learner(experiment_id)
+    
+    click.echo('Executed project {id=%s}' % identifier)
 
 # Experiment Group
 @click.group()
@@ -345,6 +363,7 @@ expr.add_command(perf_experiment)
 project.add_command(create_project)
 project.add_command(ls_project)
 project.add_command(rm_project)
+project.add_command(run_project)
 
 job.add_command(add_job)
 job.add_command(run_job)
