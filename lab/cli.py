@@ -9,6 +9,17 @@ import click
 from tabulate import tabulate
 from train import train_r
 from pymongo import MongoClient
+from pkg_resources import Requirement, resource_filename
+
+from .alerts import EmailAlerter
+
+try:
+    email_settings_filepath = resource_filename(Requirement.parse("lab"), "email_config.json")
+except:
+    print('Could not load email settings config file.')
+finally:
+    email_alerter = EmailAlerter.from_filepath(email_settings_filepath)
+
 
 def execute_learner(identifier=''):
     '''Main function that executes shell script'''
@@ -32,7 +43,15 @@ def execute_learner(identifier=''):
     cmd = filter(None, cmd)
     stdout = open(os.path.join(ewd, 'stdout.log'), 'w')
     stderr = open(os.path.join(ewd, 'stderr.log'), 'w')
-    subprocess.call(cmd, shell=False, stdout=stdout, stderr=stderr)
+    
+    try:
+        subprocess.check_call(cmd, shell=False, stdout=stdout, stderr=stderr)
+        print('Completed running {}'.format(ewd))
+        email_alerter.send_message(experiment['name'], ewd, success=True)
+    except Exception as e:
+        print('Error encountered running experiment {}.'.format(ewd))
+        print(e)
+        email_alerter.send_message(experiment['name'], ewd, success=False)
 
 @click.group()
 def cli():
@@ -59,7 +78,7 @@ def create_project(name):
     project_list['_id'] = projectid
     project_list['timestamp'] = timestamp
     project_list['pwd'] = os.path.join(os.getcwd(), name)
-    project_list['ewd'] = os.path.join(os.getcwd(), 'experiments')
+    project_list['ewd'] = os.path.join(os.getcwd(), name, 'experiments')
     project_list['data'] = os.path.join(os.getcwd(), name, 'data')
     projectdir = name
 
@@ -100,6 +119,7 @@ def ls_project():
         table.append(project_list[element])
     click.echo(tabulate(table, tablefmt='presto', headers='firstrow'))
 
+# Remove a lab project
 @click.command('rm')
 @click.argument('identifier')
 def rm_project(identifier):
@@ -116,6 +136,24 @@ def rm_project(identifier):
     projects.remove({"_id": identifier})
 
     click.echo('Removed project {id=%s}' % identifier)
+
+# Run all experiments in a project
+@click.command('run')
+@click.argument('identifier')
+def run_project(identifier):
+    ''' Run all experiments associated with the project IDENTIFIER'''
+    client = MongoClient()
+    mongodb = client.lab
+    projects = mongodb.projects
+
+    listing = projects.find_one({"_id": identifier})
+    ewd = listing['ewd']    
+
+    for experiment_id in os.listdir(ewd):
+        click.echo('Running experiment {id=%s}' % experiment_id)
+        execute_learner(experiment_id)
+    
+    click.echo('Executed project {id=%s}' % identifier)
 
 # Experiment Group
 @click.group()
@@ -218,7 +256,7 @@ def duplicate_experiment(identifier):
     click.echo("Created experiment {id=%s}" % exprid)
 
 
-
+# Remove an experiment
 @click.command('rm')
 @click.argument('identifier')
 def rm_experiment(identifier):
@@ -345,6 +383,7 @@ expr.add_command(perf_experiment)
 project.add_command(create_project)
 project.add_command(ls_project)
 project.add_command(rm_project)
+project.add_command(run_project)
 
 job.add_command(add_job)
 job.add_command(run_job)

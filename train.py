@@ -91,6 +91,6 @@ xgb$save_model(fname)
   
 json <- toJSON(result, auto_unbox = TRUE, pretty = TRUE)
 write(json, file.path(experiment["ewd"], output, paste0(make.names(Sys.time()), "_results.json")))
-}"""
+"""
 
     return res
