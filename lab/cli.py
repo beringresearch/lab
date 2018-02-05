@@ -14,7 +14,7 @@ from pkg_resources import Requirement, resource_filename
 from .alerts import EmailAlerter
 
 try:
-    email_settings_filepath = resource_filename(Requirement.parse("lab"),"email_config_testing.json")
+    email_settings_filepath = resource_filename(Requirement.parse("lab"), "email_config_testing.json")
 except:
     print('Could not load email settings config file.')
 finally:
@@ -50,7 +50,7 @@ def execute_learner(identifier=''):
         email_alerter.send_message(experiment['name'], ewd, success=True)
     except Exception as e:
         print('Error encountered running experiment {}.'.format(ewd))
-        print(e.output)
+        print(e)
         email_alerter.send_message(experiment['name'], ewd, success=False)
 
 @click.group()
@@ -78,7 +78,7 @@ def create_project(name):
     project_list['_id'] = projectid
     project_list['timestamp'] = timestamp
     project_list['pwd'] = os.path.join(os.getcwd(), name)
-    project_list['ewd'] = os.path.join(os.getcwd(), 'experiments')
+    project_list['ewd'] = os.path.join(os.getcwd(), name, 'experiments')
     project_list['data'] = os.path.join(os.getcwd(), name, 'data')
     projectdir = name
 
@@ -147,9 +147,10 @@ def run_project(identifier):
     projects = mongodb.projects
 
     listing = projects.find_one({"_id": identifier})
-    ewd = listing['ewd']
+    ewd = listing['ewd']    
 
     for experiment_id in os.listdir(ewd):
+        click.echo('Running experiment {id=%s}' % experiment_id)
         execute_learner(experiment_id)
     
     click.echo('Executed project {id=%s}' % identifier)
@@ -255,7 +256,7 @@ def duplicate_experiment(identifier):
     click.echo("Created experiment {id=%s}" % exprid)
 
 
-
+# Remove an experiment
 @click.command('rm')
 @click.argument('identifier')
 def rm_experiment(identifier):
