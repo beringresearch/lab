@@ -7,7 +7,7 @@ import datetime
 import subprocess
 import click
 from tabulate import tabulate
-from train import train_r
+from train import train_py
 from pymongo import MongoClient
 from pkg_resources import Requirement, resource_filename
 
@@ -163,8 +163,9 @@ def expr():
 
 # Create a new Experiment
 @click.command('create')
-@click.argument('name', default='', required=False)
-def create_experiment(name):
+@click.option('--name', '-n', default='',required=False)
+@click.option('--desc', '-d', default='', required=False)
+def create_experiment(name, desc):
     '''Create a new experiment'''
     timestamp = str(datetime.datetime.utcnow())
     exprid = str(uuid.uuid4())[:8]
@@ -175,6 +176,7 @@ def create_experiment(name):
     experiment = {}
     experiment['_id'] = exprid
     experiment['name'] = name
+    experiment['description'] = desc
     experiment['timestamp'] = timestamp
     experiment['ewd'] = os.path.join(os.getcwd(), exprid)
     experiment['command'] = 'Rscript'
@@ -182,10 +184,10 @@ def create_experiment(name):
     experiment['data'] = ''
     experiment['x'] = []
     experiment['y'] = ''
-    experiment['learner'] = 'train.R'
+    experiment['learner'] = 'train.py'
     experiment['method'] = ''
     experiment['options'] = {}
-    experiment['seed'] = '123'
+    experiment['seed'] = 123
     experiment['results'] = 'output'
 
     os.makedirs(experiment['ewd'])
@@ -193,8 +195,12 @@ def create_experiment(name):
     with open(os.path.join(experiment['ewd'], 'experiment.json'), 'w') as file:
         json.dump(experiment, file, sort_keys=False, indent=2)
 
-    with open(os.path.join(experiment['ewd'], 'train.R'), 'w') as file:
-        file.write(train_r())
+    with open(os.path.join(experiment['ewd'], 'train.py'), 'w') as file:
+        file.write(train_py())
+
+
+    #with open(os.path.join(experiment['ewd'], 'train.R'), 'w') as file:
+    #    file.write(train_r())
 
     client = MongoClient()
     mongodb = client.lab
@@ -306,7 +312,7 @@ def perf_experiment(identifier, metric):
         for performance in performances:
             with open(os.path.join(results, performance), 'r') as file:
                 experiment = json.load(file)
-                row.append(experiment['performance'][metric])
+                row.append(experiment[metric])
         table = [performances, row]
         click.echo('\n* '+str(i)+': %s' % metric)
         click.echo(tabulate(table, tablefmt='presto', headers='firstrow'))
