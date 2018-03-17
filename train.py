@@ -7,6 +7,7 @@ def train_py():
 import json
 import datetime
 import os
+import sys
 import pandas as pd
 
 from sklearn.model_selection import train_test_split
@@ -14,7 +15,9 @@ from tpot import TPOTClassifier
 from sklearn import metrics
 from sklearn.externals import joblib
 
-experiment = json.load(open('experiment.json'))
+experiment_options = sys.argv[1]
+
+experiment = json.load(open(experiment_options))
 
 predictors = experiment['x']
 response = experiment['y']
@@ -38,7 +41,7 @@ os.makedirs(experiment['results'])
 
 # Export Predictive model
 timestamp = str(datetime.datetime.utcnow())
-model_name = experiment['name'] + '_' + timestamp + '_model.pkl' 
+model_name = experiment['_id'] + '_' + timestamp + '_model.pkl' 
 model_name = model_name.replace(' ', '_')
 model_path = os.path.join(experiment['ewd'], experiment['results'], model_name)
 
@@ -60,7 +63,7 @@ performance = {'accuracy': accuracy,
         'recall': recall.tolist(),
         'f1-score': f1score.tolist()}
 
-performance_name = experiment['name'] + '_' + timestamp + '_performance.json' 
+performance_name = experiment['_id'] + '_' + timestamp + '_performance.json' 
 performance_name = performance_name.replace(' ', '_')
 performance_path = os.path.join(experiment['ewd'], experiment['results'], performance_name)
 
