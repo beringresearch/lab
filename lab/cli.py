@@ -317,6 +317,23 @@ def rm_experiment(identifier):
 
     click.echo('Removed experiment {id=%s}' % identifier)
 
+# Extract experiment information
+@click.command('info')
+@click.argument('identifier')
+def info_experiment(identifier):
+    '''Extract experiment information by IDENTIFIER'''
+    client = MongoClient()
+    mongodb = client.lab
+    experiments = mongodb.experiments
+
+    listing = experiments.find_one({"_id": identifier})
+
+    str = '\n*' + listing['_id'] + '\n' + 'Created at:           ' + listing['timestamp'] + '\n' + 'Dataset name:         ' + os.path.basename(listing['data']) + '\n' + 'Response column name: ' + listing['y'] + '\n' + 'Model type:           ' + listing['method'] + '\n'
+
+    click.echo(str)
+
+
+
 # Run Experiment
 @click.command('run')
 @click.argument('identifier', default='', required=False)
@@ -421,6 +438,7 @@ expr.add_command(rm_experiment)
 expr.add_command(duplicate_experiment)
 expr.add_command(run_experiment)
 expr.add_command(perf_experiment)
+expr.add_command(info_experiment)
 
 project.add_command(create_project)
 project.add_command(ls_project)
