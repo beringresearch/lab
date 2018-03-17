@@ -1,5 +1,3 @@
-'''  Template functions '''
-
 def train_py():
     ''' Default python train module template '''
 
@@ -70,6 +68,7 @@ performance_path = os.path.join(experiment['ewd'], experiment['results'], perfor
 with open(performance_path, 'w') as outfile:
         json.dump(performance, outfile)
 """
+    
     return res
     
 def train_r():

@@ -119,6 +119,42 @@ def ls_project():
         table.append(project_list[element])
     click.echo(tabulate(table, tablefmt='presto', headers='firstrow'))
 
+# Show project model information
+@click.command('info')
+@click.argument('identifier')
+def info_project(identifier):
+    '''Show project information by IDENTIFIER'''
+    
+    client = MongoClient()
+    mongodb = client.lab
+    projects = mongodb.projects
+
+    listing = projects.find_one({"_id": identifier})
+    ewd = listing['ewd']
+    experiments = os.listdir(ewd)
+
+    summary = []
+    for e in experiments:
+        experiment = json.load(open(os.path.join(ewd, e, 'experiment.json')))
+        jsonpath = os.path.join(ewd, e, experiment['results'])
+        for file in os.listdir(jsonpath):
+            if file.endswith('.json'):
+                performance = json.load(open(os.path.join(ewd, e,
+                    experiment['results'], file)))
+                summary.append(performance)
+
+    table = [['model-id', 'accuracy', 'f1-score', 'precision', 'recall']]
+    for element in range(0, len(experiments)):
+        id = experiments[element]
+        accuracy = round(summary[element]['accuracy'], 2)
+        f1score =  [ round(elem, 2) for elem in summary[element]['f1-score'] ]
+        precision =  [ round(elem, 2) for elem in summary[element]['precision'] ]
+        recall =  [ round(elem, 2) for elem in summary[element]['recall'] ]
+        table.append([id, accuracy, f1score, precision, recall])
+
+    click.echo(tabulate(table, tablefmt='presto', headers='firstrow'))
+
+
 # Remove a lab project
 @click.command('rm')
 @click.argument('identifier')
@@ -179,8 +215,8 @@ def create_experiment(name, desc):
     experiment['description'] = desc
     experiment['timestamp'] = timestamp
     experiment['ewd'] = os.path.join(os.getcwd(), exprid)
-    experiment['command'] = 'Rscript'
-    experiment['args'] = '--vanilla'
+    experiment['command'] = 'python3'
+    experiment['args'] = ''
     experiment['data'] = ''
     experiment['x'] = []
     experiment['y'] = ''
@@ -390,6 +426,7 @@ project.add_command(create_project)
 project.add_command(ls_project)
 project.add_command(rm_project)
 project.add_command(run_project)
+project.add_command(info_project)
 
 job.add_command(add_job)
 job.add_command(run_job)
