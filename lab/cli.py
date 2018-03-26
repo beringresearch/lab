@@ -12,6 +12,8 @@ from pymongo import MongoClient
 from pkg_resources import Requirement, resource_filename
 
 from .alerts import EmailAlerter
+from .project import Project
+from .experiment import Experiment
 
 try:
     email_settings_filepath = resource_filename(Requirement.parse("lab"), "email_config.json")
@@ -103,74 +105,26 @@ def create_project(name):
 @click.command('ls')
 def ls_project():
     '''List all projects'''
-    client = MongoClient()
-    mongodb = client.lab
-    projects = mongodb.projects
-
-    listing = list(projects.find())
-
-    project_list = []
-    for iteration in listing:
-        project_list.append([iteration['_id'], iteration['name'],
-                             os.path.split(iteration['ewd'])[0]])
-
-    table = [['id', 'name', 'directory']]
-    for element in range(0, len(project_list)):
-        table.append(project_list[element])
-    click.echo(tabulate(table, tablefmt='presto', headers='firstrow'))
+    project = Project()
+    table = project.list() 
+    click.echo(table) 
 
 # Show project model information
 @click.command('info')
 @click.argument('identifier')
 def info_project(identifier):
     '''Show project information by IDENTIFIER'''
-    
-    client = MongoClient()
-    mongodb = client.lab
-    projects = mongodb.projects
-
-    listing = projects.find_one({"_id": identifier})
-    ewd = listing['ewd']
-    experiments = os.listdir(ewd)
-
-    summary = []
-    for e in experiments:
-        experiment = json.load(open(os.path.join(ewd, e, 'experiment.json')))
-        jsonpath = os.path.join(ewd, e, experiment['results'])
-        for file in os.listdir(jsonpath):
-            if file.endswith('.json'):
-                performance = json.load(open(os.path.join(ewd, e,
-                    experiment['results'], file)))
-                summary.append(performance)
-
-    table = [['model-id', 'accuracy', 'f1-score', 'precision', 'recall']]
-    for element in range(0, len(experiments)):
-        id = experiments[element]
-        accuracy = round(summary[element]['accuracy'], 2)
-        f1score =  [ round(elem, 2) for elem in summary[element]['f1-score'] ]
-        precision =  [ round(elem, 2) for elem in summary[element]['precision'] ]
-        recall =  [ round(elem, 2) for elem in summary[element]['recall'] ]
-        table.append([id, accuracy, f1score, precision, recall])
-
-    click.echo(tabulate(table, tablefmt='presto', headers='firstrow'))
-
+    project = Project()
+    table = project.info(identifier) 
+    click.echo(table)
 
 # Remove a lab project
 @click.command('rm')
 @click.argument('identifier')
 def rm_project(identifier):
     '''Remove project by IDENTIFIER'''
-    client = MongoClient()
-    mongodb = client.lab
-    projects = mongodb.projects
-
-    listing = projects.find_one({"_id": identifier})
-    pwd = listing['pwd']
-    if os.path.exists(pwd):
-        shutil.rmtree(pwd)
-
-    projects.remove({"_id": identifier})
-
+    project = Project()
+    project.remove(identifier)
     click.echo('Removed project {id=%s}' % identifier)
 
 # Run all experiments in a project
@@ -249,24 +203,9 @@ def create_experiment(name, desc):
 @click.command('ls')
 def ls_experiment():
     '''List all registered experiments'''
-    client = MongoClient()
-    mongodb = client.lab
-    experiments = mongodb.experiments
-
-    listing = list(experiments.find())
-
-    experiment = []
-    for iteration in listing:
-        experiment.append([iteration['_id'], iteration['name'], iteration['method'],
-                           iteration['y'],
-                           os.path.split(iteration['ewd'])[0]])
-
-    table = [['id', 'name', 'method', 'response', 'directory']]
-    for element in range(0, len(experiment)):
-        table.append(experiment[element])
-
-    click.echo(tabulate(table, tablefmt='presto', headers='firstrow'))
-
+    experiment = Experiment()
+    table = experiment.list()
+    print(table)
 
 # Duplicate a specific experiment
 @click.command('duplicate')
@@ -345,31 +284,6 @@ def run_experiment(identifier):
     timestamp = str(datetime.datetime.utcnow())
     click.echo('Finished on %s' % timestamp)
 
-# Compare experiments
-@click.command('perf')
-@click.argument('identifier', required=True, nargs=-1)
-@click.argument('metric', required=True, nargs=1)
-def perf_experiment(identifier, metric):
-    '''Show performance by exp IDENTIFIER and METRIC'''
-    client = MongoClient()
-    mongodb = client.lab
-    experiments = mongodb.experiments
-
-    for i in identifier:
-        listing = experiments.find_one({"_id": i})
-        ewd = listing['ewd']
-        results = os.path.join(ewd, listing['results'])
-        performances = [pos_json for pos_json in os.listdir(results) if pos_json.endswith('.json')]
-
-        row = []
-        for performance in performances:
-            with open(os.path.join(results, performance), 'r') as file:
-                experiment = json.load(file)
-                row.append(experiment[metric])
-        table = [performances, row]
-        click.echo('\n* '+str(i)+': %s' % metric)
-        click.echo(tabulate(table, tablefmt='presto', headers='firstrow'))
-    click.echo('\n')
 
 # Job Group
 @click.group()
@@ -437,7 +351,6 @@ expr.add_command(create_experiment)
 expr.add_command(rm_experiment)
 expr.add_command(duplicate_experiment)
 expr.add_command(run_experiment)
-expr.add_command(perf_experiment)
 expr.add_command(info_experiment)
 
 project.add_command(create_project)

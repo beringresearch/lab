@@ -6,12 +6,12 @@ import json
 import datetime
 import os
 import sys
+import dill
 import pandas as pd
 
 from sklearn.model_selection import train_test_split
 from tpot import TPOTClassifier
 from sklearn import metrics
-from sklearn.externals import joblib
 
 experiment_options = sys.argv[1]
 
@@ -43,7 +43,8 @@ model_name = experiment['_id'] + '_' + timestamp + '_model.pkl'
 model_name = model_name.replace(' ', '_')
 model_path = os.path.join(experiment['ewd'], experiment['results'], model_name)
 
-joblib.dump(pipeline_optimizer.fitted_pipeline_, filename=model_path)
+with open(model_path, 'wb') as file:
+    dill.dump(pipeline_optimizer.fitted_pipeline_, file)
 
 # Measure model performance
 y_pred = pipeline_optimizer.predict(X_test)

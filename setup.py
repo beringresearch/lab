@@ -3,11 +3,12 @@ from setuptools import setup
 
 setup(
     name="lab",
-    version="0.2.0",
+    version="0.3.0",
     py_modules=['lab'],
     install_requires=[
-        'Click',
+        'click',
         'tabulate',
+        'pandas', 
         'pymongo'
     ],
     entry_points='''
