@@ -8,6 +8,7 @@ setup(
     install_requires=[
         'click',
         'tabulate',
+        'dill',
         'pandas', 
         'pymongo'
     ],
