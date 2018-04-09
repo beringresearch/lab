@@ -49,4 +49,13 @@ class Experiment:
 
         return model, features
 
+    def info(self, identifier):
+        client = MongoClient()
+        mongodb = client.lab
+        experiments = mongodb.experiments
 
+        listing = experiments.find_one({"_id": identifier})
+
+        str = '\n*' + listing['_id'] + '\n' + 'Created at:           ' + listing['timestamp'] + '\n' + 'Dataset name:         ' + os.path.basename(listing['data']) + '\n' + 'Response column name: ' + listing['y'] + '\n' + 'Model type:           ' + listing['method'] + '\n' + 'Directory:            ' + listing['ewd'] + '\n'
+
+        return str

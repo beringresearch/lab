@@ -261,16 +261,9 @@ def rm_experiment(identifier):
 @click.argument('identifier')
 def info_experiment(identifier):
     '''Extract experiment information by IDENTIFIER'''
-    client = MongoClient()
-    mongodb = client.lab
-    experiments = mongodb.experiments
-
-    listing = experiments.find_one({"_id": identifier})
-
-    str = '\n*' + listing['_id'] + '\n' + 'Created at:           ' + listing['timestamp'] + '\n' + 'Dataset name:         ' + os.path.basename(listing['data']) + '\n' + 'Response column name: ' + listing['y'] + '\n' + 'Model type:           ' + listing['method'] + '\n'
-
-    click.echo(str)
-
+    experiment = Experiment()
+    info = experiment.info(identifier)
+    click.echo(info)
 
 
 # Run Experiment
