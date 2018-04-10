@@ -6,6 +6,9 @@ import pandas as pd
 
 from pymongo import MongoClient
 
+def get_immediate_subdirectories(a_dir):
+    return [name for name in os.listdir(a_dir)
+        if os.path.isdir(os.path.join(a_dir, name))]
 
 class Project:
     def __init__(self):
@@ -31,8 +34,8 @@ class Project:
 
         listing = projects.find_one({"_id": identifier})
         ewd = listing['ewd']
-        experiments = os.listdir(ewd)
-
+        
+        experiments = get_immediate_subdirectories(ewd) 
         summary = []
         
         for e in experiments:
