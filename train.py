@@ -35,7 +35,7 @@ pipeline_optimizer = TPOTClassifier(generations=10,
         random_state=42, verbosity=2)
 pipeline_optimizer.fit(X_train, y_train)
 
-os.makedirs(experiment['results'])
+os.makedirs(os.path.join(experiment['ewd'], experiment['results']))
 
 # Export Predictive model
 timestamp = str(datetime.datetime.utcnow())
