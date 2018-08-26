@@ -11,7 +11,7 @@ pip install --editable .
 
 # Concepts
 Lab employs several concepts: __hyperparameter logging__, __performance metrics__, and __model persistence__.
-A typical machine learning workflow can be truned into a Lab Experiment using a few decorators
+A typical machine learning workflow can be truned into a Lab Experiment by using a single decorator.
 
 # Example
 
@@ -85,13 +85,13 @@ lab create <PROJECT_NAME>
 This creates a `labfile.yaml` file with project specifications. See `/examples` for more details.
 
 # Comparing models
-From directory that contains `/labrun`, execute:
+From the directory that contains `/labrun`, execute:
 
 ```
 lab ui
 ```
 
-The output stacks existing models and allows comparisons across logged performance metrics
+The output stacks existing models and allows comparisons across logged performance metrics.
 
 # Serving models
 A single model can be exposed through a serving API via:
@@ -99,3 +99,5 @@ A single model can be exposed through a serving API via:
 ```
 lab serve <MODEL_ID>
 ```
+
+The model becomes accessible on `localhost:5000/predict` or `localhost:5000/predict_proba`
