@@ -22,7 +22,7 @@ def run_project():
 @click.command('create')
 @click.argument('name', required = True)
 def create_project(name):
-    with open(name+'.yaml', 'w') as file:
+    with open('labfile.yaml', 'w') as file:
             meta = {'name': name,
                     'entry_points': None}
             yaml.dump(meta, file, default_flow_style=False)
