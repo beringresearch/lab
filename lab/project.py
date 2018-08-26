@@ -1,5 +1,6 @@
 import yaml
 import subprocess
+import os
 
 _DEFAULT_USER_ID = 'unknown'
 
@@ -11,9 +12,11 @@ class Project():
         self.name = config['name']
         self.entry_points = config['entry_points']
         self.user_id = _get_user_id()
+        self.labfile = labfile
 
     def start_run(self):
-        for key in self.entry_points:            
+        os.chdir(os.path.dirname(self.labfile))
+        for key in self.entry_points:
             command = self.entry_points[key]['command']
             command = command.split()
             subprocess.call(command)
