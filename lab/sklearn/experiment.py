@@ -3,6 +3,7 @@ import uuid
 import os
 import yaml
 import pickle
+import numpy
 
 from sklearn.externals import joblib
 
@@ -46,6 +47,7 @@ class Experiment():
 
 
     def log_metric(self, key, value):
+        value = numpy.array(value)
         logged_metric = {}
         logged_metric[key] = value.tolist()
 
@@ -55,13 +57,14 @@ class Experiment():
             self.metrics[key] = value.tolist()
 
     def log_parameter(self, key, value):
-        logged_parameter = {}
-        logged_parameter[key] = value
+        value = numpy.array(value)
+        logged_parameter = {}        
+        logged_parameter[key] = value.tolist()
 
         if self.parameters is None:
             self.parameters = logged_parameter
         else:
-            self.parameters[key] = value
+            self.parameters[key] = value.tolist()
 
     def log_model(self, model, filename):
         run_uuid = self.uuid
