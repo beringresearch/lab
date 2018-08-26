@@ -9,6 +9,7 @@ setup(
         'click',
         'pyyaml',
         'sklearn',
+        'flask',
         'tabulate'
         ],
     entry_points='''

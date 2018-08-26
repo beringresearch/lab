@@ -3,13 +3,19 @@ import os
 import yaml
 import tabulate
 
+from lab.server import _run_server
 from lab import Project
+
 
 @click.group()
 def cli():
     '''Machine Learning Lab'''
     pass
 
+@click.command('serve')
+@click.argument('model_id', required = True)
+def serve_model(model_id):
+    _run_server(model_id)
 
 @click.command('run')
 def run_project():
@@ -62,6 +68,7 @@ def compare_experiments():
 
 
 cli.add_command(run_project)
+cli.add_command(serve_model)
 cli.add_command(create_project)
 cli.add_command(compare_experiments)
 
