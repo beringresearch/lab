@@ -3,15 +3,14 @@ from setuptools import setup
 
 setup(
     name="lab",
-    version="0.3.1",
+    version="0.5.0",
     py_modules=['lab'],
     install_requires=[
         'click',
-        'tabulate',
-        'dill',
-        'pandas', 
-        'pymongo'
-    ],
+        'pyyaml',
+        'sklearn',
+        'tabulate'
+        ],
     entry_points='''
     [console_scripts]
     lab=lab.cli:cli

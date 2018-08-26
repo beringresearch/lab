@@ -1,59 +1,9 @@
-''' Command line interface to Machine Learning Lab '''
-import uuid
-import json
-import os
-import shutil
-import datetime
-import subprocess
 import click
-from tabulate import tabulate
-from train import train_py
-from pymongo import MongoClient
-from pkg_resources import Requirement, resource_filename
+import os
+import yaml
+import tabulate
 
-from .alerts import EmailAlerter
-from .project import Project
-from .experiment import Experiment
-
-try:
-    email_settings_filepath = resource_filename(Requirement.parse("lab"), "email_config.json")
-except:
-    print('Could not load email settings config file.')
-finally:
-    email_alerter = EmailAlerter.from_filepath(email_settings_filepath)
-
-
-def execute_learner(identifier=''):
-    '''Main function that executes shell script'''
-    client = MongoClient()
-    mongodb = client.lab
-    experiments = mongodb.experiments
-
-    if identifier == '':
-        with open('experiment.json', 'r') as file:
-            experiment = json.load(file)
-    else:
-        listing = experiments.find_one({"_id": identifier})
-        with open(os.path.join(listing['ewd'], 'experiment.json'), 'r') as file:
-            experiment = json.load(file)
-
-    experiments.update({'_id': experiment['_id']}, {"$set": experiment}, upsert=False)
-    ewd = experiment['ewd']
-    experimentjson = os.path.join(ewd, 'experiment.json')
-    learner = os.path.join(ewd, experiment['learner'])
-    cmd = [experiment['command'], experiment['args'], learner, experimentjson]
-    cmd = filter(None, cmd)
-    stdout = open(os.path.join(ewd, 'stdout.log'), 'w')
-    stderr = open(os.path.join(ewd, 'stderr.log'), 'w')
-    
-    try:
-        subprocess.check_call(cmd, shell=False, stdout=stdout, stderr=stderr)
-        print('Completed running {}'.format(ewd))
-        email_alerter.send_message(experiment['name'], ewd, success=True)
-    except Exception as e:
-        print('Error encountered running experiment {}.'.format(ewd))
-        print(e)
-        email_alerter.send_message(experiment['name'], ewd, success=False)
+from lab import Project
 
 @click.group()
 def cli():
@@ -61,305 +11,59 @@ def cli():
     pass
 
 
-# Project Group
-@click.group()
-def project():
-    '''Project commands'''
-    pass
+@click.command('run')
+def run_project():
+    if os.path.isfile('labfile.yaml'):
+        p = Project('labfile.yaml')
+        p.start_run()
+    else:
+        raise Exception('Directory is not a valid Lab Project. Initiate a labfile.yaml and run again.')
 
-# Create a new Project
 @click.command('create')
-@click.argument('name')
+@click.argument('name', required = True)
 def create_project(name):
-    '''Create a new project with NAME.'''
-    timestamp = str(datetime.datetime.utcnow())
-    projectid = str(uuid.uuid4())[:8]
+    with open(name+'.yaml', 'w') as file:
+            meta = {'name': name,
+                    'entry_points': None}
+            yaml.dump(meta, file, default_flow_style=False)
 
-    project_list = {}
-    project_list['name'] = name
-    project_list['_id'] = projectid
-    project_list['timestamp'] = timestamp
-    project_list['pwd'] = os.path.join(os.getcwd(), name)
-    project_list['ewd'] = os.path.join(os.getcwd(), name, 'experiments')
-    project_list['data'] = os.path.join(os.getcwd(), name, 'data')
-    projectdir = name
-
-    if not os.path.exists(projectdir):
-        os.makedirs(projectdir)
-        datadir = os.path.join(projectdir, 'data')
-        exprdir = os.path.join(projectdir, 'experiments')
-        os.makedirs(datadir)
-        os.makedirs(exprdir)
-
-        with open(os.path.join(project_list['pwd'], 'project.json'), 'w') as file:
-            json.dump(project_list, file, sort_keys=False, indent=2)
-
-        client = MongoClient()
-        mongodb = client.lab
-        projects = mongodb.projects
-        projects.insert_one(project_list)
-
-        click.echo('Project created {id=' + projectid + '}')
-
-# List existing lab projects
-@click.command('ls')
-def ls_project():
-    '''List all projects'''
-    project = Project()
-    table = project.list() 
-    click.echo(table) 
-
-# Show project model information
-@click.command('info')
-@click.argument('identifier')
-def info_project(identifier):
-    '''Show project information by IDENTIFIER'''
-    project = Project()
-    table = project.info(identifier) 
-    click.echo(table)
-
-# Remove a lab project
-@click.command('rm')
-@click.argument('identifier')
-def rm_project(identifier):
-    '''Remove project by IDENTIFIER'''
-    project = Project()
-    project.remove(identifier)
-    click.echo('Removed project {id=%s}' % identifier)
-
-# Run all experiments in a project
-@click.command('run')
-@click.argument('identifier')
-def run_project(identifier):
-    ''' Run all experiments associated with the project IDENTIFIER'''
-    client = MongoClient()
-    mongodb = client.lab
-    projects = mongodb.projects
-
-    listing = projects.find_one({"_id": identifier})
-    ewd = listing['ewd']    
-
-    for experiment_id in os.listdir(ewd):
-        click.echo('Running experiment {id=%s}' % experiment_id)
-        execute_learner(experiment_id)
+@click.command('ui')
+def compare_experiments():
+    experiment_directory = 'labrun'
     
-    click.echo('Executed project {id=%s}' % identifier)
+    if os.path.isdir(experiment_directory):
+        experiments = next(os.walk(experiment_directory))[1]
+    else:
+        raise("lab ls must be run from a directory that contains labruns folder.")
 
-# Experiment Group
-@click.group()
-def expr():
-    '''Experiment methods'''
-    pass
+    
+    TICK = '▇'
 
-# Create a new Experiment
-@click.command('create')
-@click.option('--name', '-n', default='',required=False)
-@click.option('--desc', '-d', default='', required=False)
-def create_experiment(name, desc):
-    '''Create a new experiment'''
-    timestamp = str(datetime.datetime.utcnow())
-    exprid = str(uuid.uuid4())[:8]
+    comparisons = []
+    
+    for e in experiments:
+        metrics_file = os.path.join(experiment_directory, e, 'metrics.yaml')
+        with open(metrics_file, 'r') as file:
+            metrics = yaml.load(file)
 
-    if name == "":
-        name = exprid
+        meta_file = os.path.join(experiment_directory, e, 'meta.yaml')
+        with open(meta_file, 'r') as file:
+            meta = yaml.load(file)
+        
+        record = [meta['experiment_uuid'], meta['user_id'], str(meta['start_time']), metrics]
+        comparisons.append(record)
+        
+    header = ['Experiment', 'User', 'Time', 'Metrics']
 
-    experiment = {}
-    experiment['_id'] = exprid
-    experiment['name'] = name
-    experiment['description'] = desc
-    experiment['timestamp'] = timestamp
-    experiment['ewd'] = os.path.join(os.getcwd(), exprid)
-    experiment['command'] = 'python3'
-    experiment['args'] = ''
-    experiment['data'] = ''
-    experiment['x'] = []
-    experiment['y'] = ''
-    experiment['learner'] = 'train.py'
-    experiment['method'] = ''
-    experiment['options'] = {}
-    experiment['seed'] = 123
-    experiment['results'] = 'output'
+    click.echo(tabulate.tabulate(comparisons, headers = header))
+        
 
-    os.makedirs(experiment['ewd'])
-
-    with open(os.path.join(experiment['ewd'], 'experiment.json'), 'w') as file:
-        json.dump(experiment, file, sort_keys=False, indent=2)
-
-    with open(os.path.join(experiment['ewd'], 'train.py'), 'w') as file:
-        file.write(train_py())
+        
 
 
-    #with open(os.path.join(experiment['ewd'], 'train.R'), 'w') as file:
-    #    file.write(train_r())
-
-    client = MongoClient()
-    mongodb = client.lab
-    experiments = mongodb.experiments
-    experiments.insert_one(experiment)
-
-    click.echo('Experiment created {id=' + exprid + '}')
-
-# List existing lab experiments
-@click.command('ls')
-def ls_experiment():
-    '''List all registered experiments'''
-    experiment = Experiment()
-    table = experiment.list()
-    print(table)
-
-# Duplicate a specific experiment
-@click.command('duplicate')
-@click.argument('identifier')
-def duplicate_experiment(identifier):
-    '''Duplicate experiment with an IDENTIFIER'''
-    timestamp = str(datetime.datetime.utcnow())
-    exprid = str(uuid.uuid4())[:8]
-
-    client = MongoClient()
-    mongodb = client.lab
-    experiments = mongodb.experiments
-    experiment = experiments.find_one({"_id": identifier})
-
-    ewd = experiment['ewd']
-    experiment['_id'] = exprid
-    experiment['timestamp'] = timestamp
-    experiment['ewd'] = os.path.join(os.getcwd(), exprid)
-
-    experiments.insert_one(experiment)
-
-    os.makedirs(experiment['ewd'])
-    shutil.copy2(os.path.join(ewd, 'experiment.json'), experiment['ewd'])
-    shutil.copy2(os.path.join(ewd, experiment['learner']), experiment['ewd'])
-
-    with open(os.path.join(experiment['ewd'], 'experiment.json'), 'w') as file:
-        json.dump(experiment, file, sort_keys=False, indent=2)
-
-    click.echo("Created experiment {id=%s}" % exprid)
-
-
-# Remove an experiment
-@click.command('rm')
-@click.argument('identifier')
-def rm_experiment(identifier):
-    '''Permanently remove experiment by IDENTIFIER'''
-    client = MongoClient()
-    mongodb = client.lab
-    experiments = mongodb.experiments
-
-    listing = experiments.find_one({"_id": identifier})
-    ewd = listing['ewd']
-
-    if os.path.exists(ewd):
-        shutil.rmtree(ewd)
-
-    experiments.remove({"_id": identifier})
-
-    click.echo('Removed experiment {id=%s}' % identifier)
-
-# Extract experiment information
-@click.command('info')
-@click.argument('identifier')
-def info_experiment(identifier):
-    '''Extract experiment information by IDENTIFIER'''
-    experiment = Experiment()
-    info = experiment.info(identifier)
-    click.echo(info)
-
-
-# Run Experiment
-@click.command('run')
-@click.argument('identifier', default='', required=False)
-def run_experiment(identifier):
-    '''Run a single experiment by IDENTIFIER'''
-    timestamp = str(datetime.datetime.utcnow())
-    click.echo('Starting on %s' % timestamp)
-    execute_learner(identifier)
-    timestamp = str(datetime.datetime.utcnow())
-    click.echo('Finished on %s' % timestamp)
-
-
-# Job Group
-@click.group()
-def job():
-    '''Job methods'''
-    pass
-
-@click.command('add')
-@click.argument('identifier', default='', required=False)
-def add_job(identifier):
-    '''Create an experiment job queue by IDENTIFIER'''
-    client = MongoClient()
-    mongodb = client.lab
-    jobs = mongodb.jobs
-    experiments = mongodb.experiments
-
-    listing = experiments.find_one({"_id": identifier})
-    jobs.insert_one(listing)
-
-    click.echo('Job listing created {id=%s}' % identifier)
-
-@click.command('ls')
-def ls_job():
-    '''List all existing jobs in a queue'''
-    client = MongoClient()
-    mongodb = client.lab
-    jobs = mongodb.jobs
-
-    listing = list(jobs.find())
-
-    experiment = []
-    for iteration in listing:
-        experiment.append([iteration['_id'], iteration['method'], iteration['y'],
-                           os.path.split(iteration['ewd'])[0]])
-
-    table = [['id', 'method', 'response', 'directory']]
-    for element in range(0, len(experiment)):
-        table.append(experiment[element])
-
-    click.echo(tabulate(table, tablefmt='presto'))
-
-@click.command('run')
-def run_job():
-    '''Sequentially run all jobs'''
-    timestamp = str(datetime.datetime.utcnow())
-    click.echo('Starting on %s' % timestamp)
-
-    client = MongoClient()
-    mongodb = client.lab
-    jobs = mongodb.jobs
-
-    listing = list(jobs.find())
-
-    for j in listing:
-        identifier = j['_id']
-        click.echo('Running job {id=%s}' % identifier)
-        execute_learner(identifier)
-        jobs.delete_one({'_id': identifier})
-
-    timestamp = str(datetime.datetime.utcnow())
-    click.echo('Finished on %s' % timestamp)
-
-
-expr.add_command(create_experiment)
-expr.add_command(rm_experiment)
-expr.add_command(duplicate_experiment)
-expr.add_command(run_experiment)
-expr.add_command(info_experiment)
-
-project.add_command(create_project)
-project.add_command(ls_project)
-project.add_command(rm_project)
-project.add_command(run_project)
-project.add_command(info_project)
-
-job.add_command(add_job)
-job.add_command(run_job)
-job.add_command(ls_job)
-
-cli.add_command(project)
-cli.add_command(expr)
-cli.add_command(ls_experiment)
-cli.add_command(job)
+cli.add_command(run_project)
+cli.add_command(create_project)
+cli.add_command(compare_experiments)
 
 if __name__ == '__main__':
     cli()

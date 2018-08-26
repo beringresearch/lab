@@ -1,0 +1,7 @@
+name: melanoma
+
+entry_points:
+  svm:
+    command: "python train_svm.py"
+  random_forest:
+    command: "python train_randomforest.py"
