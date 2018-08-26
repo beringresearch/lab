@@ -12,11 +12,12 @@ class Experiment():
     def __init__(self):
         pass
 
-    def create_run(self, run_uuid = None, user_id = None, timestamp = None, metrics = None):        
+    def create_run(self, run_uuid = None, user_id = None, timestamp = None, metrics = None, parameters = None):        
         self.uuid = str(uuid.uuid4())
         self.user_id = _get_user_id()
         self.timestamp = timestamp 
-        self.metrics = metrics   
+        self.metrics = metrics  
+        self.parameters = parameters 
         
     def start_run(self, fun):
         self.create_run(user_id = _get_user_id(), timestamp = datetime.datetime.now())
@@ -39,6 +40,10 @@ class Experiment():
         with open(metrics_file, 'w') as file:
             yaml.dump(self.metrics, file, default_flow_style=False)
 
+        parameters_file = os.path.join(run_directory, 'parameters.yaml')
+        with open(parameters_file, 'w') as file:
+            yaml.dump(self.parameters, file, default_flow_style=False)
+
 
     def log_metric(self, key, value):
         logged_metric = {}
@@ -48,6 +53,15 @@ class Experiment():
             self.metrics = logged_metric
         else:
             self.metrics[key] = value.tolist()
+
+    def log_parameter(self, key, value):
+        logged_parameter = {}
+        logged_parameter[key] = value
+
+        if self.parameters is None:
+            self.parameters = logged_parameter
+        else:
+            self.parameters[key] = value
 
     def log_model(self, model, filename):
         run_uuid = self.uuid

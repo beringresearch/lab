@@ -8,7 +8,8 @@ setup(
     install_requires=[
         'click',
         'pyyaml',
-        'sklearn'
+        'sklearn',
+        'tabulate'
         ],
     entry_points='''
     [console_scripts]

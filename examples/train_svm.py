@@ -28,5 +28,8 @@ if __name__ == "__main__":
         e.log_metric('accuracy_score', accuracy)
         e.log_metric('precision_score', precision)
 
+        e.log_parameter('C', C)
+        e.log_parameter('gamma', gamma)
+
         e.log_model(clf, 'svm')
 

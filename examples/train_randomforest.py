@@ -16,8 +16,9 @@ if __name__ == "__main__":
 
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.24, random_state=42)
         
-        
-        clf = RandomForestClassifier()
+        n_estimators = 100
+
+        clf = RandomForestClassifier(n_estimators = n_estimators)
         clf.fit(X_train, y_train)
 
         y_pred = clf.predict(X_test)
@@ -26,5 +27,7 @@ if __name__ == "__main__":
 
         e.log_metric('accuracy_score', accuracy)
         e.log_metric('precision_score', precision)
+
+        e.log_parameter('n_estimators', n_estimators)
 
         e.log_model(clf, 'randomforest')
