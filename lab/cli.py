@@ -18,8 +18,8 @@ def serve_model(model_id):
     _run_server(model_id)
 
 @click.command('run')
-@click.argument('labdir', required = 'True')
-def run_project(labdir):
+@click.argument('labdir', required = False)
+def run_project(labdir='.'):
     labfile = os.path.join(labdir, 'labfile.yaml')
     if os.path.isfile(labfile):
         p = Project(labfile)
