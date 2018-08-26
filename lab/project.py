@@ -1,84 +1,29 @@
-import os
-import json
-import shutil
+import yaml
+import subprocess
 
-import pandas as pd
+_DEFAULT_USER_ID = 'unknown'
 
-from pymongo import MongoClient
+class Project():
+    def __init__(self, labfile):
+        with open(labfile, 'r') as file:
+            config = yaml.load(file)
 
-def get_immediate_subdirectories(a_dir):
-    return [name for name in os.listdir(a_dir)
-        if os.path.isdir(os.path.join(a_dir, name))]
+        self.name = config['name']
+        self.entry_points = config['entry_points']
+        self.user_id = _get_user_id()
 
-class Project:
-    def __init__(self):
-        None
-
-    def remove(self, identifier):
-        client = MongoClient()
-        mongodb = client.lab
-        projects = mongodb.projects
-
-        listing = projects.find_one({"_id": identifier})
-        pwd = listing['pwd']
-        if os.path.exists(pwd):
-            shutil.rmtree(pwd)
-
-        projects.remove({"_id": identifier})
+    def start_run(self):
+        for key in self.entry_points:            
+            command = self.entry_points[key]['command']
+            command = command.split()
+            subprocess.call(command)
 
 
-    def info(self, identifier):
-        client = MongoClient()
-        mongodb = client.lab
-        projects = mongodb.projects
-
-        listing = projects.find_one({"_id": identifier})
-        ewd = listing['ewd']
-        
-        experiments = get_immediate_subdirectories(ewd) 
-        summary = []
-        
-        for e in experiments:
-            experiment = json.load(open(os.path.join(ewd, e, 'experiment.json')))
-            jsonpath = os.path.join(ewd, e, experiment['results'])
-            for file in os.listdir(jsonpath):
-                if file.endswith('.json'):
-                    performance = json.load(open(os.path.join(ewd, e, 
-                        experiment['results'], file)))
-            summary.append(performance)
-
-        table = [['model-id', 'accuracy', 'f1-score', 'precision', 'recall']]
-        for element in range(0, len(experiments)):
-            id = experiments[element]
-            accuracy = round(summary[element]['accuracy'], 2)
-            f1score =  [ round(elem, 2) for elem in summary[element]['f1-score'] ]
-            precision =  [ round(elem, 2) for elem in summary[element]['precision'] ]
-            recall =  [ round(elem, 2) for elem in summary[element]['recall'] ]
-            table.append([id, accuracy, f1score, precision, recall])
-
-        table = pd.DataFrame(table, columns = table[0])
-        table = table.drop(table.index[0])
-        return table
-
-
-    def list(self):
-        client = MongoClient()
-        mongodb = client.lab
-        projects = mongodb.projects
-
-        listing = list(projects.find())
-
-        project_list = []
-    
-        for iteration in listing:
-            project_list.append([iteration['_id'], iteration['name'],
-                                os.path.dirname(os.path.dirname(iteration['ewd']))])
-
-        table = [['id', 'name', 'directory']]
-        for element in range(0, len(project_list)):
-            table.append(project_list[element])
-
-        table = pd.DataFrame(table, columns = table[0])
-        table = table.drop(table.index[0])
-        return table
-
+def _get_user_id():
+    """Get the ID of the user for the current run."""
+    try:
+        import pwd
+        import os
+        return pwd.getpwuid(os.getuid())[0]
+    except ImportError:
+        return _DEFAULT_USER_ID

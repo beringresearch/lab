@@ -1,61 +1,66 @@
+import datetime
+import uuid
 import os
-import dill
+import yaml
+import pickle
 
-import pandas as pd
+from sklearn.externals import joblib
 
-from pymongo import MongoClient
+_DEFAULT_USER_ID = 'unknown'
 
-class Experiment:
+class Experiment():
     def __init__(self):
-        None
+        pass
 
-    def list(self):
-        client = MongoClient()
-        mongodb = client.lab
-        experiments = mongodb.experiments
+    def create_run(self, run_uuid = None, user_id = None, timestamp = None, metrics = None):        
+        self.uuid = str(uuid.uuid4())
+        self.user_id = _get_user_id()
+        self.timestamp = timestamp 
+        self.metrics = metrics   
+        
+    def start_run(self, fun):
+        self.create_run(user_id = _get_user_id(), timestamp = datetime.datetime.now())
+        run_uuid = self.uuid
+        run_directory = os.path.join('labrun', run_uuid)
+        os.makedirs(run_directory)
+            
+        fun()    
 
-        listing = list(experiments.find())
+        meta_file = os.path.join(run_directory, 'meta.yaml')
+        with open(meta_file, 'w') as file:
+            meta = {'artifact_uri': os.path.dirname(os.path.abspath(meta_file)),
+                    'start_time': self.timestamp,
+                    'end_time': datetime.datetime.now(),
+                    'experiment_uuid': self.uuid,
+                    'user_id': self.user_id}
+            yaml.dump(meta, file, default_flow_style=False)
+        
+        metrics_file = os.path.join(run_directory, 'metrics.yaml')
+        with open(metrics_file, 'w') as file:
+            yaml.dump(self.metrics, file, default_flow_style=False)
 
-        experiment = []
-        for iteration in listing:
-            experiment.append([iteration['_id'], iteration['method'],
-                iteration['y']])
 
+    def log_metric(self, key, value):
+        logged_metric = {}
+        logged_metric[key] = value.tolist()
 
-        table = [['id', 'method', 'response']]
-        for element in range(0, len(experiment)):
-            table.append(experiment[element])
+        if self.metrics is None:
+            self.metrics = logged_metric
+        else:
+            self.metrics[key] = value.tolist()
 
-        table = pd.DataFrame(table, columns = table[0])
-        table = table.drop(table.index[0])
-        return table
+    def log_model(self, model, filename):
+        run_uuid = self.uuid
+        run_directory = os.path.join('labrun', run_uuid)
+        model_file = os.path.join(run_directory, filename+'.pkl')
+        joblib.dump(model, model_file)
 
-    def load(self, identifier):
-        client = MongoClient()
-        mongodb = client.lab
-        experiments = mongodb.experiments
-
-        listing = experiments.find_one({"_id": identifier})
-        ewd = listing['ewd']
-        output = listing['results']
-        path = os.path.join(ewd, output)
-
-        for file in os.listdir(path):
-                if file.endswith('.pkl'):
-                    path = os.path.join(ewd, output, file)
-                    model = dill.load(open(path, 'rb'))
-
-        features = listing['x']
-
-        return model, features
-
-    def info(self, identifier):
-        client = MongoClient()
-        mongodb = client.lab
-        experiments = mongodb.experiments
-
-        listing = experiments.find_one({"_id": identifier})
-
-        str = '\n*' + listing['_id'] + '\n' + 'Created at:           ' + listing['timestamp'] + '\n' + 'Dataset name:         ' + os.path.basename(listing['data']) + '\n' + 'Response column name: ' + listing['y'] + '\n' + 'Model type:           ' + listing['method'] + '\n' + 'Directory:            ' + listing['ewd'] + '\n'
-
-        return str
+        
+def _get_user_id():
+    """Get the ID of the user for the current run."""
+    try:
+        import pwd
+        import os
+        return pwd.getpwuid(os.getuid())[0]
+    except ImportError:
+        return _DEFAULT_USER_ID
