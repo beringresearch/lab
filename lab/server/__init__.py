@@ -28,6 +28,10 @@ def predict_proba():
     prediction = clf.predict_proba(query)
     return jsonify({'prediction': prediction.tolist()})
 
+@app.route("/classes", methods = ['GET'])
+def classes_():
+    return jsonify(clf.classes_.tolist())
+
 def _run_server(model_id):
     global clf
     model_file = glob.glob(os.path.join('labrun', model_id, '*.pkl'))[0]

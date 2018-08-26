@@ -3,7 +3,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, precision_score
 
-from lab import Experiment
+from lab.sklearn import Experiment
 
 if __name__ == "__main__":
     e = Experiment()
@@ -29,5 +29,5 @@ if __name__ == "__main__":
         e.log_metric('precision_score', precision)
 
         e.log_parameter('n_estimators', n_estimators)
-                
+
         e.log_model(clf, 'randomforest')
