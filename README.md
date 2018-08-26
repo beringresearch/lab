@@ -9,43 +9,93 @@ virtualenv -p python3 lab
 pip install --editable .
 ```
 
+# Concepts
+Lab employs several concepts: __hyperparameter logging__, __performance metrics__, and __model persistence__.
+A typical machine learning workflow can be truned into a Lab Experiment using a few decorators
+
 # Example
 
-|Script to train an SVM on the iris dataset                   | The same script as a Lab experiment                         |
-|-------------------------------------------------------------|-------------------------------------------------------------|
-|`python`                                                     |`python                                                      |
-|`from sklearn import svm, datasets`                          |`from sklearn import svm, datasets`                          |
-|`from sklearn.model_selection import train_test_split`       |`from sklearn.model_selection import train_test_split`       |
-|`from sklearn.metrics import accuracy_score, precision_score`|`from sklearn.metrics import accuracy_score, precision_score`|
-|` `                                                          |``                                                           |
-|` `                                                          |`from lab.sklearn import Experment                           |
-|` `                                                          |` `                                                          |
-|` `                                                          |`e = Experiment()`                                           |
-|` `                                                          |``                                                           |
-|` `                                                          |`@e.start_run`                                               |
-|` `                                                          |`def run():`                                                 |
-|`C = 1.0`                                                    |`    C = 1.0`                                                |
-|`gamma = 0.7`                                                |`    gamma = 0.7`                                            |
-|`iris = datasets.load_iris()`                                |`    iris = datasets.load_iris()`                            |
-|`X = iris.data`                                              |`    X = iris.data`                                          |
-|`y = iris.target`                                            |`    y = iris.target`                                        |
-|``                                                           |` `                                                          |
-|`X_train, X_test, y_train, y_test = \\`                      |`    X_train, X_test, y_train, y_test = \\`                  |
-|`   train_test_split(X, y, test_size=0.24, random_state=42)` |`    train_test_split(X, y, test_size=0.24, random_state=42)`|
-|``                                                           |``                                                           |   
-|``                                                           |``                                                           |
-|`clf = svm.SVC(C, 'rbf', gamma=gamma, probability=True)`     |`    clf = svm.SVC(C, 'rbf', gamma=gamma, probability=True)` |
-|`clf.fit(X_train, y_train)`                                  |`c   lf.fit(X_train, y_train)`                               |
-|``                                                           |``                                                           |
-|`y_pred = clf.predict(X_test)`                               |`    y_pred = clf.predict(X_test)`                           |
-|`accuracy = accuracy_score(y_test, y_pred)`                  |`    accuracy = accuracy_score(y_test, y_pred)`              |
-|`precision = precision_score(y_test, y_pred, \\`             |`    precision = precision_score(y_test, y_pred, \\`         |
-|`   average = 'macro')`                                      |`    average = 'macro')`                                     |
-|``                                                           |``                                                           |
-|``                                                           |`    e.log_metric('accuracy_score', accuracy)`               |
-|``                                                           |`    e.log_metric('precision_score', precision)`             |
-|``                                                           |``                                                           |
-|``                                                           |`    e.log_parameter('C', C)`                                |
-|``                                                           |`    e.log_parameter('gamma', gamma)`                        |
-|``                                                           |``                                                           |   
-|``                                                           |`    e.log_model(clf, 'svm')`                                |
+Here's a simple script that trains an SVM classifier on the iris data set:
+
+```python
+from sklearn import svm, datasets
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, precision_score
+
+C = 1.0
+gamma = 0.7
+iris = datasets.load_iris()
+X = iris.data
+y = iris.target
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.24, random_state=42)
+        
+clf = svm.SVC(C, 'rbf', gamma=gamma, probability=True)
+clf.fit(X_train, y_train)
+
+y_pred = clf.predict(X_test)
+accuracy = accuracy_score(y_test, y_pred)
+precision = precision_score(y_test, y_pred, average = 'macro')
+```
+
+It's trivial to create a Lab Experiment using a simple decorator:
+
+```python
+from sklearn import svm, datasets
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, precision_score
+
+from lab.sklearn import Experiment
+
+e = Experiment()
+
+@e.start_run
+def train():
+    C = 1.0
+    gamma = 0.7
+    iris = datasets.load_iris()
+    X = iris.data
+    y = iris.target
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.24, random_state=42)
+        
+    clf = svm.SVC(C, 'rbf', gamma=gamma, probability=True)
+    clf.fit(X_train, y_train)
+
+    y_pred = clf.predict(X_test)
+    accuracy = accuracy_score(y_test, y_pred)
+    precision = precision_score(y_test, y_pred, average = 'macro')
+
+    e.log_metric('accuracy_score', accuracy)
+    e.log_metric('precision_score', precision)
+
+    e.log_parameter('C', C)
+    e.log_parameter('gamma', gamma)
+
+    e.log_model(clf, 'svm')
+```
+
+# Running a project
+Lab Project can be initialised through:
+
+```
+lab create <PROJECT_NAME>
+```
+
+This creates a `labfile.yaml` file with project specifications. See `/examples` for more details.
+
+# Comparing models
+From directory that contains `/labrun`, execute:
+
+```
+lab ui
+```
+
+The output stacks existing models and allows comparisons across logged performance metrics
+
+# Serving models
+A single model can be exposed through a serving API via:
+
+```
+lab serve <MODEL_ID>
+```
