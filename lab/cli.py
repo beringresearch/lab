@@ -18,7 +18,7 @@ def serve_model(model_id):
     _run_server(model_id)
 
 @click.command('run')
-@click.argument('labdir', required = False)
+@click.argument('labdir', default = '.', required = False)
 def run_project(labdir='.'):
     labfile = os.path.join(labdir, 'labfile.yaml')
     if os.path.isfile(labfile):
@@ -45,7 +45,7 @@ def compare_experiments():
         raise("lab ls must be run from a directory that contains labruns folder.")
 
     
-    TICK = '▇'
+    TICK = '█'
 
     comparisons = []
     
@@ -55,16 +55,23 @@ def compare_experiments():
             metrics = yaml.load(file)
 
         for k, v in metrics.items():
-            metrics[k] = round(v, 2)
+            metrics[k] = round(v, 2)        
 
         meta_file = os.path.join(experiment_directory, e, 'meta.yaml')
         with open(meta_file, 'r') as file:
             meta = yaml.load(file)
         
-        record = [meta['experiment_uuid'], meta['user_id'], str(meta['start_time'].date()), metrics]
+        metrics_list = list(metrics.values())
+        
+        tick_list = []
+        for m in range(len(metrics_list)):
+            tick_list.append(format(metrics_list[m], '.2f')+': '+TICK * round(metrics_list[m]*10))
+
+        record = [meta['experiment_uuid'], meta['user_id'], str(meta['start_time'].date())] + tick_list
         comparisons.append(record)
         
-    header = ['Experiment', 'User', 'Time', 'Metrics']
+    header = ['Experiment', 'User', 'Time'] + list(metrics.keys())
+
 
     click.echo(tabulate.tabulate(comparisons, headers = header))
         
