@@ -5,3 +5,5 @@ entry_points:
     command: "python train_svm.py"
   random_forest:
     command: "python train_randomforest.py"
+  xgboost:
+    command: "python train_xgboost.py"
