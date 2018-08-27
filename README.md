@@ -88,7 +88,7 @@ This creates a `labfile.yaml` file with project specifications. See `/examples` 
 From the directory that contains `/labrun`, execute:
 
 ```
-lab ui
+lab ls
 ```
 
 The output stacks existing models and allows comparisons across logged performance metrics.

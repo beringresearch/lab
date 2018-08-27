@@ -35,7 +35,7 @@ def create_project(name):
                     'entry_points': None}
             yaml.dump(meta, file, default_flow_style=False)
 
-@click.command('ui')
+@click.command('ls')
 def compare_experiments():
     experiment_directory = 'labrun'
     
@@ -70,7 +70,7 @@ def compare_experiments():
         record = [meta['experiment_uuid'], meta['user_id'], str(meta['start_time'].date())] + tick_list
         comparisons.append(record)
         
-    header = ['Experiment', 'User', 'Time'] + list(metrics.keys())
+    header = ['Experiment', 'User', 'Date'] + list(metrics.keys())
 
 
     click.echo(tabulate.tabulate(comparisons, headers = header))
