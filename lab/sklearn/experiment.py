@@ -4,6 +4,9 @@ import os
 import yaml
 import pickle
 import numpy
+import warnings
+
+warnings.filterwarnings(action='ignore', category=DeprecationWarning)
 
 from sklearn.externals import joblib
 

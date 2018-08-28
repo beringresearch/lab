@@ -2,6 +2,9 @@ import click
 import os
 import yaml
 import tabulate
+import warnings
+
+warnings.filterwarnings("ignore")
 
 from lab.server import _run_server
 from lab import Project
@@ -42,7 +45,8 @@ def compare_experiments():
     if os.path.isdir(experiment_directory):
         experiments = next(os.walk(experiment_directory))[1]
     else:
-        raise("lab ls must be run from a directory that contains labruns folder.")
+        raise Exception("lab ls must be run from a directory that contains labruns folder.")
+        
 
     
     TICK = '█'
