@@ -16,12 +16,15 @@ class Experiment():
     def __init__(self):
         pass
 
-    def create_run(self, run_uuid = None, user_id = None, timestamp = None, metrics = None, parameters = None):        
+    def create_run(self, run_uuid = None, user_id = None,
+                   timestamp = None, metrics = None, parameters = None,
+                   feature_names = None):        
         self.uuid = str(uuid.uuid4())
         self.user_id = _get_user_id()
         self.timestamp = timestamp 
         self.metrics = metrics  
-        self.parameters = parameters 
+        self.parameters = parameters
+        self.feature_names = feature_names
         
     def start_run(self, fun):
         self.create_run(user_id = _get_user_id(), timestamp = datetime.datetime.now())
@@ -31,6 +34,7 @@ class Experiment():
             
         fun()    
 
+        # Log run metadata
         meta_file = os.path.join(run_directory, 'meta.yaml')
         with open(meta_file, 'w') as file:
             meta = {'artifact_uri': os.path.dirname(os.path.abspath(meta_file)),
@@ -40,14 +44,23 @@ class Experiment():
                     'user_id': self.user_id}
             yaml.dump(meta, file, default_flow_style=False)
         
+        # Log metrics
         metrics_file = os.path.join(run_directory, 'metrics.yaml')
         with open(metrics_file, 'w') as file:
             yaml.dump(self.metrics, file, default_flow_style=False)
 
+        # Log parameters
         parameters_file = os.path.join(run_directory, 'parameters.yaml')
         with open(parameters_file, 'w') as file:
             yaml.dump(self.parameters, file, default_flow_style=False)
 
+        # Log features
+        feature_file = os.path.join(run_directory, 'features.yaml')
+        with open(feature_file, 'w') as file:
+            yaml.dump(self.feature_names, file, default_flow_style=False)
+
+    def log_features(self, feature_names):
+        self.feature_names = feature_names
 
     def log_metric(self, key, value):
         value = numpy.array(value)

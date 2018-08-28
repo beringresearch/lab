@@ -18,6 +18,7 @@ if __name__ == "__main__":
         
         n_estimators = 100
 
+        e.log_features(['Sepal Length', 'Sepal Width', 'Petal Length', 'Petal Width'])
         clf = RandomForestClassifier(n_estimators = n_estimators)
         clf.fit(X_train, y_train)
 

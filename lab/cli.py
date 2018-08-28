@@ -46,8 +46,6 @@ def compare_experiments():
         experiments = next(os.walk(experiment_directory))[1]
     else:
         raise Exception("lab ls must be run from a directory that contains labruns folder.")
-        
-
     
     TICK = '█'
 
