@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name="lab",
-    version="0.5.0",
+    version="0.5.5",
     py_modules=['lab'],
     install_requires=[
         'click',
