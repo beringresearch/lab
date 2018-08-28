@@ -60,7 +60,7 @@ class Experiment():
             yaml.dump(self.feature_names, file, default_flow_style=False)
 
     def log_features(self, feature_names):
-        self.feature_names = feature_names
+        self.feature_names = list(feature_names)
 
     def log_metric(self, key, value):
         value = numpy.array(value)
