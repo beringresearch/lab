@@ -3,6 +3,8 @@ import os
 import yaml
 import tabulate
 import warnings
+import pandas as pd
+import numpy as np
 
 warnings.filterwarnings("ignore")
 
@@ -49,36 +51,44 @@ def compare_experiments():
     
     TICK = '█'
 
-    comparisons = []
-    
+    comparisons = []    
     for e in experiments:
         metrics_file = os.path.join(experiment_directory, e, 'metrics.yaml')
         with open(metrics_file, 'r') as file:
             metrics = yaml.load(file)
-
         for k, v in metrics.items():
             metrics[k] = round(v, 2)        
-
-        meta_file = os.path.join(experiment_directory, e, 'meta.yaml')
-        with open(meta_file, 'r') as file:
-            meta = yaml.load(file)
         
         metrics_list = list(metrics.values())
         
-        tick_list = []
-        for m in range(len(metrics_list)):
-            tick_list.append(format(metrics_list[m], '.2f')+': '+TICK * round(metrics_list[m]*10))
-
-        record = [meta['experiment_uuid'], meta['user_id'], meta['source'], str(meta['start_time'].date())] + tick_list
+        meta_file = os.path.join(experiment_directory, e, 'meta.yaml')
+        with open(meta_file, 'r') as file:
+            meta = yaml.load(file)
+                            
+        record = [meta['experiment_uuid'], meta['user_id'], meta['source'], str(meta['start_time'].date())] + metrics_list
         comparisons.append(record)
-        
+
+    # Create visualisation of numeric metrics
+    A = pd.DataFrame(comparisons)
+    meta_data = A[[0, 1, 2, 3]]
+    metrics_data = A.drop([0, 1, 2, 3], axis = 1)
+    
+    row_max = metrics_data.max(axis = 0)
+    scaled_metrics_data = metrics_data.divide(row_max, axis = 1)
+    
+    sparklines = np.empty(shape = metrics_data.shape, dtype=object)
+    for row in range(metrics_data.shape[0]):
+        for column in range(metrics_data.shape[1]):
+            value = metrics_data.iloc[row, column]
+            scaled_value = scaled_metrics_data.iloc[row, column]
+            spark = format(value, '.2f')+': '+TICK * int(round(scaled_value*10))
+            sparklines[row, column] = spark
+
+    result = pd.concat([meta_data, pd.DataFrame(sparklines)], axis = 1)
+    
     header = ['Experiment', 'User', 'Source', 'Date'] + list(metrics.keys())
 
-
-    click.echo(tabulate.tabulate(comparisons, headers = header))
-        
-
-        
+    click.echo(tabulate.tabulate(result, headers = header))
 
 
 cli.add_command(run_project)

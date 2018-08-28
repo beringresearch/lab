@@ -7,6 +7,8 @@ setup(
     py_modules=['lab'],
     install_requires=[
         'click',
+        'numpy',
+        'pandas',
         'pyyaml',
         'sklearn',
         'flask',

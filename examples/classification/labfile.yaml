@@ -1,4 +1,4 @@
-name: melanoma
+name: examples
 
 entry_points:
   svm:
