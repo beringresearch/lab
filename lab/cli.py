@@ -69,10 +69,10 @@ def compare_experiments():
         for m in range(len(metrics_list)):
             tick_list.append(format(metrics_list[m], '.2f')+': '+TICK * round(metrics_list[m]*10))
 
-        record = [meta['experiment_uuid'], meta['user_id'], str(meta['start_time'].date())] + tick_list
+        record = [meta['experiment_uuid'], meta['user_id'], meta['source'], str(meta['start_time'].date())] + tick_list
         comparisons.append(record)
         
-    header = ['Experiment', 'User', 'Date'] + list(metrics.keys())
+    header = ['Experiment', 'User', 'Source', 'Date'] + list(metrics.keys())
 
 
     click.echo(tabulate.tabulate(comparisons, headers = header))

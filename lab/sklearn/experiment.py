@@ -1,6 +1,7 @@
 import datetime
 import uuid
 import os
+import sys
 import yaml
 import pickle
 import numpy
@@ -13,7 +14,7 @@ from sklearn.externals import joblib
 _DEFAULT_USER_ID = 'unknown'
 
 class Experiment():
-    def __init__(self):
+    def __init__(self):        
         pass
 
     def create_run(self, run_uuid = None, user_id = None,
@@ -25,6 +26,7 @@ class Experiment():
         self.metrics = metrics  
         self.parameters = parameters
         self.feature_names = feature_names
+        self.source = sys.argv[0]
         
     def start_run(self, fun):
         self.create_run(user_id = _get_user_id(), timestamp = datetime.datetime.now())
@@ -38,6 +40,7 @@ class Experiment():
         meta_file = os.path.join(run_directory, 'meta.yaml')
         with open(meta_file, 'w') as file:
             meta = {'artifact_uri': os.path.dirname(os.path.abspath(meta_file)),
+                    'source': self.source,
                     'start_time': self.timestamp,
                     'end_time': datetime.datetime.now(),
                     'experiment_uuid': self.uuid,
