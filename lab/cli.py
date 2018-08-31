@@ -74,7 +74,7 @@ def compare_experiments():
     metrics_data = A.drop([0, 1, 2], axis = 1)
     
     row_max = metrics_data.abs().max(axis = 0)    
-    scaled_metrics_data = metrics_data.divide(row_max, axis = 1)
+    scaled_metrics_data = metrics_data.abs().divide(row_max, axis = 1)
     scaled_metrics_data = scaled_metrics_data.fillna(value = 0)
     
     sparklines = np.empty(shape = metrics_data.shape, dtype=object)
