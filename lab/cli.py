@@ -73,14 +73,16 @@ def compare_experiments():
     meta_data = A[[0, 1, 2, 3]]
     metrics_data = A.drop([0, 1, 2, 3], axis = 1)
     
-    row_max = metrics_data.max(axis = 0)
+    row_max = metrics_data.abs().max(axis = 0)    
     scaled_metrics_data = metrics_data.divide(row_max, axis = 1)
+    scaled_metrics_data = scaled_metrics_data.fillna(value = 0)
     
     sparklines = np.empty(shape = metrics_data.shape, dtype=object)
     for row in range(metrics_data.shape[0]):
         for column in range(metrics_data.shape[1]):
             value = metrics_data.iloc[row, column]
             scaled_value = scaled_metrics_data.iloc[row, column]
+            scaled_value = scaled_value
             spark = format(value, '.2f')+': '+TICK * int(round(scaled_value*10))
             sparklines[row, column] = spark
 
