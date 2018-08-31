@@ -65,13 +65,13 @@ def compare_experiments():
         with open(meta_file, 'r') as file:
             meta = yaml.load(file)
                             
-        record = [meta['experiment_uuid'], meta['user_id'], meta['source'], str(meta['start_time'].date())] + metrics_list
+        record = [meta['experiment_uuid'], meta['source'], str(meta['start_time'].date())] + metrics_list
         comparisons.append(record)
 
     # Create visualisation of numeric metrics
     A = pd.DataFrame(comparisons)
-    meta_data = A[[0, 1, 2, 3]]
-    metrics_data = A.drop([0, 1, 2, 3], axis = 1)
+    meta_data = A[[0, 1, 2]]
+    metrics_data = A.drop([0, 1, 2], axis = 1)
     
     row_max = metrics_data.abs().max(axis = 0)    
     scaled_metrics_data = metrics_data.divide(row_max, axis = 1)
@@ -88,7 +88,7 @@ def compare_experiments():
 
     result = pd.concat([meta_data, pd.DataFrame(sparklines)], axis = 1)
     
-    header = ['Experiment', 'User', 'Source', 'Date'] + list(metrics.keys())
+    header = ['Experiment', 'Source', 'Date'] + list(metrics.keys())
 
     click.echo(tabulate.tabulate(result, headers = header))
 
