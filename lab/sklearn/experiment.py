@@ -20,7 +20,7 @@ class Experiment():
     def create_run(self, run_uuid = None, user_id = None,
                    timestamp = None, metrics = None, parameters = None,
                    feature_names = None):        
-        self.uuid = str(uuid.uuid4())
+        self.uuid = str(uuid.uuid4())[:8]
         self.user_id = _get_user_id()
         self.timestamp = timestamp 
         self.metrics = metrics  
