@@ -91,6 +91,15 @@ class Experiment():
         model_file = os.path.join(run_directory, filename+'.pkl')
         joblib.dump(model, model_file)
 
+    def log_artifact(self, artifact, filename):
+        run_uuid = self.uuid
+        run_directory = os.path.join('labrun', run_uuid)
+
+        destination = os.path.join(run_directory, filename)
+        file_name, file_extension = os.path.splitext(filename)
+        if file_extension == '.png':
+            artifact.savefig(destination)
+
         
 def _get_user_id():
     """Get the ID of the user for the current run."""
