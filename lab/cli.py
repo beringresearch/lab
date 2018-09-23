@@ -18,9 +18,10 @@ def cli():
     pass
 
 @click.command('serve')
-@click.argument('model_id', required = True)
-def serve_model(model_id):
-    _run_server(model_id)
+@click.argument('experiment_id', required = True)
+@click.argument('model_name', required = True)
+def serve_model(experiment_id, model_name):
+    _run_server(experiment_id, model_name)
 
 @click.command('run')
 @click.argument('labdir', default = '.', required = False)

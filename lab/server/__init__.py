@@ -39,15 +39,15 @@ def classes_():
 def get_feature_names():
     return jsonify(feature_names)
 
-def _run_server(model_id):
+def _run_server(experiment_id, model_name):
     global clf
     global feature_names
     
-    model_file = glob.glob(os.path.join('labrun', model_id, '*.pkl'))[0]    
+    model_file = glob.glob(os.path.join('labrun', experiment_id, model_name+'.pkl'))[0]    
     clf = joblib.load(model_file)
     print('Model loaded succesfully.')
 
-    feature_file = os.path.join('labrun', model_id, 'features.yaml')     
+    feature_file = os.path.join('labrun', experiment_id, 'features.yaml')     
     with open(feature_file, 'r') as file:
         feature_names = yaml.load(file)
     print(feature_names)
