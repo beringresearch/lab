@@ -42,7 +42,8 @@ def create_project(name):
             yaml.dump(meta, file, default_flow_style=False)
 
 @click.command('ls')
-def compare_experiments():
+@click.argument('sort_by', required = False)
+def compare_experiments(sort_by = None):
     experiment_directory = 'labrun'
     
     if os.path.isdir(experiment_directory):
@@ -88,10 +89,13 @@ def compare_experiments():
             sparklines[row, column] = spark
 
     result = pd.concat([meta_data, pd.DataFrame(sparklines)], axis = 1)
-    
-    header = ['Experiment', 'Source', 'Date'] + list(metrics.keys())
+    result.columns = ['Experiment', 'Source', 'Date'] + list(metrics.keys())    
 
-    click.echo(tabulate.tabulate(result, headers = header))
+    if sort_by is not None:
+        result.sort_values(by = [sort_by], axis = 0, ascending=False, inplace = True)
+
+    header = ['Experiment', 'Source', 'Date'] + list(metrics.keys())
+    click.echo(tabulate.tabulate(result.values, headers = header))
 
 
 cli.add_command(run_project)
