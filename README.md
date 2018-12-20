@@ -5,8 +5,12 @@ Command line interface for the management of arbitrary machine learning tasks.
 ```
 git clone https://github.com/beringresearch/lab
 cd lab
-virtualenv -p python3 lab
 pip install --editable .
+```
+
+# Creating a new Lab Project
+```
+lab init --name [NAME] --r requirements.txt
 ```
 
 # Concepts
@@ -79,25 +83,16 @@ def train():
 Lab Project can be initialised through:
 
 ```
-lab create <PROJECT_NAME>
+lab run <PATH/TO/TRAIN.py>
 ```
 
-This creates a `labfile.yaml` file with project specifications. See `/examples` for more details.
+This creates a `.labrun` folder with artificats of the run.
 
 # Comparing models
-From the directory that contains `/labrun`, execute:
+From the directory that contains `.labrun`, execute:
 
 ```
 lab ls
 ```
 
 The output stacks existing models and allows comparisons across logged performance metrics.
-
-# Serving models
-A single model can be exposed through a serving API via:
-
-```
-lab serve <MODEL_ID>
-```
-
-The model becomes accessible on `localhost:5000/predict` or `localhost:5000/predict_proba`
