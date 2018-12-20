@@ -29,8 +29,9 @@ def lab_init(name, r):
 @click.command('run')
 @click.argument('script', required = True)
 def lab_run(script):
-    python_bin = '.venv'+'/bin/python'
-    subprocess.Popen([python_bin, script])
+    home_dir = os.path.dirname(os.path.realpath(script))
+    python_bin = os.path.join(home_dir, '.venv', 'bin/python')
+    subprocess.call([python_bin, script])
 
 @click.command('ls')
 @click.argument('sort_by', required = False)

@@ -4,6 +4,7 @@ import sys
 import yaml
 import subprocess
 import os
+import shutil
 
 import virtualenv as ve
 
@@ -21,11 +22,23 @@ def project_init(name, r):
     # Create a virtual environment
     venv_dir = os.path.join(name, '.venv')
     ve.create_environment(venv_dir)
-
-    if r is not None:  
-        with open(r, "a") as myfile:
-            myfile.write('git+https://github.com/beringresearch/lab')
+    
+    if r is not None:          
         subprocess.call([venv_dir + '/bin/pip', 'install', '-r', r])
+
+    pkgname = 'lab'    
+    pyversion = '%s.%s' % (sys.version_info[0], sys.version_info[1])
+    
+    try:
+        pkgobj = __import__(pkgname)
+    except Exception as e:
+        print(e)
+        sys.exit(1)
+    
+    pkgdir = os.path.dirname(pkgobj.__file__)
+    dst = '%s/lib/python%s/site-packages/%s' % (venv_dir, pyversion, pkgname)
+    shutil.copytree(pkgdir, dst)
+    
 
     # Create runtime configuration
     runtime = {'name': name,

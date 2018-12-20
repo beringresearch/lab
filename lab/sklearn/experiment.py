@@ -5,13 +5,13 @@ import sys
 import yaml
 import numpy
 import warnings
-import virtualenv as ve
 
 warnings.filterwarnings(action='ignore', category=DeprecationWarning)
 
 from sklearn.externals import joblib
 
 _DEFAULT_USER_ID = 'unknown'
+home_dir = os.path.dirname(os.path.realpath(__file__))
 
 class Experiment():
     def __init__(self):        
@@ -30,8 +30,8 @@ class Experiment():
         
     def start_run(self, fun):
         self.create_run(user_id = _get_user_id(), timestamp = datetime.datetime.now())
-        run_uuid = self.uuid
-        run_directory = os.path.join('.labrun', run_uuid)
+        run_uuid = self.uuid        
+        run_directory = os.path.join(home_dir, '.labrun', run_uuid)
         os.makedirs(run_directory)
             
         fun()    
@@ -87,13 +87,13 @@ class Experiment():
 
     def log_model(self, model, filename):
         run_uuid = self.uuid
-        run_directory = os.path.join('.labrun', run_uuid)
+        run_directory = os.path.join(home_dir, '.labrun', run_uuid)
         model_file = os.path.join(run_directory, filename+'.pkl')
         joblib.dump(model, model_file)
 
     def log_artifact(self, artifact, filename):
         run_uuid = self.uuid
-        run_directory = os.path.join('.labrun', run_uuid)
+        run_directory = os.path.join(home_dir, '.labrun', run_uuid)
 
         destination = os.path.join(run_directory, filename)
         file_name, file_extension = os.path.splitext(filename)
