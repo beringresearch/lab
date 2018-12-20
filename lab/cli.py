@@ -1,15 +1,18 @@
 import click
 import os
+import uuid
 import yaml
 import tabulate
+import subprocess
+
 import warnings
 import pandas as pd
 import numpy as np
 
-warnings.filterwarnings("ignore")
+from lab import project_init
 
-from lab.server import _run_server
-from lab import Project
+working_directory = os.getcwd()
+warnings.filterwarnings("ignore")
 
 
 @click.group()
@@ -17,39 +20,27 @@ def cli():
     '''Machine Learning Lab'''
     pass
 
-@click.command('serve')
-@click.argument('experiment_id', required = True)
-@click.argument('model_name', required = True)
-def serve_model(experiment_id, model_name):
-    _run_server(experiment_id, model_name)
+@click.command('init')
+@click.option('--name', type=str, default=str(uuid.uuid4()))
+@click.option('--r', default=None, type=str)
+def lab_init(name, r):
+    project_init(name, r)
 
 @click.command('run')
-@click.argument('labdir', default = '.', required = False)
-def run_project(labdir='.'):
-    labfile = os.path.join(labdir, 'labfile.yaml')
-    if os.path.isfile(labfile):
-        p = Project(labfile)
-        p.start_run()
-    else:
-        raise Exception('Directory is not a valid Lab Project. Initiate a labfile.yaml and run again.')
-
-@click.command('create')
-@click.argument('name', required = True)
-def create_project(name):
-    with open('labfile.yaml', 'w') as file:
-            meta = {'name': name,
-                    'entry_points': None}
-            yaml.dump(meta, file, default_flow_style=False)
+@click.argument('script', required = True)
+def lab_run(script):
+    python_bin = '.venv'+'/bin/python'
+    subprocess.Popen([python_bin, script])
 
 @click.command('ls')
 @click.argument('sort_by', required = False)
 def compare_experiments(sort_by = None):
-    experiment_directory = 'labrun'
+    experiment_directory = '.labrun'
     
     if os.path.isdir(experiment_directory):
         experiments = next(os.walk(experiment_directory))[1]
     else:
-        raise Exception("lab ls must be run from a directory that contains labruns folder.")
+        raise Exception("lab ls must be run from a directory that contains .labrun folder.")
     
     TICK = '█'
 
@@ -97,10 +88,8 @@ def compare_experiments(sort_by = None):
     header = ['Experiment', 'Source', 'Date'] + list(metrics.keys())
     click.echo(tabulate.tabulate(result.values, headers = header))
 
-
-cli.add_command(run_project)
-cli.add_command(serve_model)
-cli.add_command(create_project)
+cli.add_command(lab_init)
+cli.add_command(lab_run)
 cli.add_command(compare_experiments)
 
 if __name__ == '__main__':

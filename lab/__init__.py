@@ -1,4 +1,3 @@
-from .project import Project
+from .project import project_init
 from . import keras
-from . import server
 from . import sklearn

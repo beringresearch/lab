@@ -10,8 +10,7 @@ setup(
         'numpy',
         'pandas',
         'pyyaml',
-        'sklearn',
-        'flask',
+        'sklearn',        
         'tabulate'
         ],
     entry_points='''

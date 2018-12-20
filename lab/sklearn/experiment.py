@@ -3,9 +3,9 @@ import uuid
 import os
 import sys
 import yaml
-import pickle
 import numpy
 import warnings
+import virtualenv as ve
 
 warnings.filterwarnings(action='ignore', category=DeprecationWarning)
 
@@ -31,7 +31,7 @@ class Experiment():
     def start_run(self, fun):
         self.create_run(user_id = _get_user_id(), timestamp = datetime.datetime.now())
         run_uuid = self.uuid
-        run_directory = os.path.join('labrun', run_uuid)
+        run_directory = os.path.join('.labrun', run_uuid)
         os.makedirs(run_directory)
             
         fun()    
@@ -87,13 +87,13 @@ class Experiment():
 
     def log_model(self, model, filename):
         run_uuid = self.uuid
-        run_directory = os.path.join('labrun', run_uuid)
+        run_directory = os.path.join('.labrun', run_uuid)
         model_file = os.path.join(run_directory, filename+'.pkl')
         joblib.dump(model, model_file)
 
     def log_artifact(self, artifact, filename):
         run_uuid = self.uuid
-        run_directory = os.path.join('labrun', run_uuid)
+        run_directory = os.path.join('.labrun', run_uuid)
 
         destination = os.path.join(run_directory, filename)
         file_name, file_extension = os.path.splitext(filename)
