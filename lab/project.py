@@ -23,8 +23,10 @@ def project_init(name, r):
     venv_dir = os.path.join(name, '.venv')
     ve.create_environment(venv_dir)
     
-    if r is not None:          
+    if r is not None:
+        subprocess.call([venv_dir + '/bin/pip', 'install', 'virtualenv'])
         subprocess.call([venv_dir + '/bin/pip', 'install', '-r', r])
+    
 
     pkgname = 'lab'    
     pyversion = '%s.%s' % (sys.version_info[0], sys.version_info[1])
