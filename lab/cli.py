@@ -28,8 +28,10 @@ def lab_init(name, r):
 
 @click.command('run')
 @click.argument('script', required = True)
-def lab_run(script):
+def lab_run(script):    
     home_dir = os.path.dirname(os.path.realpath(script))
+    if not os.path.exists('.labrun'):
+        os.makedirs('.labrun')
     python_bin = os.path.join(home_dir, '.venv', 'bin/python')
     subprocess.call([python_bin, script])
 
