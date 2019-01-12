@@ -25,9 +25,10 @@ def project_init(name, r):
     
     if r is not None:
         subprocess.call([venv_dir + '/bin/pip', 'install', 'virtualenv'])
+        subprocess.call([venv_dir + '/bin/pip', 'install', 'pyyaml'])
         subprocess.call([venv_dir + '/bin/pip', 'install', '-r', r])
     
-
+    # Move lab into the virtual environment
     pkgname = 'lab'    
     pyversion = '%s.%s' % (sys.version_info[0], sys.version_info[1])
     

@@ -24,32 +24,34 @@ def cli():
 @click.option('--name', type=str, default=str(uuid.uuid4()))
 @click.option('--r', default=None, type=str)
 def lab_init(name, r):
-    project_init(name, r)
+    if os.path.isdir(name):
+        click.echo('Project '+name+' already exists.')
+    else:
+        project_init(name, r)
 
 @click.command('run')
 @click.argument('script', required = True)
 def lab_run(script):    
-    home_dir = os.path.dirname(os.path.realpath(script))
-    if not os.path.exists('.labrun'):
-        os.makedirs('.labrun')
+    home_dir = os.path.dirname(os.path.realpath(script))    
     python_bin = os.path.join(home_dir, '.venv', 'bin/python')
     subprocess.call([python_bin, script])
 
 @click.command('ls')
 @click.argument('sort_by', required = False)
 def compare_experiments(sort_by = None):
-    experiment_directory = '.labrun'
+    models_directory = 'models'
+    logs_directory = 'logs'
     
-    if os.path.isdir(experiment_directory):
-        experiments = next(os.walk(experiment_directory))[1]
+    if os.path.isdir(models_directory):
+        experiments = next(os.walk(models_directory))[1]
     else:
-        raise Exception("lab ls must be run from a directory that contains .labrun folder.")
+        raise Exception("lab ls must be run from a directory that contains models folder.")
     
     TICK = '█'
 
     comparisons = []    
     for e in experiments:
-        metrics_file = os.path.join(experiment_directory, e, 'metrics.yaml')
+        metrics_file = os.path.join(models_directory, e, 'metrics.yaml')
         with open(metrics_file, 'r') as file:
             metrics = yaml.load(file)
         for k, v in metrics.items():
@@ -57,7 +59,7 @@ def compare_experiments(sort_by = None):
         
         metrics_list = list(metrics.values())
         
-        meta_file = os.path.join(experiment_directory, e, 'meta.yaml')
+        meta_file = os.path.join(logs_directory, e, 'meta.yaml')
         with open(meta_file, 'r') as file:
             meta = yaml.load(file)
                             

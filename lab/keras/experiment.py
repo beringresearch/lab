@@ -25,17 +25,20 @@ class Experiment():
         self.parameters = parameters
         self.feature_names = feature_names
         self.source = sys.argv[0]
+        self.home_dir = os.path.dirname(os.path.realpath(sys.argv[0]))
         
     def start_run(self, fun):
         self.create_run(user_id = _get_user_id(), timestamp = datetime.datetime.now())
         run_uuid = self.uuid
-        run_directory = os.path.join('labrun', run_uuid)
-        os.makedirs(run_directory)
+        models_directory = os.path.join(self.home_dir, 'models', run_uuid)        
+        logs_directory = os.path.join(self.home_dir, 'logs', run_uuid)
+        os.makedirs(models_directory)
+        os.makedirs(logs_directory)
             
         fun()    
 
         # Log run metadata
-        meta_file = os.path.join(run_directory, 'meta.yaml')
+        meta_file = os.path.join(logs_directory, 'meta.yaml')
         with open(meta_file, 'w') as file:
             meta = {'artifact_uri': os.path.dirname(os.path.abspath(meta_file)),
                     'source': self.source,
@@ -46,17 +49,17 @@ class Experiment():
             yaml.dump(meta, file, default_flow_style=False)
         
         # Log metrics
-        metrics_file = os.path.join(run_directory, 'metrics.yaml')
+        metrics_file = os.path.join(models_directory, 'metrics.yaml')
         with open(metrics_file, 'w') as file:
             yaml.dump(self.metrics, file, default_flow_style=False)
 
         # Log parameters
-        parameters_file = os.path.join(run_directory, 'parameters.yaml')
+        parameters_file = os.path.join(models_directory, 'parameters.yaml')
         with open(parameters_file, 'w') as file:
             yaml.dump(self.parameters, file, default_flow_style=False)
 
         # Log features
-        feature_file = os.path.join(run_directory, 'features.yaml')
+        feature_file = os.path.join(models_directory, 'features.yaml')
         with open(feature_file, 'w') as file:
             yaml.dump(self.feature_names, file, default_flow_style=False)
 
@@ -85,15 +88,15 @@ class Experiment():
 
     def log_model(self, model, filename):
         run_uuid = self.uuid
-        run_directory = os.path.join('labrun', run_uuid)
-        model_file = os.path.join(run_directory, filename+'.h5')
+        models_directory = os.path.join(self.home_dir, 'models', run_uuid)
+        model_file = os.path.join(models_directory, filename+'.h5')
         model.save(model_file)
 
     def log_artifact(self, artifact, filename):
         run_uuid = self.uuid
-        run_directory = os.path.join('labrun', run_uuid)
+        models_directory = os.path.join(self.home_dir, 'models', run_uuid)
 
-        destination = os.path.join(run_directory, filename)
+        destination = os.path.join(models_directory, filename)
         file_name, file_extension = os.path.splitext(filename)
         if file_extension == '.png':
             artifact.savefig(destination)
