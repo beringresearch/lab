@@ -22,7 +22,7 @@ def project_init(name, r):
     # Create a virtual environment
     venv_dir = os.path.join(name, '.venv')
 
-    environment = ve.EnvBuilder(with_pip=True)
+    environment = ve.EnvBuilder(symlinks=True, with_pip=True)
     environment.create(venv_dir)
     
     if r is not None:
