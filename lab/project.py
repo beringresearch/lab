@@ -6,7 +6,7 @@ import subprocess
 import os
 import shutil
 
-import virtualenv as ve
+import venv as ve
 
 def project_init(name, r):
     # Create project structure
@@ -21,10 +21,12 @@ def project_init(name, r):
 
     # Create a virtual environment
     venv_dir = os.path.join(name, '.venv')
-    ve.create_environment(venv_dir)
+
+    environment = ve.EnvBuilder(with_pip=True)
+    environment.create(venv_dir)
     
     if r is not None:
-        subprocess.call([venv_dir + '/bin/pip', 'install', 'virtualenv'])
+        #subprocess.call([venv_dir + '/bin/pip', 'install', 'virtualenv'])
         subprocess.call([venv_dir + '/bin/pip', 'install', 'pyyaml'])
         subprocess.call([venv_dir + '/bin/pip', 'install', '-r', r])
     
