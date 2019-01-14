@@ -87,10 +87,8 @@ Lab Project can be initialised through:
 lab run <PATH/TO/TRAIN.py>
 ```
 
-This creates a `.labrun` folder with artificats of the run.
-
 # Comparing models
-From the directory that contains `.labrun`, execute:
+From the project directory execute:
 
 ```
 lab ls
