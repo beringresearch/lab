@@ -9,11 +9,10 @@ import warnings
 import pandas as pd
 import numpy as np
 
-from lab import project_init
+from lab import project_init, create_venv
 
 working_directory = os.getcwd()
 warnings.filterwarnings("ignore")
-
 
 @click.group()
 def cli():
@@ -21,18 +20,25 @@ def cli():
     pass
 
 @click.command('init')
-@click.option('--name', type=str, default=str(uuid.uuid4()))
-@click.option('--r', default=None, type=str)
-def lab_init(name, r):
+@click.argument('name', type=str, default=str(uuid.uuid4()))
+def lab_init(name):
+    if not os.path.isfile('requirements.txt'):
+        click.echo('requirements.txt is not found in the current working directory.')
+        raise click.Abort()
+
     if os.path.isdir(name):
         click.echo('Project '+name+' already exists.')
     else:
-        project_init(name, r)
+        project_init(name)
 
 @click.command('run')
 @click.argument('script', required = True)
 def lab_run(script):    
-    home_dir = os.path.dirname(os.path.realpath(script))    
+    home_dir = os.path.dirname(os.path.realpath(script))  
+    if not os.path.exists(os.path.join(home_dir, '.venv')):
+        click.echo('virtual environment not found. Creating one for this project')
+        create_venv(home_dir)
+
     python_bin = os.path.join(home_dir, '.venv', 'bin/python')
     subprocess.call([python_bin, script])
 
