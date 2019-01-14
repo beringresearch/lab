@@ -1,4 +1,3 @@
-virtualenv
 pip
 click
 pyyaml
