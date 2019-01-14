@@ -48,6 +48,7 @@ def project_init(name, r):
     # Create runtime configuration
     runtime = {'name': name,
                'description': None,
+               'python': pyversion
                'timestamp': str(datetime.datetime.now()),
                'venv': '.venv'}
     with open(os.path.join(name, 'config', 'runtime.yaml'), 'w') as file:
