@@ -9,8 +9,9 @@ pip install --editable .
 ```
 
 # Creating a new Lab Project
+New Lab projects rely on the presence of the __requirements.txt__ file which is used to create the python virtual environment necessary for reproducible experiment execution.
 ```
-lab init --name [NAME] --r requirements.txt
+lab init [NAME]
 ```
 
 # Concepts
