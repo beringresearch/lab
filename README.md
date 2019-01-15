@@ -107,3 +107,5 @@ Experiment    Source              Date        accuracy_score    precision_score
 49ffb76e      train_mnist_mlp.py  2019-01-15  0.97: ██████████  0.97: ██████████
 261a34e4      train_mnist_cnn.py  2019-01-15  0.98: ██████████  0.98: ██████████
 ```
+
+Copyright 2019, Bering Limited
