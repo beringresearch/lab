@@ -1,7 +1,8 @@
-
 # Machine Learning Lab
 
 A lightweight command line interface for the management of arbitrary machine learning tasks.
+
+NOTE: Lab is in active development - expect a bumpy ride!
 
 ## Installation
 

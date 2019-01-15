@@ -62,17 +62,3 @@ def project_init(project_name):
                'venv': '.venv'}
     with open(os.path.join(project_name, 'config', 'runtime.yaml'), 'w') as file:
         yaml.dump(runtime, file, default_flow_style=False)
-
-    # Generate a Dockerfile
-    #f.write('FROM python:%s\n' % (pyversion))
-    #f = open(os.path.join(name, 'Dockerfile'), 'w')
-    #f.write('COPY .venv .\n')
-    #f.write('COPY config .\n')
-    #f.write('COPY data .\n')
-    #f.write('COPY logs .\n')
-    #f.write('COPY models .\n')
-    #f.write('COPY notebooks .\n')
-    #f.write('COPY requirements.txt .\n')
-    #f.write('COPY README.md .')    
-    #f.close()
-    
