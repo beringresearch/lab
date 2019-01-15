@@ -17,13 +17,24 @@ warnings.filterwarnings("ignore")
 
 @click.group()
 def cli():
-    """Machine Learning Lab
+    """
+    \b
+       o
+       o
+     ___
+     | |
+     | |
+     |o|
+    .' '.
+   /  o  \ 
+  :____o__:
+  '._____.' Bering's Machine Learning Lab    
 
     \b
     Quickstart:
     1. Generate requirements.txt
     2. Create a new Lab Environment: lab init --name [NAME]
-    3. Create an experiment
+    3. Create a python script with your experiment
     4. Run the experiment: lab run [NAME]
     5. Check performance: lab ls
 
@@ -35,7 +46,7 @@ def cli():
 @click.command('init')
 @click.option('--name', type=str, default=str(uuid.uuid4()), help='environment name')
 def lab_init(name):
-    """ initialise a new Lab environment """
+    """ Initialise a new Lab environment """
     if not os.path.isfile('requirements.txt'):
         click.echo('requirements.txt is not found in the current working directory.')
         raise click.Abort()
@@ -48,7 +59,7 @@ def lab_init(name):
 @click.command('run')
 @click.argument('script', required = True)
 def lab_run(script):    
-    """ run a training script """
+    """ Run a training script """
     home_dir = os.path.dirname(os.path.realpath(script))  
     if not os.path.exists(os.path.join(home_dir, '.venv')):
         click.echo('virtual environment not found. Creating one for this project')
@@ -60,7 +71,7 @@ def lab_run(script):
 @click.command('ls')
 @click.argument('sort_by', required = False)
 def compare_experiments(sort_by = None):
-    """ compare multiple Lab experiments """
+    """ Compare multiple Lab Experiments """
     models_directory = 'models'
     logs_directory = 'logs'
     TICK = '█'
