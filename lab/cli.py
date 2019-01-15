@@ -75,35 +75,38 @@ def compare_experiments(sort_by = None):
                             
             record = [meta['experiment_uuid'], meta['source'], str(meta['start_time'].date())] + metrics_list
             comparisons.append(record)
-
-            # Create visualisation of numeric metrics
-            A = pd.DataFrame(comparisons)
-            meta_data = A[[0, 1, 2]]
-            metrics_data = A.drop([0, 1, 2], axis = 1)
-    
-            row_max = metrics_data.abs().max(axis = 0)    
-            scaled_metrics_data = metrics_data.abs().divide(row_max, axis = 1)
-            scaled_metrics_data = scaled_metrics_data.fillna(value = 0)
-    
-            sparklines = np.empty(shape = metrics_data.shape, dtype=object)
-            for row in range(metrics_data.shape[0]):
-                for column in range(metrics_data.shape[1]):
-                    value = metrics_data.iloc[row, column]
-                    scaled_value = scaled_metrics_data.iloc[row, column]
-                    scaled_value = scaled_value
-                    spark = format(value, '.2f')+': '+TICK * int(round(scaled_value*10))
-                    sparklines[row, column] = spark
-
-            result = pd.concat([meta_data, pd.DataFrame(sparklines)], axis = 1)
-            result.columns = ['Experiment', 'Source', 'Date'] + list(metrics.keys())    
-
-            if sort_by is not None:
-                result.sort_values(by = [sort_by], axis = 0, ascending=False, inplace = True)
-
-            header = ['Experiment', 'Source', 'Date'] + list(metrics.keys())
-            click.echo(tabulate.tabulate(result.values, headers = header))
         except:
             pass
+
+    # Create visualisation of numeric metrics
+    try:
+        A = pd.DataFrame(comparisons)
+        meta_data = A[[0, 1, 2]]
+        metrics_data = A.drop([0, 1, 2], axis = 1)
+    
+        row_max = metrics_data.abs().max(axis = 0)    
+        scaled_metrics_data = metrics_data.abs().divide(row_max, axis = 1)
+        scaled_metrics_data = scaled_metrics_data.fillna(value = 0)
+    
+        sparklines = np.empty(shape = metrics_data.shape, dtype=object)
+        for row in range(metrics_data.shape[0]):
+            for column in range(metrics_data.shape[1]):
+                value = metrics_data.iloc[row, column]
+                scaled_value = scaled_metrics_data.iloc[row, column]
+                scaled_value = scaled_value
+                spark = format(value, '.2f')+': '+TICK * int(round(scaled_value*10))
+                sparklines[row, column] = spark
+
+        result = pd.concat([meta_data, pd.DataFrame(sparklines)], axis = 1)
+        result.columns = ['Experiment', 'Source', 'Date'] + list(metrics.keys())    
+
+        if sort_by is not None:
+            result.sort_values(by = [sort_by], axis = 0, ascending=False, inplace = True)
+
+        header = ['Experiment', 'Source', 'Date'] + list(metrics.keys())
+        click.echo(tabulate.tabulate(result.values, headers = header))
+    except:
+        pass
 
 cli.add_command(lab_init)
 cli.add_command(lab_run)
