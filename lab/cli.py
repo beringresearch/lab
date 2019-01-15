@@ -17,8 +17,18 @@ warnings.filterwarnings("ignore")
 
 @click.group()
 def cli():
-    """
-    Machine Learning Lab
+    """Machine Learning Lab
+
+    \b
+    Quickstart:
+    1. Generate requirements.txt
+    2. Create a new Lab Environment: lab init --name [NAME]
+    3. Create an experiment
+    4. Run the experiment: lab run [NAME]
+    5. Check performance: lab ls
+
+    Copyright 2019 Bering Limited. https://beringresearch.com
+
     """
     pass
 
