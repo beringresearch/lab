@@ -10,18 +10,22 @@ import pandas as pd
 import numpy as np
 
 from lab import project_init, create_venv
+import lab.version as lab_version
 
 working_directory = os.getcwd()
 warnings.filterwarnings("ignore")
 
 @click.group()
 def cli():
-    '''Machine Learning Lab'''
+    """
+    Machine Learning Lab
+    """
     pass
 
 @click.command('init')
-@click.argument('name', type=str, default=str(uuid.uuid4()))
+@click.option('--name', type=str, default=str(uuid.uuid4()), help='environment name')
 def lab_init(name):
+    """ initialise a new Lab environment """
     if not os.path.isfile('requirements.txt'):
         click.echo('requirements.txt is not found in the current working directory.')
         raise click.Abort()
@@ -34,6 +38,7 @@ def lab_init(name):
 @click.command('run')
 @click.argument('script', required = True)
 def lab_run(script):    
+    """ run a training script """
     home_dir = os.path.dirname(os.path.realpath(script))  
     if not os.path.exists(os.path.join(home_dir, '.venv')):
         click.echo('virtual environment not found. Creating one for this project')
@@ -45,6 +50,7 @@ def lab_run(script):
 @click.command('ls')
 @click.argument('sort_by', required = False)
 def compare_experiments(sort_by = None):
+    """ compare multiple Lab experiments """
     models_directory = 'models'
     logs_directory = 'logs'
     TICK = '█'

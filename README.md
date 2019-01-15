@@ -20,7 +20,7 @@ A typical machine learning workflow can be truned into a Lab Experiment by addin
 ## Creating a new Lab Project
 
 ```bash
-lab init [NAME]
+lab init --name [NAME]
 ```
 
 Lab will look for a **requirements.txt** file in the working directory to generate a portable virtual environment for ML experiments.
