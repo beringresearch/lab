@@ -15,7 +15,7 @@ pip install --editable .
 ## Concepts
 
 Lab employs three concepts: __reproducible environment__, __logging__, and __model persistence__.
-A typical machine learning workflow can be truned into a Lab Experiment by adding a single decorator.
+A typical machine learning workflow can be turned into a Lab Experiment by adding a single decorator.
 
 ## Creating a new Lab Project
 
@@ -97,7 +97,7 @@ lab run <PATH/TO/TRAIN.py>
 
 ## Comparing models
 
-Lab assumes that all Experiments associated with a Project log consistent perofmrnace metrics. We can quickly assess performance of each experiment by running:
+Lab assumes that all Experiments associated with a Project log consistent performance metrics. We can quickly assess performance of each experiment by running:
 
 ```bash
 lab ls
