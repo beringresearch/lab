@@ -18,6 +18,7 @@ def create_venv(project_name):
     environment.create(venv_dir)
     
     subprocess.call([venv_dir + '/bin/pip', 'install', 'pyyaml'])
+    subprocess.call([venv_dir + '/bin/pip', 'install', 'minio'])
     subprocess.call([venv_dir + '/bin/pip', 'install', '-r', 'requirements.txt'])
     
     # Move lab into the virtual environment
