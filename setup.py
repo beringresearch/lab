@@ -11,6 +11,7 @@ setup(
     py_modules=['lab'],
     install_requires=[
         'click>=6.7',
+        'minio',
         'numpy',
         'pandas',
         'pyyaml',

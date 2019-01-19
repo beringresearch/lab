@@ -108,4 +108,20 @@ Experiment    Source              Date        accuracy_score    precision_score
 261a34e4      train_mnist_cnn.py  2019-01-15  0.98: ██████████  0.98: ██████████
 ```
 
+## Pushing models to a centralised repository
+
+Lab experiments can be pushed to a centralised filesystem through integration with [minio](https://minio.io). Lab assumes that you have setup minio on a private cloud.
+
+Lab can be configured once to interface with a remote minio instance:
+
+```bash
+lab config --endpoint [URL:PORT] --accesskey [STRING] --secretkey [STRING]
+```
+
+To push a local lab experiment to minio:
+
+```bash
+lab push .
+```
+
 Copyright 2019, Bering Limited

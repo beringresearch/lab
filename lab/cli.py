@@ -4,12 +4,13 @@ import uuid
 import yaml
 import tabulate
 import subprocess
+from minio import Minio
 
 import warnings
 import pandas as pd
 import numpy as np
 
-from lab import project_init, create_venv
+from lab import project_init, create_venv, push_to_minio
 import lab.version as lab_version
 
 working_directory = os.getcwd()
@@ -135,9 +136,60 @@ def compare_experiments(sort_by = None):
     except:
         pass
 
+@click.command('push')
+@click.argument('path', type=str, default=os.getcwd())
+def lab_push(path):
+    """ Push lab experiment to minio """
+    models_directory = 'models'
+    logs_directory = 'logs'
+
+    home_dir = os.path.expanduser('~')
+    lab_dir = os.path.join(home_dir, '.lab')
+    if not os.path.exists(lab_dir):
+        click.echo('Lab is not configured to connect to minio. Run lab config to set up access points.')
+        click.Context.abort(cli)
+
+    if not (os.path.exists(models_directory) & os.path.exists(logs_directory)):
+        click.echo('This directory does not appear to contain a valid lab project. Run lab init to create one.')
+        click.Context.abort(cli)
+    
+    push_to_minio(path)
+
+    
+
+@click.command('config')
+@click.option('--endpoint', type=str, help='minio endpoint address')
+@click.option('--accesskey', type=str, help='minio access key')
+@click.option('--secretkey', type=str, help='minio secret key')
+def lab_config(endpoint, accesskey, secretkey):
+    """ Configure the lab environment and setup remote file storage"""
+    home_dir = os.path.expanduser('~')
+    lab_dir = os.path.join(home_dir, '.lab')
+    if not os.path.exists(lab_dir):
+        os.makedirs(lab_dir)
+
+    try:
+        minioClient = Minio(endpoint,
+                  access_key=accesskey,
+                  secret_key=secretkey,
+                  secure=False)
+    except:
+        click.echo('Cannot connect to minio instance. Check your credentials and hostname. Ensure that endpoint is not prefixed with http or https.')
+        click.Context.abort(cli)
+
+    
+    config = {'minio_endpoint': endpoint,
+              'minio_accesskey': accesskey,
+              'minio_secretkey': secretkey}
+
+    with open(os.path.join(lab_dir, 'config.yaml'), 'w') as file:
+        yaml.dump(config, file, default_flow_style=False)
+
 cli.add_command(lab_init)
 cli.add_command(lab_run)
 cli.add_command(compare_experiments)
+cli.add_command(lab_config)
+cli.add_command(lab_push)
 
 if __name__ == '__main__':
     cli()
