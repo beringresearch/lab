@@ -4,6 +4,8 @@ A lightweight command line interface for the management of arbitrary machine lea
 
 NOTE: Lab is in active development - expect a bumpy ride!
 
+![alt text](https://github.com/beringresearch/lab/blob/master/examples/lab-uml.png "Bering's Lab")
+
 ## Installation
 
 ```bash
