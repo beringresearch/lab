@@ -139,6 +139,7 @@ def compare_experiments(sort_by = None):
 @click.command('push')
 @click.argument('path', type=str, default=os.getcwd())
 def lab_push(path):
+    """ Push lab experiment to minio """
     models_directory = 'models'
     logs_directory = 'logs'
 
