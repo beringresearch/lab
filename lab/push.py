@@ -40,8 +40,8 @@ def push_to_minio(bucket, path):
         minioClient.make_bucket(bucket, location='eu-west-1')
 
     try:
-        for root, directories, filenames in os.walk(path):
-            for i in range(len(input_objects)):                
-                minioClient.fput_object(bucket, output_objects[i], input_objects[i])
+        for i in range(len(input_objects)):                
+            minioClient.fput_object(bucket, output_objects[i], input_objects[i])
+            print('Succesfully processed '+input_objects[i])
     except ResponseError as err:
         print(err)
