@@ -20,7 +20,7 @@ def push_to_minio(bucket, path):
     
     hostname = minio_config['minio_endpoint']
     accesskey = minio_config['minio_accesskey']
-    secretkey = minio_config['minio_secretkey']
+    secretkey = minio_config['minio_secretkey'] 
 
     input_objects = []
     output_objects = []
