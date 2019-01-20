@@ -22,13 +22,6 @@ def push_to_minio(bucket, path):
     accesskey = minio_config['minio_accesskey']
     secretkey = minio_config['minio_secretkey']
 
-    #time_stamp = time.time()
-    #output_filename = datetime.datetime.fromtimestamp(time_stamp).strftime('%Y-%m-%d_%H:%M:%S') + '.tar.gz'
-    #exclude_files = ['.venv']
-    #with tarfile.open(output_filename, "w:gz") as tar:
-    #    tar.add(path, arcname=os.path.basename(path),
-    #    exclude=exclude_venv)
-
     input_objects = []
     output_objects = []
     exclude = set(['.venv'])
@@ -51,7 +44,4 @@ def push_to_minio(bucket, path):
             for i in range(len(input_objects)):                
                 minioClient.fput_object(bucket, output_objects[i], input_objects[i])
     except ResponseError as err:
-        print(err)    
-
-def exclude_venv(tarinfo):
-    return '.venv' in tarinfo
+        print(err)
