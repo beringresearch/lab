@@ -123,7 +123,7 @@ lab config --endpoint [URL:PORT] --accesskey [STRING] --secretkey [STRING]
 To push a local lab experiment to minio:
 
 ```bash
-lab push .
+lab push --bucket [BUCKETNAME] .
 ```
 
 Copyright 2019, Bering Limited
