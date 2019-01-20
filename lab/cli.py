@@ -126,8 +126,9 @@ def compare_experiments(sort_by = None):
         pass
 
 @click.command('push')
+@click.option('--bucket', type=str, default=str(uuid.uuid4()), help='minio bucket name')
 @click.argument('path', type=str, default=os.getcwd())
-def lab_push(path):
+def lab_push(bucket, path):
     """ Push lab experiment to minio """
     models_directory = 'models'
     logs_directory = 'logs'
@@ -142,7 +143,7 @@ def lab_push(path):
         click.echo('This directory does not appear to contain a valid lab project. Run lab init to create one.')
         click.Context.abort(cli)
     
-    push_to_minio(path)
+    push_to_minio(bucket, path)
 
     
 

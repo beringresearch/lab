@@ -1,4 +1,3 @@
 # Copyright 2019 Bering Limited
 
-
-VERSION = '0.6.0-dev'
+VERSION = '0.6.1-dev'
