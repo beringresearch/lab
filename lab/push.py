@@ -31,7 +31,9 @@ def push_to_minio(bucket, path):
 
     input_objects = []
     output_objects = []
-    for root, d_names, f_names in os.walk(path):
+    exclude = set(['.venv'])
+    for root, d_names, f_names in os.walk(path, topdown=True):
+        d_names[:] = [d for d in d_names if d not in exclude]
         for f in f_names:
             input_objects.append(os.path.join(root, f))
             output_objects.append(os.path.join(project_name, root.strip('./'), f))
