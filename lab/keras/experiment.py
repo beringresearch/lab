@@ -5,6 +5,7 @@ import sys
 import yaml
 import numpy
 import warnings
+import shutil
 
 warnings.filterwarnings(action='ignore', category=DeprecationWarning)
 
@@ -31,37 +32,42 @@ class Experiment():
         self.create_run(user_id = _get_user_id(), timestamp = datetime.datetime.now())
         run_uuid = self.uuid
         models_directory = os.path.join(self.home_dir, 'models', run_uuid)        
-        logs_directory = os.path.join(self.home_dir, 'logs', run_uuid)
-        os.makedirs(models_directory)
-        os.makedirs(logs_directory)
-            
-        fun()    
+        logs_directory = os.path.join(self.home_dir, 'logs', run_uuid)        
 
-        # Log run metadata
-        meta_file = os.path.join(logs_directory, 'meta.yaml')
-        with open(meta_file, 'w') as file:
-            meta = {'artifact_uri': os.path.dirname(os.path.abspath(meta_file)),
-                    'source': self.source,
-                    'start_time': self.timestamp,
-                    'end_time': datetime.datetime.now(),
-                    'experiment_uuid': self.uuid,
-                    'user_id': self.user_id}
-            yaml.dump(meta, file, default_flow_style=False)
+        try:
+            fun() 
+        except Exception as e:            
+            shutil.rmtree(logs_directory)
+            print(e)
+        else:
+            os.makedirs(models_directory)
+            os.makedirs(logs_directory)   
+
+            # Log run metadata
+            meta_file = os.path.join(logs_directory, 'meta.yaml')
+            with open(meta_file, 'w') as file:
+                meta = {'artifact_uri': os.path.dirname(os.path.abspath(meta_file)),
+                        'source': self.source,
+                        'start_time': self.timestamp,
+                        'end_time': datetime.datetime.now(),
+                        'experiment_uuid': self.uuid,
+                        'user_id': self.user_id}
+                yaml.dump(meta, file, default_flow_style=False)
         
-        # Log metrics
-        metrics_file = os.path.join(models_directory, 'metrics.yaml')
-        with open(metrics_file, 'w') as file:
-            yaml.dump(self.metrics, file, default_flow_style=False)
+            # Log metrics
+            metrics_file = os.path.join(models_directory, 'metrics.yaml')
+            with open(metrics_file, 'w') as file:
+                yaml.dump(self.metrics, file, default_flow_style=False)
 
-        # Log parameters
-        parameters_file = os.path.join(models_directory, 'parameters.yaml')
-        with open(parameters_file, 'w') as file:
-            yaml.dump(self.parameters, file, default_flow_style=False)
+            # Log parameters
+            parameters_file = os.path.join(models_directory, 'parameters.yaml')
+            with open(parameters_file, 'w') as file:
+                yaml.dump(self.parameters, file, default_flow_style=False)
 
-        # Log features
-        feature_file = os.path.join(models_directory, 'features.yaml')
-        with open(feature_file, 'w') as file:
-            yaml.dump(self.feature_names, file, default_flow_style=False)
+            # Log features
+            feature_file = os.path.join(models_directory, 'features.yaml')
+            with open(feature_file, 'w') as file:
+                yaml.dump(self.feature_names, file, default_flow_style=False)
 
     def log_features(self, feature_names):
         self.feature_names = list(feature_names)
