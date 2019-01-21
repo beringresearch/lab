@@ -76,7 +76,7 @@ def train():
     precision = precision_score(y_true = actual, y_pred = y_classes, average = 'macro')
 
     # Log all metrics
-    e.log_metrics('accuracy_score', accuracy)
+    e.log_metric('accuracy_score', accuracy)
     e.log_metric('precision_score', precision)
 
     # Log parameters
