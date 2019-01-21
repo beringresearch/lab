@@ -4,6 +4,7 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
 from keras import backend as K
+from keras.callbacks import TensorBoard
 
 from sklearn.metrics import accuracy_score, precision_score
 
@@ -59,11 +60,13 @@ model.compile(loss=keras.losses.categorical_crossentropy,
 e = Experiment()
 @e.start_run
 def train():
+    tensorboard = TensorBoard(log_dir='logs/'+e.uuid) # Point tensorboard logs to this experiment
     model.fit(x_train, y_train,
             batch_size=batch_size,
             epochs=epochs,
             verbose=1,
-            validation_data=(x_test, y_test))
+            validation_data=(x_test, y_test),
+            callbacks=[tensorboard])
 
     y_prob = model.predict(x_test)
     y_classes = y_prob.argmax(axis=-1)
@@ -73,7 +76,7 @@ def train():
     precision = precision_score(y_true = actual, y_pred = y_classes, average = 'macro')
 
     # Log all metrics
-    e.log_metric('accuracy_score', accuracy)
+    e.log_metrics('accuracy_score', accuracy)
     e.log_metric('precision_score', precision)
 
     # Log parameters
