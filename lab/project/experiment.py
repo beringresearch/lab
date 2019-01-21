@@ -72,7 +72,7 @@ class Experiment():
             # Log models            
             for filename in self.models.keys():
                 model_file = os.path.join(models_directory, filename+'.pkl')
-                pickle.dump(self.models[filename], open(model_file, 'wb')
+                pickle.dump(self.models[filename], open(model_file, 'wb'))
 
     def log_features(self, feature_names):
         self.feature_names = list(feature_names)
@@ -101,6 +101,7 @@ class Experiment():
         run_uuid = self.uuid
         self.models[key] = value        
 
+    # Experimental feature - API is bound to change!
     def log_artifact(self, artifact, filename):
         run_uuid = self.uuid
         models_directory = os.path.join(self.home_dir, 'models', run_uuid)
