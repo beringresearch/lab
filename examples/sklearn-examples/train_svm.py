@@ -2,7 +2,7 @@ from sklearn import svm, datasets
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, precision_score
 
-from lab.sklearn import Experiment
+from lab.project import Experiment
 
 if __name__ == "__main__":
     e = Experiment()
