@@ -18,7 +18,7 @@ class Experiment():
 
     def create_run(self, run_uuid = None, user_id = None,
                    timestamp = None, metrics = None, parameters = None,
-                   feature_names = None):        
+                   feature_names = None, models = dict()):        
         self.uuid = str(uuid.uuid4())[:8]
         self.user_id = _get_user_id()
         self.timestamp = timestamp 
@@ -27,6 +27,7 @@ class Experiment():
         self.feature_names = feature_names
         self.source = sys.argv[0]
         self.home_dir = os.path.dirname(os.path.realpath(sys.argv[0]))
+        self.models = models
         
     def start_run(self, fun):
         self.create_run(user_id = _get_user_id(), timestamp = datetime.datetime.now())
@@ -69,6 +70,12 @@ class Experiment():
             with open(feature_file, 'w') as file:
                 yaml.dump(self.feature_names, file, default_flow_style=False)
 
+            # Log models
+            for filename in self.models.keys():
+                model_file = os.path.join(models_directory, filename+'.h5')
+                joblib.dump(self.models[filename], model_file)
+
+
     def log_features(self, feature_names):
         self.feature_names = list(feature_names)
 
@@ -92,11 +99,10 @@ class Experiment():
         else:
             self.parameters[key] = value.tolist()
 
-    def log_model(self, model, filename):
+    def log_model(self, key, value):
         run_uuid = self.uuid
-        models_directory = os.path.join(self.home_dir, 'models', run_uuid)
-        model_file = os.path.join(models_directory, filename+'.h5')
-        model.save(model_file)
+        self.models[key] = value
+        
 
     def log_artifact(self, artifact, filename):
         run_uuid = self.uuid

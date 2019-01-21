@@ -31,4 +31,5 @@ if __name__ == "__main__":
 
         e.log_parameter('n_estimators', n_estimators)
 
-        e.log_model(clf, 'randomforest')
+        e.log_model('randomforest', clf)
+        e.log_model('anotherone', clf)

@@ -32,5 +32,5 @@ if __name__ == "__main__":
         e.log_parameter('C', C)
         e.log_parameter('gamma', gamma)
 
-        e.log_model(clf, 'svm')
+        e.log_model('svm', clf)
 

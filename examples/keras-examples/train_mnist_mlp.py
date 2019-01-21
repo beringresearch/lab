@@ -63,4 +63,4 @@ def train():
     e.log_parameter('batch_size', batch_size)
 
     # Save model
-    e.log_model(model, 'mnist-mlp')
+    e.log_model('mnist-mlp', model)
