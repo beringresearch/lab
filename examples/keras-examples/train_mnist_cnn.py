@@ -8,7 +8,7 @@ from keras.callbacks import TensorBoard
 
 from sklearn.metrics import accuracy_score, precision_score
 
-from lab.keras import Experiment
+from lab.project import Experiment
 
 batch_size = 128
 num_classes = 10
