@@ -86,7 +86,7 @@ def train():
     e.log_parameter('C', C) ## New Line
     e.log_parameter('gamma', gamma) ## New Line
 
-    e.log_model(clf, 'svm') ## New Line
+    e.log_model('svm', clf) ## New Line
 ```
 
 ## Running an Experiment
