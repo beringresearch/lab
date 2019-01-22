@@ -4,3 +4,4 @@ click
 pyyaml
 sklearn
 tabulate
+gitpython>=2.1.0

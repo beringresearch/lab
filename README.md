@@ -61,7 +61,7 @@ from sklearn import svm, datasets
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, precision_score
 
-from lab.sklearn import Experiment ## New Line
+from lab.experiment import Experiment ## New Line
 
 e = Experiment() ## New Line
 

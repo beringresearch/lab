@@ -1,5 +1,5 @@
-import imp
 import os
+import imp
 from setuptools import setup
 
 version = imp.load_source(
@@ -16,7 +16,8 @@ setup(
         'pandas',
         'pyyaml',
         'scikit-learn',        
-        'tabulate'
+        'tabulate',
+        'gitpython>=2.1.0'
         ],
     entry_points='''
     [console_scripts]

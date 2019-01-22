@@ -6,7 +6,7 @@ from keras.optimizers import RMSprop
 
 from sklearn.metrics import accuracy_score, precision_score
 
-from lab.project import Experiment
+from lab.experiment import Experiment
 
 batch_size = 128
 num_classes = 10

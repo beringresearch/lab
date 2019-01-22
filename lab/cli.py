@@ -1,4 +1,5 @@
 import click
+import git
 import os
 import uuid
 import yaml
@@ -10,7 +11,7 @@ import warnings
 import pandas as pd
 import numpy as np
 
-from lab import project_init, create_venv, push_to_minio
+from lab.project import project_init, create_venv, push_to_minio, fetch_git_repo
 import lab.version as lab_version
 
 working_directory = os.getcwd()
@@ -38,11 +39,20 @@ def lab_init(name):
     else:
         project_init(name)
 
+
 @click.command('run')
 @click.argument('script', required = True)
 def lab_run(script):    
     """ Run a training script """
-    home_dir = os.path.dirname(os.path.realpath(script))  
+
+    try:
+        with open(os.path.join(os.getcwd(), 'config', 'runtime.yaml'), 'r') as file:
+            config = yaml.load(file)
+            home_dir = config['path']
+    except:
+        click.echo("It appears that <lab run> was called from a non-lab project. We can't load Lab configuration.")
+        click.Context.abort(cli)
+
     if not os.path.exists(os.path.join(home_dir, '.venv')):
         click.echo('virtual environment not found. Creating one for this project')
         create_venv(home_dir)
