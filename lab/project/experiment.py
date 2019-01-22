@@ -75,6 +75,13 @@ class Experiment():
                 pickle.dump(self.models[filename], open(model_file, 'wb'))
 
     def log_features(self, feature_names):
+        """ Log feature names
+
+            Parameters
+            ----------
+            feature_names: array
+                Feature names or indices to be logged
+        """
         self.feature_names = list(feature_names)
 
     def log_metric(self, key, value):

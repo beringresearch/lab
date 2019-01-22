@@ -1,0 +1,186 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Quickstart &#8212; lab  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Command Line Interface" href="cli.html" />
+    <link rel="prev" title="Machine Learning Lab" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="quickstart">
+<span id="id1"></span><h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="installing-lab">
+<h2>Installing Lab<a class="headerlink" href="#installing-lab" title="Permalink to this headline">¶</a></h2>
+<p>For the time being, lab is available through our github repository:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/beringresearch/lab
+<span class="nb">cd</span> lab
+pip install --editable .
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">You cannot install Lab on the MacOS system installation of Python. We recommend installing
+Python 3 through the <a class="reference external" href="https://brew.sh/">Homebrew</a> package manager using
+<code class="docutils literal notranslate"><span class="pre">brew</span> <span class="pre">install</span> <span class="pre">python</span></code>.</p>
+</div>
+</div>
+<div class="section" id="setting-up-your-first-project">
+<h2>Setting up your first Project<a class="headerlink" href="#setting-up-your-first-project" title="Permalink to this headline">¶</a></h2>
+<p>Lab projects are initiated using a <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> file. This ensures a consistent and reproducible environment.</p>
+<p>Let’s create a simple environment that imports sklearn:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">echo</span> <span class="s2">&quot;sklearn&quot;</span> &gt;&gt; requirements.txt
+lab init --name <span class="nb">test</span>
+</pre></div>
+</div>
+<p>Lab will run through project initialisation and create a new <strong>test</strong> project with its own virtual environment.</p>
+</div>
+<div class="section" id="creating-your-first-lab-experiment">
+<h2>Creating your first Lab Experiment<a class="headerlink" href="#creating-your-first-lab-experiment" title="Permalink to this headline">¶</a></h2>
+<p>Training scripts can be placed directly into the <em>test/</em> directory. Here’s an example training script, <em>train.py</em>, set up to train a Random Forest classifier with appropriate Lab logging API:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">datasets</span>
+<span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">RandomForestClassifier</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">precision_score</span>
+
+<span class="kn">from</span> <span class="nn">lab.project</span> <span class="kn">import</span> <span class="n">Experiment</span>
+
+<span class="n">e</span> <span class="o">=</span> <span class="n">Experiment</span><span class="p">()</span> <span class="c1"># Initialise Lab Experiment</span>
+
+<span class="nd">@e.start_run</span> <span class="c1"># Indicate the start of the Experiment</span>
+<span class="k">def</span> <span class="nf">train</span><span class="p">():</span>
+    <span class="n">iris</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">load_iris</span><span class="p">()</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">iris</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">iris</span><span class="o">.</span><span class="n">target</span>
+
+    <span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.24</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+
+    <span class="n">n_estimators</span> <span class="o">=</span> <span class="mi">100</span>
+
+    <span class="n">e</span><span class="o">.</span><span class="n">log_features</span><span class="p">([</span><span class="s1">&#39;Sepal Length&#39;</span><span class="p">,</span> <span class="s1">&#39;Sepal Width&#39;</span><span class="p">,</span> <span class="s1">&#39;Petal Length&#39;</span><span class="p">,</span> <span class="s1">&#39;Petal Width&#39;</span><span class="p">])</span>
+    <span class="n">clf</span> <span class="o">=</span> <span class="n">RandomForestClassifier</span><span class="p">(</span><span class="n">n_estimators</span> <span class="o">=</span> <span class="n">n_estimators</span><span class="p">)</span>
+    <span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+
+    <span class="n">y_pred</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+    <span class="n">accuracy</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+    <span class="n">precision</span> <span class="o">=</span> <span class="n">precision_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">average</span> <span class="o">=</span> <span class="s1">&#39;macro&#39;</span><span class="p">)</span>
+
+    <span class="n">e</span><span class="o">.</span><span class="n">log_metric</span><span class="p">(</span><span class="s1">&#39;accuracy_score&#39;</span><span class="p">,</span> <span class="n">accuracy</span><span class="p">)</span>        <span class="c1"># Log accuracy</span>
+    <span class="n">e</span><span class="o">.</span><span class="n">log_metric</span><span class="p">(</span><span class="s1">&#39;precision_score&#39;</span><span class="p">,</span> <span class="n">precision</span><span class="p">)</span>      <span class="c1"># Log aprecision</span>
+
+    <span class="n">e</span><span class="o">.</span><span class="n">log_parameter</span><span class="p">(</span><span class="s1">&#39;n_estimators&#39;</span><span class="p">,</span> <span class="n">n_estimators</span><span class="p">)</span>   <span class="c1"># Log parameters of your choice</span>
+
+    <span class="n">e</span><span class="o">.</span><span class="n">log_model</span><span class="p">(</span><span class="s1">&#39;randomforest&#39;</span><span class="p">,</span> <span class="n">clf</span><span class="p">)</span>                <span class="c1"># Log the actual model</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="running-a-lab-experiment">
+<h2>Running a Lab Experiment<a class="headerlink" href="#running-a-lab-experiment" title="Permalink to this headline">¶</a></h2>
+<p>The Experiment can now be launched through:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>lab run train.py
+</pre></div>
+</div>
+<p>Lab will log performance metrics and model files into appropriate Experiment folders.</p>
+</div>
+<div class="section" id="compare-lab-experiments">
+<h2>Compare Lab Experiments<a class="headerlink" href="#compare-lab-experiments" title="Permalink to this headline">¶</a></h2>
+<p>Multiple Experiments can be compared from the root of the Project folder:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>lab ls
+
+Experiment    Source              Date        accuracy_score    precision_score
+------------  ------------------  ----------  ----------------  -----------------
+49ffb76e      train_mnist_mlp.py  <span class="m">2019</span>-01-15  <span class="m">0</span>.97: ██████████  <span class="m">0</span>.97: ██████████
+261a34e4      train_mnist_cnn.py  <span class="m">2019</span>-01-15  <span class="m">0</span>.98: ██████████  <span class="m">0</span>.98: ██████████
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">lab</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Lab Documentation:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">Concepts</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Machine Learning Lab</a></li>
+      <li>Next: <a href="cli.html" title="next chapter">Command Line Interface</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Bering Limited.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/quickstart.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

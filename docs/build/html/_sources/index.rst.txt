@@ -1,20 +1,15 @@
-.. lab documentation master file, created by
-   sphinx-quickstart on Mon Jan 21 13:57:59 2019.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-Welcome to lab's documentation!
-===============================
+Machine Learning Lab
+====================
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+    :maxdepth: 1
+    :caption: Lab Documentation:
 
+    quickstart
+    cli
+    concepts
 
+.. warning::
 
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+    The current version of Lab is a beta release. This means that APIs and storage formats
+    are subject to breaking change.
