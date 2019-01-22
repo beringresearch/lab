@@ -48,6 +48,11 @@ def project_init(project_name):
 
     open(os.path.join(project_name, 'README.md'), 'a').close()
 
+    file = open(os.path.join(project_name, '.gitignore'), 'w')
+    file.write('.venv/')
+    file.close()
+
+
     # Copy requirements.txt file
     copyfile('requirements.txt', project_name+'/requirements.txt')
 
