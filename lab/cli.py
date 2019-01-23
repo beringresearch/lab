@@ -6,6 +6,7 @@ import yaml
 import tabulate
 import subprocess
 import importlib.util
+import shutil
 from minio import Minio
 
 import warnings
