@@ -1,9 +1,11 @@
 import click
+import sys
 import os
 import uuid
 import yaml
 import tabulate
 import subprocess
+import importlib.util
 from minio import Minio
 
 import warnings
@@ -55,6 +57,27 @@ def lab_run(script):
     if not os.path.exists(os.path.join(home_dir, '.venv')):
         click.echo('virtual environment not found. Creating one for this project')
         create_venv(home_dir)
+
+    # Check that venv and global Lab versions match
+    pyversion = '%s.%s' % (sys.version_info[0], sys.version_info[1])
+    venv = '%s/lib/python%s/site-packages/%s' % ('.venv', pyversion, 'lab')
+    spec = importlib.util.spec_from_file_location('lab', os.path.join(venv, '__init__.py'))
+    foo = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(foo)
+    venv_lab_version = foo.__version__
+        
+    if lab_version != venv_lab_version:
+        click.echo('It appears that your Lab Project was built using a different Lab version (' + venv_lab_version + ').')
+        if click.confirm('Do you want to sync?'):
+            try:
+                pkgobj = __import__('lab')
+            except Exception as e:
+                print(e)
+                sys.exit(1)
+    
+            pkgdir = os.path.dirname(pkgobj.__file__)            
+            shutil.copytree(pkgdir, venv)
+
 
     python_bin = os.path.join(home_dir, '.venv', 'bin/python')
     subprocess.call([python_bin, script])

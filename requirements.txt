@@ -2,5 +2,5 @@ pip
 minio
 click
 pyyaml
-sklearn
+scikit-learn
 tabulate
