@@ -76,7 +76,9 @@ def lab_run(script):
                 print(e)
                 sys.exit(1)
     
-            pkgdir = os.path.dirname(pkgobj.__file__)            
+            pkgdir = os.path.dirname(pkgobj.__file__)
+            if os.path.exists(venv):
+                shutil.rmtree(venv)          
             shutil.copytree(pkgdir, venv)
 
 
