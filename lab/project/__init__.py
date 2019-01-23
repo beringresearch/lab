@@ -17,8 +17,7 @@ def create_venv(project_name):
     # Create a virtual environment
     venv_dir = os.path.join(project_name, '.venv')
 
-    environment = ve.EnvBuilder(symlinks=True, with_pip=True,
-        system_site_packages = True)
+    environment = ve.EnvBuilder(symlinks=True, with_pip=True)
     environment.create(venv_dir)
     
     subprocess.call([venv_dir + '/bin/pip', 'install', '-I', 'pyyaml'])
@@ -26,18 +25,18 @@ def create_venv(project_name):
     subprocess.call([venv_dir + '/bin/pip', 'install', '-I', '-r', 'requirements.txt'])
     
     # Move lab into the virtual environment
-    #pkgname = 'lab'    
-    #pyversion = '%s.%s' % (sys.version_info[0], sys.version_info[1])
+    pkgname = 'lab'    
+    pyversion = '%s.%s' % (sys.version_info[0], sys.version_info[1])
     
-    #try:
-    #    pkgobj = __import__(pkgname)
-    #except Exception as e:
-    #    print(e)
-    #    sys.exit(1)
+    try:
+        pkgobj = __import__(pkgname)
+    except Exception as e:
+        print(e)
+        sys.exit(1)
     
-    #pkgdir = os.path.dirname(pkgobj.__file__)
-    #dst = '%s/lib/python%s/site-packages/%s' % (venv_dir, pyversion, pkgname)
-    #shutil.copytree(pkgdir, dst)
+    pkgdir = os.path.dirname(pkgobj.__file__)
+    dst = '%s/lib/python%s/site-packages/%s' % (venv_dir, pyversion, pkgname)
+    shutil.copytree(pkgdir, dst)
 
 def project_init(project_name):
     pyversion = '%s.%s' % (sys.version_info[0], sys.version_info[1])
