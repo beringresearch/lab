@@ -20,9 +20,9 @@ def create_venv(project_name):
     environment = ve.EnvBuilder(symlinks=True, with_pip=True)
     environment.create(venv_dir)
     
-    subprocess.call([venv_dir + '/bin/pip', 'install', '-I', 'pyyaml'])
-    subprocess.call([venv_dir + '/bin/pip', 'install', '-I', 'minio'])    
-    subprocess.call([venv_dir + '/bin/pip', 'install', '-I', '-r', 'requirements.txt'])
+    subprocess.call([venv_dir + '/bin/pip', 'install', 'pyyaml'])
+    subprocess.call([venv_dir + '/bin/pip', 'install', 'minio'])    
+    subprocess.call([venv_dir + '/bin/pip', 'install', '-r', 'requirements.txt'])
     
     # Move lab into the virtual environment
     pkgname = 'lab'    
