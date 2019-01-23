@@ -1,5 +1,4 @@
 import click
-import git
 import os
 import uuid
 import yaml
