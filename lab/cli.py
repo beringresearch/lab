@@ -10,7 +10,7 @@ import warnings
 import pandas as pd
 import numpy as np
 
-from lab.project import project_init, create_venv, push_to_minio, fetch_git_repo
+from lab.project import project_init, create_venv, push_to_minio
 import lab.version as lab_version
 
 working_directory = os.getcwd()
