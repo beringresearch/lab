@@ -15,7 +15,7 @@ class Experiment():
     def __init__(self):        
         pass
 
-    def create_run(self, run_uuid = None, user_id = None,
+    def create_run(self, run_uuid = None, user_id = None, home_dir = None,
                    timestamp = None, metrics = None, parameters = None,
                    feature_names = None, models = dict()):        
         self.uuid = str(uuid.uuid4())[:8]
@@ -25,7 +25,8 @@ class Experiment():
         self.parameters = parameters
         self.feature_names = feature_names
         self.source = sys.argv[0]
-        self.home_dir = os.path.dirname(os.path.realpath(sys.argv[0]))
+        #self.home_dir = os.path.dirname(os.path.realpath(sys.argv[0]))        
+        self.home_dir = os.path.dirname(os.path.dirname(os.path.dirname(sys.executable))) # hacky but will do for now
         self.models = models
         
         
@@ -33,7 +34,7 @@ class Experiment():
         self.create_run(user_id = _get_user_id(), timestamp = datetime.datetime.now())
         run_uuid = self.uuid        
         models_directory = os.path.join(self.home_dir, 'models', run_uuid)        
-        logs_directory = os.path.join(self.home_dir, 'logs', run_uuid)            
+        logs_directory = os.path.join(self.home_dir, 'logs', run_uuid)          
         
         try:
             fun()    
