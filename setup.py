@@ -16,8 +16,7 @@ setup(
         'pandas',
         'pyyaml',
         'scikit-learn',        
-        'tabulate',
-        'gitpython>=2.1.0'
+        'tabulate'        
         ],
     entry_points='''
     [console_scripts]

@@ -50,7 +50,7 @@ def lab_run(script):
             config = yaml.load(file)
             home_dir = config['path']
     except:
-        click.echo("It appears that <lab run> was called from a non-lab project. We can't load Lab configuration.")
+        click.echo("Having trouble reading configuration file for this project. \nIt's most likely that this is either not a Lab Project or the Project was created with an older version of Lab.\n")
         click.Context.abort(cli)
 
     if not os.path.exists(os.path.join(home_dir, '.venv')):
