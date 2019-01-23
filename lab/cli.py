@@ -13,8 +13,9 @@ import warnings
 import pandas as pd
 import numpy as np
 
+import lab
 from lab.project import project_init, create_venv, push_to_minio
-import lab.__version__ as lab_version
+
 
 working_directory = os.getcwd()
 warnings.filterwarnings("ignore")
@@ -67,7 +68,7 @@ def lab_run(script):
     spec.loader.exec_module(foo)
     venv_lab_version = foo.__version__
         
-    if lab_version != venv_lab_version:
+    if lab.__version__ != venv_lab_version:
         click.echo('It appears that your Lab Project was built using a different Lab version (' + venv_lab_version + ').')
         if click.confirm('Do you want to sync?'):
             try:
