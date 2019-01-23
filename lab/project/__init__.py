@@ -18,7 +18,7 @@ def create_venv(project_name):
     venv_dir = os.path.join(project_name, '.venv')
 
     environment = ve.EnvBuilder(symlinks=True, with_pip=True,
-        system_site_packages = True, prompt = project_name)
+        system_site_packages = True)
     environment.create(venv_dir)
     
     subprocess.call([venv_dir + '/bin/pip', 'install', '-I', 'pyyaml'])
