@@ -46,7 +46,7 @@ def project_init(project_name):
     os.mkdir(os.path.join(project_name, 'notebooks'))
     os.mkdir(os.path.join(project_name, 'data'))
     os.mkdir(os.path.join(project_name, 'logs'))
-    os.mkdir(os.path.join(project_name, 'models'))
+    os.mkdir(os.path.join(project_name, 'experiments'))
     os.mkdir(os.path.join(project_name, 'config'))
 
     open(os.path.join(project_name, 'README.md'), 'a').close()

@@ -1,17 +1,21 @@
 import click
+import sys
 import os
 import uuid
 import yaml
 import tabulate
 import subprocess
+import importlib.util
+import shutil
 from minio import Minio
 
 import warnings
 import pandas as pd
 import numpy as np
 
+import lab
 from lab.project import project_init, create_venv, push_to_minio
-import lab.version as lab_version
+
 
 working_directory = os.getcwd()
 warnings.filterwarnings("ignore")
@@ -56,6 +60,29 @@ def lab_run(script):
         click.echo('virtual environment not found. Creating one for this project')
         create_venv(home_dir)
 
+    # Check that venv and global Lab versions match
+    pyversion = '%s.%s' % (sys.version_info[0], sys.version_info[1])
+    venv = '%s/lib/python%s/site-packages/%s' % ('.venv', pyversion, 'lab')
+    spec = importlib.util.spec_from_file_location('lab', os.path.join(venv, '__init__.py'))
+    foo = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(foo)
+    venv_lab_version = foo.__version__
+        
+    if lab.__version__ != venv_lab_version:
+        click.echo('It appears that your Lab Project was built using a different Lab version (' + venv_lab_version + ').')
+        if click.confirm('Do you want to sync?'):
+            try:
+                pkgobj = __import__('lab')
+            except Exception as e:
+                print(e)
+                sys.exit(1)
+    
+            pkgdir = os.path.dirname(pkgobj.__file__)
+            if os.path.exists(venv):
+                shutil.rmtree(venv)          
+            shutil.copytree(pkgdir, venv)
+
+
     python_bin = os.path.join(home_dir, '.venv', 'bin/python')
     subprocess.call([python_bin, script])
 
@@ -63,7 +90,7 @@ def lab_run(script):
 @click.argument('sort_by', required = False)
 def compare_experiments(sort_by = None):
     """ Compare multiple Lab Experiments """
-    models_directory = 'models'
+    models_directory = 'experiments'
     logs_directory = 'logs'
     TICK = '█'
 
@@ -131,7 +158,7 @@ def compare_experiments(sort_by = None):
 @click.argument('path', type=str, default=os.getcwd())
 def lab_push(bucket, path):
     """ Push lab experiment to minio """
-    models_directory = 'models'
+    models_directory = 'experiments'
     logs_directory = 'logs'
 
     home_dir = os.path.expanduser('~')
