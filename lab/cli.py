@@ -90,7 +90,7 @@ def lab_run(script):
 @click.argument('sort_by', required = False)
 def compare_experiments(sort_by = None):
     """ Compare multiple Lab Experiments """
-    models_directory = 'models'
+    models_directory = 'experiments'
     logs_directory = 'logs'
     TICK = '█'
 
@@ -158,7 +158,7 @@ def compare_experiments(sort_by = None):
 @click.argument('path', type=str, default=os.getcwd())
 def lab_push(bucket, path):
     """ Push lab experiment to minio """
-    models_directory = 'models'
+    models_directory = 'experiments'
     logs_directory = 'logs'
 
     home_dir = os.path.expanduser('~')

@@ -33,7 +33,7 @@ class Experiment():
     def start_run(self, fun):        
         self.create_run(user_id = _get_user_id(), timestamp = datetime.datetime.now())
         run_uuid = self.uuid        
-        models_directory = os.path.join(self.home_dir, 'models', run_uuid)        
+        models_directory = os.path.join(self.home_dir, 'experiments', run_uuid)        
         logs_directory = os.path.join(self.home_dir, 'logs', run_uuid)          
         
         try:
@@ -112,7 +112,7 @@ class Experiment():
     # Experimental feature - API is bound to change!
     def log_artifact(self, artifact, filename):
         run_uuid = self.uuid
-        models_directory = os.path.join(self.home_dir, 'models', run_uuid)
+        models_directory = os.path.join(self.home_dir, 'experiments', run_uuid)
 
         destination = os.path.join(models_directory, filename)
         file_name, file_extension = os.path.splitext(filename)
