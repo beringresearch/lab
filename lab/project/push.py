@@ -6,12 +6,12 @@ import time
 from minio import Minio
 from minio.error import ResponseError
 
-def push_to_minio(bucket, path):
+def push_to_minio(tag, bucket, path):
     home_dir = os.path.expanduser('~')
     lab_dir = os.path.join(home_dir, '.lab')
 
     with open(os.path.join(lab_dir, 'config.yaml'), 'r') as file:
-        minio_config = yaml.load(file)
+        minio_config = yaml.load(file)[tag]
 
     with open(os.path.join(path, 'config/runtime.yaml'), 'r') as file:
         config = yaml.load(file)
