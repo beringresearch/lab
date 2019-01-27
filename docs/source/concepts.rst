@@ -24,7 +24,6 @@ Lab was designed to benchmark multiple predictive models and hyperparameters. To
 - Hyperparameters
 - Performance metrics
 - Model files
-- Experimental arteficts such as ROC curves
 
 Model Persistence
 -----------------

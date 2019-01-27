@@ -1,0 +1,224 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Logging Experiment Artifacts &#8212; lab  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Concepts" href="concepts.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="logging-experiment-artifacts">
+<span id="logging"></span><h1>Logging Experiment Artifacts<a class="headerlink" href="#logging-experiment-artifacts" title="Permalink to this headline">¶</a></h1>
+<p>The Lab logging component was designed to interface directly with your training code without disrupting the machine learning workflow.
+Currently, users can keep track of the following experiment artfacts:</p>
+<ul class="simple">
+<li>Feature names</li>
+<li>Hyperparameters</li>
+<li>Performance metrics</li>
+<li>Model files</li>
+</ul>
+<div class="section" id="feature-names">
+<h2>Feature names<a class="headerlink" href="#feature-names" title="Permalink to this headline">¶</a></h2>
+<p>Data features are simply lists of feature names or column indices. Consider the snippet:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">datasets</span>
+
+<span class="n">iris</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">load_iris</span><span class="p">()</span>
+<span class="n">feature_names</span> <span class="o">=</span> <span class="n">iris</span><span class="p">[</span><span class="s1">&#39;feature_names&#39;</span><span class="p">]</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">feature_names</span><span class="p">)</span>
+
+<span class="p">[</span><span class="s1">&#39;sepal length (cm)&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;sepal width (cm)&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;petal length (cm)&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;petal width (cm)&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>We can log these features by adding a few lines of code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">datasets</span>
+<span class="kn">from</span> <span class="nn">lab.experiment</span> <span class="kn">import</span> <span class="n">Experiment</span> <span class="c1">#import lab Experiment</span>
+
+<span class="n">e</span> <span class="o">=</span> <span class="n">Experiment</span><span class="p">()</span>
+<span class="n">e</span><span class="o">.</span><span class="n">start_run</span><span class="p">()</span>                         <span class="c1"># Initiate an experiment</span>
+<span class="k">def</span> <span class="nf">train</span><span class="p">():</span>
+    <span class="n">iris</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">load_iris</span><span class="p">()</span>
+    <span class="n">feature_names</span> <span class="o">=</span> <span class="n">iris</span><span class="p">[</span><span class="s1">&#39;feature_names&#39;</span><span class="p">]</span>
+
+    <span class="n">e</span><span class="o">.</span><span class="n">log_features</span><span class="p">(</span><span class="n">feature_names</span><span class="p">)</span>     <span class="c1"># Log features</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="hyperparameters">
+<h2>Hyperparameters<a class="headerlink" href="#hyperparameters" title="Permalink to this headline">¶</a></h2>
+<p>Let’s carry on with the Iris dataset and consider a Random Forest Classifier with an exhaustive grid search along the number of trees and maximum depth of a tree:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">datasets</span>
+<span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">RandomForestClassifier</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">GridSearchCV</span>
+<span class="kn">from</span> <span class="nn">lab.experiment</span> <span class="kn">import</span> <span class="n">Experiment</span> <span class="c1">#import lab Experiment</span>
+
+<span class="n">e</span> <span class="o">=</span> <span class="n">Experiment</span><span class="p">()</span>
+<span class="n">e</span><span class="o">.</span><span class="n">start_run</span><span class="p">()</span>                         <span class="c1"># Initiate an experiment</span>
+<span class="k">def</span> <span class="nf">train</span><span class="p">():</span>
+    <span class="n">iris</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">load_iris</span><span class="p">()</span>
+
+    <span class="n">feature_names</span> <span class="o">=</span> <span class="n">iris</span><span class="p">[</span><span class="s1">&#39;feature_names&#39;</span><span class="p">]</span>
+    <span class="n">e</span><span class="o">.</span><span class="n">log_features</span><span class="p">(</span><span class="n">feature_names</span><span class="p">)</span>     <span class="c1"># Log features</span>
+
+    <span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;n_estimators&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span>
+                  <span class="s1">&#39;max_depth&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">]}</span>
+
+    <span class="n">rfc</span> <span class="o">=</span> <span class="n">RandomForestClassifier</span><span class="p">()</span>
+    <span class="n">clf</span> <span class="o">=</span> <span class="n">GridSearchCV</span><span class="p">(</span><span class="n">rfc</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+    <span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">iris</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">iris</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>
+
+    <span class="n">best_parameters</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">best_estimator_</span><span class="o">.</span><span class="n">get_params</span><span class="p">()</span>
+
+    <span class="n">e</span><span class="o">.</span><span class="n">log_parameter</span><span class="p">(</span><span class="s1">&#39;n_estimators&#39;</span><span class="p">,</span> <span class="n">best_parameters</span><span class="p">[</span><span class="s1">&#39;n_estimators&#39;</span><span class="p">])</span>
+    <span class="n">e</span><span class="o">.</span><span class="n">log_parameter</span><span class="p">(</span><span class="s1">&#39;max_depth&#39;</span><span class="p">,</span> <span class="n">best_parameters</span><span class="p">[</span><span class="s1">&#39;max_depth&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="performance-metrics">
+<h2>Performance Metrics<a class="headerlink" href="#performance-metrics" title="Permalink to this headline">¶</a></h2>
+<p>Lab was designed to easily compare multiple machine lerning experiments through consistent performance metrics.
+Let’s expand our example and assess model accuracy and precision.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">datasets</span>
+<span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">RandomForestClassifier</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">GridSearchCV</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">precision_score</span>
+<span class="kn">from</span> <span class="nn">lab.experiment</span> <span class="kn">import</span> <span class="n">Experiment</span> <span class="c1">#import lab Experiment</span>
+
+<span class="n">e</span> <span class="o">=</span> <span class="n">Experiment</span><span class="p">()</span>
+<span class="n">e</span><span class="o">.</span><span class="n">start_run</span><span class="p">()</span>                         <span class="c1"># Initiate an experiment</span>
+<span class="k">def</span> <span class="nf">train</span><span class="p">():</span>
+    <span class="n">iris</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">load_iris</span><span class="p">()</span>
+
+    <span class="n">feature_names</span> <span class="o">=</span> <span class="n">iris</span><span class="p">[</span><span class="s1">&#39;feature_names&#39;</span><span class="p">]</span>
+    <span class="n">e</span><span class="o">.</span><span class="n">log_features</span><span class="p">(</span><span class="n">feature_names</span><span class="p">)</span>     <span class="c1"># Log features</span>
+
+    <span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;n_estimators&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span>
+                  <span class="s1">&#39;max_depth&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">]}</span>
+
+    <span class="n">rfc</span> <span class="o">=</span> <span class="n">RandomForestClassifier</span><span class="p">()</span>
+    <span class="n">clf</span> <span class="o">=</span> <span class="n">GridSearchCV</span><span class="p">(</span><span class="n">rfc</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+    <span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">iris</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">iris</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>
+
+    <span class="n">best_parameters</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">best_estimator_</span><span class="o">.</span><span class="n">get_params</span><span class="p">()</span>
+
+    <span class="n">e</span><span class="o">.</span><span class="n">log_parameter</span><span class="p">(</span><span class="s1">&#39;n_estimators&#39;</span><span class="p">,</span> <span class="n">best_parameters</span><span class="p">[</span><span class="s1">&#39;n_estimators&#39;</span><span class="p">])</span>
+    <span class="n">e</span><span class="o">.</span><span class="n">log_parameter</span><span class="p">(</span><span class="s1">&#39;max_depth&#39;</span><span class="p">,</span> <span class="n">best_parameters</span><span class="p">[</span><span class="s1">&#39;max_depth&#39;</span><span class="p">])</span>
+
+    <span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">iris</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">iris</span><span class="o">.</span><span class="n">target</span><span class="p">,</span>
+                                            <span class="n">test_size</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+
+    <span class="n">rfc</span> <span class="o">=</span> <span class="n">RandomForestClassifer</span><span class="p">(</span><span class="n">n_estimators</span> <span class="o">=</span> <span class="n">best_parameters</span><span class="p">[</span><span class="s1">&#39;n_estimators&#39;</span><span class="p">],</span>
+                                <span class="n">max_depth</span> <span class="o">=</span> <span class="n">best_parameters</span><span class="p">[</span><span class="s1">&#39;max_depth&#39;</span><span class="p">])</span>
+    <span class="n">rfc</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+
+    <span class="n">y_pred</span> <span class="o">=</span> <span class="n">rfc</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+    <span class="n">accuracy</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+    <span class="n">precision</span> <span class="o">=</span> <span class="n">precision_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">average</span> <span class="o">=</span> <span class="s1">&#39;macro&#39;</span><span class="p">)</span>
+
+    <span class="n">e</span><span class="o">.</span><span class="n">log_metric</span><span class="p">(</span><span class="s1">&#39;accuracy_score&#39;</span><span class="p">,</span> <span class="n">accuracy</span><span class="p">)</span>    <span class="c1"># Log accuracy</span>
+    <span class="n">e</span><span class="o">.</span><span class="n">log_metric</span><span class="p">(</span><span class="s1">&#39;precision_score&#39;</span><span class="p">,</span> <span class="n">precision</span><span class="p">)</span>  <span class="c1"># Log precisions</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="model-artifacts">
+<h2>Model Artifacts<a class="headerlink" href="#model-artifacts" title="Permalink to this headline">¶</a></h2>
+<p>Finally, it’s useful to store model objects themselves for future use. Consider our fitted GridSearchCV object <code class="docutils literal notranslate"><span class="pre">clf</span></code> from an earlier example.
+It can now be logged using a simple expression:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">e</span><span class="o">.</span><span class="n">log_model</span><span class="p">(</span><span class="s1">&#39;GridSearchCV&#39;</span><span class="p">,</span> <span class="n">clf</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">lab</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Lab Documentation:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">Concepts</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Logging Experiment Artifacts</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="concepts.html" title="previous chapter">Concepts</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Bering Limited.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/logging.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

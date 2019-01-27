@@ -8,6 +8,7 @@ Machine Learning Lab
     quickstart
     cli
     concepts
+    logging
 
 .. warning::
 

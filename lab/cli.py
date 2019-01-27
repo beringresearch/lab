@@ -33,11 +33,12 @@ Copyright 2019 Bering Limited. https://beringresearch.com
 def lab_init(name):
     """ Initialise a new Lab environment """
     if not os.path.isfile('requirements.txt'):
-        click.echo('requirements.txt is not found in the current working directory.')
+        click.secho('requirements.txt is not found in the current working directory.', fg='red')
         raise click.Abort()
 
     if os.path.isdir(name):
-        click.echo('Project '+name+' already exists.')
+        click.secho('Project '+name+' already exists.', fg='red')
+        raise click.Abort()
     else:
         project_init(name)
 
@@ -52,7 +53,7 @@ def lab_run(script):
             config = yaml.load(file)
             home_dir = config['path']            
     except FileNotFoundError:
-        click.echo("Having trouble reading configuration file for this project. \nIt's most likely that this is either not a Lab Project or the Project was created with an older version of Lab.\n")
+        click.secho("Having trouble parsing configuration file for this project. \nIt's most likely that this is either not a Lab Project or the Project was created with an older version of Lab.\n", fg = 'red')
         click.Context.abort(cli)
     else:
         # Update project directory if it hasn't been updated        
@@ -62,7 +63,7 @@ def lab_run(script):
                 yaml.dump(config, file, default_flow_style=False)
 
     if not os.path.exists(os.path.join(home_dir, '.venv')):
-        click.echo('Virtual environment not found. Creating one for this project')
+        click.secho('Virtual environment not found. Creating one for this project', fg = 'blue')
         create_venv(home_dir)
     
     
@@ -79,7 +80,7 @@ def lab_run(script):
     global_lab_version = lab.__version__    
         
     if  global_lab_version != venv_lab_version:
-        click.echo('It appears that your Lab Project was built using a different Lab version (' + venv_lab_version + ').')
+        click.secho('It appears that your Lab Project was built using a different Lab version (' + venv_lab_version + ').', fg = 'blue')
         if click.confirm('Do you want to sync?'):
             try:
                 pkgobj = __import__('lab')
@@ -105,12 +106,12 @@ def compare_experiments(sort_by = None):
     TICK = '█'
 
     if not os.path.exists(models_directory):
-        click.echo('This directory does not appear to contain a valid lab project. Run lab init to create one.')
+        click.secho("This directory does not appear to be a valid lab project. It's lacking the expected directory structure.\nRun <lab init> to create one.", fg = 'red')
         click.Context.abort(cli)
     
     experiments = next(os.walk(models_directory))[1]
     if len(experiments) == 0:
-        click.echo("It looks like you've started a brand new project. Run your first experiment to generate a list of metrics.")
+        click.secho("It looks like you've started a brand new project. Run your first experiment to generate a list of metrics.", fg = 'blue')
         click.Context.abort(cli)
     comparisons = []
 
@@ -175,11 +176,11 @@ def lab_push(tag, bucket, path):
     home_dir = os.path.expanduser('~')
     lab_dir = os.path.join(home_dir, '.lab')
     if not os.path.exists(lab_dir):
-        click.echo('Lab is not configured to connect to minio. Run lab config to set up access points.')
+        click.secho('Lab is not configured to connect to minio. Run <lab config> to set up access points.', fg = 'red')
         click.Context.abort(cli)
 
     if not (os.path.exists(models_directory) & os.path.exists(logs_directory)):
-        click.echo('This directory does not appear to contain a valid lab project. Run lab init to create one.')
+        click.secho('This directory lacks a valid lab project directory structure. Run <lab init> to create one.', fg = 'blue')
         click.Context.abort(cli)
     
     push_to_minio(tag, bucket, path)
@@ -206,7 +207,7 @@ def lab_config(tag, endpoint, accesskey, secretkey):
                   secret_key=secretkey,
                   secure=False)
     except:
-        click.echo('Cannot connect to minio instance. Check your credentials and hostname. Ensure that endpoint is not prefixed with http or https.')
+        click.secho('Cannot connect to minio instance. Check your credentials and hostname. Ensure that endpoint is not prefixed with http or https.', fg = 'red')
         click.Context.abort(cli)
 
     # Create configuration
@@ -218,7 +219,7 @@ def lab_config(tag, endpoint, accesskey, secretkey):
         with open(os.path.join(lab_dir, 'config.yaml'), 'r') as file:
             minio_config = yaml.safe_load(file)
             if tag in minio_config.keys():
-                click.echo('Host tag '+tag+' already exists in your configuration. Try a different name.')
+                click.secho('Host tag '+tag+' already exists in your configuration. Try a different name.', fg = 'red')
                 click.Context.abort(cli)
 
             minio_config[tag] = config

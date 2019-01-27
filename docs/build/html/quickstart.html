@@ -66,7 +66,7 @@ lab init --name <span class="nb">test</span>
 <span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
 <span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">precision_score</span>
 
-<span class="kn">from</span> <span class="nn">lab.project</span> <span class="kn">import</span> <span class="n">Experiment</span>
+<span class="kn">from</span> <span class="nn">lab.experiment</span> <span class="kn">import</span> <span class="n">Experiment</span> <span class="c1"># Import Experiment</span>
 
 <span class="n">e</span> <span class="o">=</span> <span class="n">Experiment</span><span class="p">()</span> <span class="c1"># Initialise Lab Experiment</span>
 
@@ -140,6 +140,7 @@ Experiment    Source              Date        accuracy_score    precision_score
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="concepts.html">Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logging.html">Logging Experiment Artifacts</a></li>
 </ul>
 
 <div class="relations">
