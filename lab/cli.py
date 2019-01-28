@@ -185,14 +185,16 @@ def lab_push(tag, bucket, path):
     
     push_to_minio(tag, bucket, path)
 
-    
+@click.group()
+def config():
+    pass
 
-@click.command('config')
+@click.command('minio')
 @click.option('--tag', type=str, help='helpful minio host tag')
 @click.option('--endpoint', type=str, help='minio endpoint address')
 @click.option('--accesskey', type=str, help='minio access key')
 @click.option('--secretkey', type=str, help='minio secret key')
-def lab_config(tag, endpoint, accesskey, secretkey):
+def minio_config(tag, endpoint, accesskey, secretkey):
     """ Configure the lab environment and setup remote file storage"""
     home_dir = os.path.expanduser('~')
     lab_dir = os.path.join(home_dir, '.lab')
@@ -233,8 +235,10 @@ def lab_config(tag, endpoint, accesskey, secretkey):
 cli.add_command(lab_init)
 cli.add_command(lab_run)
 cli.add_command(compare_experiments)
-cli.add_command(lab_config)
 cli.add_command(lab_push)
+cli.add_command(config)
+
+config.add_command(minio_config)
 
 if __name__ == '__main__':
     cli()

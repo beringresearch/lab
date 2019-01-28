@@ -119,7 +119,7 @@ Lab experiments can be pushed to a centralised filesystem through integration wi
 Lab can be configured once to interface with a remote minio instance:
 
 ```bash
-lab config --tag my-minio --endpoint [URL:PORT] --accesskey [STRING] --secretkey [STRING]
+lab config minio --tag my-minio --endpoint [URL:PORT] --accesskey [STRING] --secretkey [STRING]
 ```
 
 To push a local lab experiment to minio:
