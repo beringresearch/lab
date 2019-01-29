@@ -1,0 +1,127 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Minio Interface &#8212; lab  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Logging Experiment Artifacts" href="logging.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="minio-interface">
+<span id="push"></span><h1>Minio Interface<a class="headerlink" href="#minio-interface" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="https://minio.io">Minio</a> is a high performance distributed object storage server, designed for large-scale private cloud infrastructure.
+This makes it a great fit as a storage environment for multiple Lab Projects and Experiments. Lab makes it trivial to back up completed Projects
+and share them across teams.</p>
+<div class="section" id="configuring-minio-server">
+<h2>Configuring minio server<a class="headerlink" href="#configuring-minio-server" title="Permalink to this headline">¶</a></h2>
+<p>There are a number of ways to <a class="reference external" href="https://docs.minio.io">install minio</a> on a wide range of operating systems. See more details installation
+instructions in minio documentation pages.</p>
+</div>
+<div class="section" id="setting-up-lab-minio-interface">
+<h2>Setting up Lab minio interface<a class="headerlink" href="#setting-up-lab-minio-interface" title="Permalink to this headline">¶</a></h2>
+<p>Once minio is up and running, you will need to make a note of the <code class="docutils literal notranslate"><span class="pre">endpoint</span></code>, <code class="docutils literal notranslate"><span class="pre">access</span> <span class="pre">key</span></code>, and <code class="docutils literal notranslate"><span class="pre">secret</span> <span class="pre">key</span></code>. Lab supports multiple minio configurations
+through a convenient tagging system. Each configuration can be set up through CLI:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>lab config minio --tag <span class="o">[</span>MINIO_TAG<span class="o">]</span> -- endpoint <span class="o">[</span>TEXT<span class="o">]</span> --accesskey <span class="o">[</span>TEXT<span class="o">]</span> --secretkey <span class="o">[</span>TEXT<span class="o">]</span>
+</pre></div>
+</div>
+<p>Note that the endpoint is simply an IP address and port of a minio host, e.g. <code class="docutils literal notranslate"><span class="pre">192.168.1.50:9000</span></code>.</p>
+</div>
+<div class="section" id="storing-lab-projects">
+<h2>Storing Lab Projects<a class="headerlink" href="#storing-lab-projects" title="Permalink to this headline">¶</a></h2>
+<p>Lab Projects can be pushed to a specific minio host by running a simple command from the Project root folder:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>lab push --tag <span class="o">[</span>MINIO_TAG<span class="o">]</span> --bucket <span class="o">[</span>TEXT<span class="o">]</span> .
+</pre></div>
+</div>
+<p>Here, <code class="docutils literal notranslate"><span class="pre">--tag</span></code> specifies a nickname of an exisiting minio connection and <code class="docutils literal notranslate"><span class="pre">--bucket</span></code> refers to a unique destination name on minio host, analogous to an S3 bucket.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">lab</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Lab Documentation:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logging.html">Logging Experiment Artifacts</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Minio Interface</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="logging.html" title="previous chapter">Logging Experiment Artifacts</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Bering Limited.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/push.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

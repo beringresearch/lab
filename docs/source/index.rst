@@ -9,6 +9,7 @@ Machine Learning Lab
     cli
     concepts
     logging
+    push
 
 .. warning::
 
