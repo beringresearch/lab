@@ -14,8 +14,7 @@ setup(
         'minio',
         'numpy',
         'pandas',
-        'pyyaml',
-        'scikit-learn',        
+        'pyyaml',        
         'tabulate'        
         ],
     entry_points='''
