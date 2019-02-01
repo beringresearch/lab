@@ -15,7 +15,7 @@ from minio.error import ResponseError
 @click.option('--name', type=str, default=str(uuid.uuid4()),
               help='environment name')
 def lab_init(name):
-    """ Initialise a new Lab environment """
+    """ Initialise a new Lab Project """
     if not os.path.isfile('requirements.txt'):
         click.secho('requirements.txt is not found in the '
                     'current working directory.', fg='red')
@@ -61,7 +61,7 @@ def _create_venv(project_name):
               help='minio bucket name')
 @click.argument('path', type=str, default=os.getcwd())
 def lab_push(tag, bucket, path):
-    """ Push lab experiment to minio """
+    """ Push Lab Experiment to minio """
     models_directory = 'experiments'
     logs_directory = 'logs'
 
@@ -74,7 +74,7 @@ def lab_push(tag, bucket, path):
         raise click.Abort()
 
     if not (os.path.exists(models_directory) & os.path.exists(logs_directory)):
-        click.secho('This directory lacks a valid lab project directory '
+        click.secho('This directory lacks a valid Lab Project directory '
                     'structure. Run <lab init> to create one.',
                     fg='blue')
         raise click.Abort()

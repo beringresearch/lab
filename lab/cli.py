@@ -2,9 +2,12 @@ import click
 import os
 import warnings
 import yaml
+import sys
 
 from minio import Minio
 from urllib3.exceptions import MaxRetryError
+
+import lab
 from lab.project import cli as lab_project
 from lab.experiment import cli as lab_experiment
 
@@ -18,8 +21,7 @@ def cli():
 Bering's Machine Learning Lab
 
 Copyright 2019 Bering Limited. https://beringresearch.com
-"""
-    pass
+"""    
 
 
 # Project
@@ -35,8 +37,36 @@ cli.add_command(lab_experiment.lab_rm)
 # Lab configuration
 @click.group()
 def config():
+    """ Global Lab configuration """
     pass
 
+@click.command('info')
+def lab_info():
+    """ Display system-wide information """
+    import multiprocessing
+    import platform
+    import psutil
+
+    system_version = str(sys.version_info[0])+'.'+str(sys.version_info[1])+'.'+str(sys.version_info[2])
+    home_dir = os.path.expanduser('~')
+    lab_dir = os.path.join(home_dir, '.lab')
+
+    # Test connection
+    if not os.path.exists(lab_dir):
+        n_minio_hosts = 0
+    else:
+        with open(os.path.join(lab_dir, 'config.yaml'), 'r') as file:
+            minio_config = yaml.safe_load(file)
+        n_minio_hosts = len(minio_config.keys())
+
+    click.secho('Lab version: '+lab.__version__, fg='yellow')
+    click.echo('Minio hosts: '+str(n_minio_hosts)+'\n')
+    click.echo('Operating System: '+platform.system())
+    click.echo('Python version: '+system_version)
+    click.echo('CPUs: '+str(multiprocessing.cpu_count()))
+    click.echo('Total Memory: '+str(psutil.virtual_memory()[0]))
+    click.echo('Available Memory: '+str(psutil.virtual_memory()[1]))
+    click.echo('Free Memory: '+str(psutil.virtual_memory()[4]))
 
 @click.command('minio')
 @click.option('--tag', type=str, help='helpful minio host tag')
@@ -44,7 +74,7 @@ def config():
 @click.option('--accesskey', type=str, help='minio access key')
 @click.option('--secretkey', type=str, help='minio secret key')
 def minio_config(tag, endpoint, accesskey, secretkey):
-    """ Configure the lab environment and setup remote file storage"""
+    """ Setup remote minio host """
     home_dir = os.path.expanduser('~')
     lab_dir = os.path.join(home_dir, '.lab')
 
@@ -87,6 +117,7 @@ def minio_config(tag, endpoint, accesskey, secretkey):
 
 
 cli.add_command(config)
+cli.add_command(lab_info)
 config.add_command(minio_config)
 
 if __name__ == '__main__':
