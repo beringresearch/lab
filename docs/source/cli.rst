@@ -19,10 +19,12 @@ Lab is invoked through a simple Command Line Interface (CLI).
     --help  Show this message and exit.
 
     Commands:
-        config  Configure the lab environment and setup...
-        init    Initialise a new Lab environment
+        config  Global Lab configuration
+        info    Display system-wide information
+        init    Initialise a new Lab Project
         ls      Compare multiple Lab Experiments
-        push    Push lab experiment to minio
+        push    Push Lab Experiment to minio
+        rm      Remove a Lab Experiment
         run     Run a training script
 
 Each individual command has a detailed help screen accessible via ``lab command_name --help``.
