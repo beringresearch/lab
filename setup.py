@@ -15,7 +15,8 @@ setup(
         'numpy',
         'pandas',
         'pyyaml',        
-        'tabulate'        
+        'tabulate',
+        'cloudpickle'
         ],
     entry_points='''
     [console_scripts]
