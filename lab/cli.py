@@ -27,6 +27,7 @@ Copyright 2019 Bering Limited. https://beringresearch.com
 # Project
 cli.add_command(lab_project.lab_init)
 cli.add_command(lab_project.lab_push)
+cli.add_command(lab_project.lab_pull)
 cli.add_command(lab_project.lab_update)
 
 # Experiment
