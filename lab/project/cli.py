@@ -72,6 +72,33 @@ def _create_venv(project_name):
     dst = '%s/lib/python%s/site-packages/%s' % (venv_dir, pyversion, pkgname)
     shutil.copytree(pkgdir, dst)
 
+@click.command('pull')
+@click.option('--tag', type=str, help='minio host nickname')
+@click.option('--bucket', type=str, default=str(uuid.uuid4()),
+              help='minio bucket name')
+@click.option('--project', type=str, default=str(uuid.uuid4()),
+              help='Lab Project name')
+def lab_pull(tag, bucket, project):
+    """ Pulls Lab Experiment from minio to current directory """
+    home_dir = os.path.expanduser('~')
+    project_dir = os.path.join(os.getcwd(), project)
+    lab_dir = os.path.join(home_dir, '.lab')
+
+    if not os.path.exists(lab_dir):
+        click.secho('Lab is not configured to connect to minio. '
+                    'Run <lab config> to set up access points.',
+                    fg='red')
+        raise click.Abort()
+
+
+    if not os.path.exists(project_dir):
+        os.makedirs(project_dir)
+        _pull_from_minio(tag, bucket, project)
+    else:
+        click.secho('Directory '+project+' already exists.', fg='red')
+        raise click.Abort()
+    
+
 
 @click.command('push')
 @click.option('--tag', type=str, help='minio host nickname')
@@ -99,6 +126,35 @@ def lab_push(tag, bucket, path):
 
     _push_to_minio(tag, bucket, path)
 
+
+def _pull_from_minio(tag, bucket, project_name):
+    home_dir = os.path.expanduser('~')
+    lab_dir = os.path.join(home_dir, '.lab')
+    project_dir = os.path.join(os.getcwd(), project_name)
+
+    with open(os.path.join(lab_dir, 'config.yaml'), 'r') as file:
+        minio_config = yaml.load(file)[tag]
+    
+    hostname = minio_config['minio_endpoint']
+    accesskey = minio_config['minio_accesskey']
+    secretkey = minio_config['minio_secretkey']
+
+    minioClient = Minio(hostname,
+                        access_key=accesskey,
+                        secret_key=secretkey,
+                        secure=False)
+
+    if not minioClient.bucket_exists(bucket):
+        click.secho('Bucket '+bucket+ ' is not found on remote', fg='red')
+        raise click.Abort()
+    try:
+        objects = minioClient.list_objects(bucket, prefix=project_name, recursive=True)
+        for obj in objects:
+            object_name = obj.object_name
+            print('Downloading '+object_name)
+            minioClient.fget_object(bucket, object_name, os.path.join(os.getcwd(), object_name))
+    except ResponseError as err:
+        print(err)
 
 def _push_to_minio(tag, bucket, path):
     home_dir = os.path.expanduser('~')
