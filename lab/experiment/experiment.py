@@ -5,7 +5,7 @@ import sys
 import yaml
 import numpy
 import warnings
-import pickle
+import cloudpickle
 
 warnings.filterwarnings(action='ignore', category=DeprecationWarning)
 
@@ -76,7 +76,7 @@ class Experiment():
             # Log models
             for filename in self.models.keys():
                 model_file = os.path.join(models_directory, filename+'.pkl')
-                pickle.dump(self.models[filename], open(model_file, 'wb'))
+                cloudpickle.dump(self.models[filename], open(model_file, 'wb'))
 
     def log_features(self, feature_names):
         """ Log feature names
