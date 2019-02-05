@@ -27,6 +27,23 @@ def lab_init(name):
     else:
         _project_init(name)
 
+@click.command(name='update')
+def lab_update():
+    """ Update Lab Environment from Project's requirements.txt """
+    if not os.path.isdir('.venv'):
+        click.secho("Doesn't looks like this is a valid "
+                    'Lab Project as .venv is missing.', fg='red')
+        raise click.Abort()
+    if not os.path.isfile('requirements.txt'):
+        click.secho('requirements.txt file is missing.', fg='red')
+        raise click.Abort()
+    
+    click.secho('Updating environemnt using requirements.txt', fg='blue')
+    venv_dir = os.path.join(os.getcwd(), '.venv')
+    subprocess.call([venv_dir + '/bin/pip', 'install',
+                    '-r', 'requirements.txt'])
+    
+
 
 def _create_venv(project_name):
     # Create a virtual environment
@@ -36,6 +53,7 @@ def _create_venv(project_name):
     environment.create(venv_dir)
 
     subprocess.call([venv_dir + '/bin/pip', 'install', 'pyyaml'])
+    subprocess.call([venv_dir + '/bin/pip', 'install', 'cloudpickle'])
     subprocess.call([venv_dir + '/bin/pip', 'install', 'minio'])
     subprocess.call([venv_dir + '/bin/pip', 'install',
                     '-r', 'requirements.txt'])

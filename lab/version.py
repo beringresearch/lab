@@ -1,3 +1,3 @@
 # Copyright 2019 Bering Limited
 
-VERSION = '0.7.1-dev'
+VERSION = '0.7.2-dev'
