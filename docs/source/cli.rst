@@ -26,5 +26,6 @@ Lab is invoked through a simple Command Line Interface (CLI).
         push    Push Lab Experiment to minio
         rm      Remove a Lab Experiment
         run     Run a training script
+        update  Update Lab Environment from Project's...
 
 Each individual command has a detailed help screen accessible via ``lab command_name --help``.
