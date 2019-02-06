@@ -23,6 +23,7 @@ Lab is invoked through a simple Command Line Interface (CLI).
         info    Display system-wide information
         init    Initialise a new Lab Project
         ls      Compare multiple Lab Experiments
+        pull    Pulls Lab Experiment from minio to current...
         push    Push Lab Experiment to minio
         rm      Remove a Lab Experiment
         run     Run a training script
