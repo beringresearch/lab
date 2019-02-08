@@ -29,6 +29,7 @@ cli.add_command(lab_project.lab_init)
 cli.add_command(lab_project.lab_push)
 cli.add_command(lab_project.lab_pull)
 cli.add_command(lab_project.lab_update)
+cli.add_command(lab_project.lab_notebook)
 
 # Experiment
 cli.add_command(lab_experiment.lab_run)

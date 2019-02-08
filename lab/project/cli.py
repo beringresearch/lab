@@ -10,6 +10,34 @@ import shutil
 from minio import Minio
 from minio.error import ResponseError
 
+@click.command(name='notebook')
+def lab_notebook():
+    """ Launch a jupyter notebook """
+    if not os.path.isdir('.venv'):
+        click.secho("Doesn't looks like this is a valid "
+                    'Lab Project as .venv is missing.', fg='red')
+        raise click.Abort()
+
+    if not os.path.isdir('config'):
+        click.secho("Doesn't looks like this is a valid "
+                    'Lab Project as config is missing.', fg='red')
+        raise click.Abort()
+    
+    with open(os.path.join(os.getcwd(),
+              'config', 'runtime.yaml'), 'r') as file:
+        config = yaml.load(file)
+    project_name = config['name'] + '_' + ''.join(e for e in config['timestamp'] if e.isalnum())
+
+    _launch_lab_notebook(project_name)
+
+def _launch_lab_notebook(project_name):
+
+    venv_dir = os.path.join(os.getcwd(), '.venv')
+    subprocess.call([venv_dir + '/bin/pip', 'install', 'ipykernel'])
+    subprocess.call([venv_dir + '/bin/ipython', 'kernel', 'install', '--user', '--name='+project_name])
+
+    subprocess.call([venv_dir + '/bin/jupyter', 'notebook',
+        '--NotebookApp.notebook_dir=notebooks'])
 
 @click.command(name='init')
 @click.option('--name', type=str, default=str(uuid.uuid4()),
@@ -43,36 +71,6 @@ def lab_update():
     subprocess.call([venv_dir + '/bin/pip', 'install',
                     '-r', 'requirements.txt'])
     
-
-
-def _create_venv(project_name):
-    # Create a virtual environment
-    venv_dir = os.path.join(project_name, '.venv')
-
-    environment = ve.EnvBuilder(symlinks=True, with_pip=True)
-    environment.create(venv_dir)
-
-    subprocess.call([venv_dir + '/bin/pip', 'install', '--upgrade', 'pip'])
-
-    subprocess.call([venv_dir + '/bin/pip', 'install', 'pyyaml'])
-    subprocess.call([venv_dir + '/bin/pip', 'install', 'cloudpickle'])
-    subprocess.call([venv_dir + '/bin/pip', 'install', 'minio'])
-    subprocess.call([venv_dir + '/bin/pip', 'install',
-                    '-r', 'requirements.txt'])
-
-    # Move lab into the virtual environment
-    pkgname = 'lab'
-    pyversion = '%s.%s' % (sys.version_info[0], sys.version_info[1])
-
-    try:
-        pkgobj = __import__(pkgname)
-    except Exception as e:
-        print(e)
-        sys.exit(1)
-
-    pkgdir = os.path.dirname(pkgobj.__file__)
-    dst = '%s/lib/python%s/site-packages/%s' % (venv_dir, pyversion, pkgname)
-    shutil.copytree(pkgdir, dst)
 
 @click.command('pull')
 @click.option('--tag', type=str, help='minio host nickname')
@@ -128,6 +126,34 @@ def lab_push(tag, bucket, path):
 
     _push_to_minio(tag, bucket, path)
 
+def _create_venv(project_name):
+    # Create a virtual environment
+    venv_dir = os.path.join(project_name, '.venv')
+
+    environment = ve.EnvBuilder(symlinks=True, with_pip=True)
+    environment.create(venv_dir)
+
+    subprocess.call([venv_dir + '/bin/pip', 'install', '--upgrade', 'pip'])
+
+    subprocess.call([venv_dir + '/bin/pip', 'install', 'pyyaml'])
+    subprocess.call([venv_dir + '/bin/pip', 'install', 'cloudpickle'])
+    subprocess.call([venv_dir + '/bin/pip', 'install', 'minio'])
+    subprocess.call([venv_dir + '/bin/pip', 'install',
+                    '-r', 'requirements.txt'])
+
+    # Move lab into the virtual environment
+    pkgname = 'lab'
+    pyversion = '%s.%s' % (sys.version_info[0], sys.version_info[1])
+
+    try:
+        pkgobj = __import__(pkgname)
+    except Exception as e:
+        print(e)
+        sys.exit(1)
+
+    pkgdir = os.path.dirname(pkgobj.__file__)
+    dst = '%s/lib/python%s/site-packages/%s' % (venv_dir, pyversion, pkgname)
+    shutil.copytree(pkgdir, dst)
 
 def _pull_from_minio(tag, bucket, project_name):
     home_dir = os.path.expanduser('~')
