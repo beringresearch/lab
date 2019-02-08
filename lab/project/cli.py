@@ -52,6 +52,8 @@ def _create_venv(project_name):
     environment = ve.EnvBuilder(symlinks=True, with_pip=True)
     environment.create(venv_dir)
 
+    subprocess.call([venv_dir + '/bin/pip', 'install', '--upgrade', 'pip'])
+
     subprocess.call([venv_dir + '/bin/pip', 'install', 'pyyaml'])
     subprocess.call([venv_dir + '/bin/pip', 'install', 'cloudpickle'])
     subprocess.call([venv_dir + '/bin/pip', 'install', 'minio'])
