@@ -18,18 +18,18 @@ class Experiment():
 
     def create_run(self, run_uuid=None, user_id=None, home_dir=None,
                    timestamp=None, metrics=None, parameters=None,
-                   feature_names=None, models=dict()):
+                   source=None, feature_names=None, models=dict()):
         self.uuid = str(uuid.uuid4())[:8]
         self.user_id = _get_user_id()
         self.timestamp = timestamp
         self.metrics = metrics
         self.parameters = parameters
         self.feature_names = feature_names
-        self.source = sys.argv[0]
+        self.source = ' '.join(sys.argv)
         self.home_dir = os.path.dirname(
                             os.path.dirname(
                                 os.path.dirname(sys.executable)))
-        self.models = models
+        self.models = models        
 
     def start_run(self, fun):
         self.create_run(user_id=_get_user_id(),
@@ -38,8 +38,9 @@ class Experiment():
         models_directory = os.path.join(self.home_dir, 'experiments', run_uuid)
         logs_directory = os.path.join(self.home_dir, 'logs', run_uuid)
 
+
         try:
-            fun()
+            fun()            
         except Exception as e:
             print(e)
         else:

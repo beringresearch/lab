@@ -28,12 +28,12 @@ Copyright 2019 Bering Limited. https://beringresearch.com
 cli.add_command(lab_project.lab_init)
 cli.add_command(lab_project.lab_push)
 cli.add_command(lab_project.lab_pull)
+cli.add_command(lab_project.lab_ls)
 cli.add_command(lab_project.lab_update)
 cli.add_command(lab_project.lab_notebook)
 
 # Experiment
 cli.add_command(lab_experiment.lab_run)
-cli.add_command(lab_experiment.lab_ls)
 cli.add_command(lab_experiment.lab_rm)
 
 

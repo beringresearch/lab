@@ -4,9 +4,6 @@ import subprocess
 import yaml
 import shutil
 import sys
-import tabulate
-import pandas as pd
-import numpy as np
 
 from lab.project.cli import _create_venv
 
@@ -29,7 +26,7 @@ def lab_rm(experiment_id):
 
 
 @click.command('run')
-@click.argument('script', required=True)
+@click.argument('script', required=True, nargs=-1)
 def lab_run(script):
     """ Run a training script """
 
@@ -93,77 +90,4 @@ def lab_run(script):
             shutil.copytree(pkgdir, venv)
 
     python_bin = os.path.join(home_dir, '.venv', 'bin/python')
-    subprocess.call([python_bin, script])
-
-
-@click.command('ls')
-@click.argument('sort_by', required=False)
-def lab_ls(sort_by=None):
-    """ Compare multiple Lab Experiments """
-    models_directory = 'experiments'
-    logs_directory = 'logs'
-    TICK = '█'
-
-    if not os.path.exists(models_directory):
-        click.secho('This directory does not appear to have a valid '
-                    'Lab Project structure.\nRun <lab init> to create one.',
-                    fg='red')
-        raise click.Abort()
-
-    experiments = next(os.walk(models_directory))[1]
-    if len(experiments) == 0:
-        click.secho("It looks like you've started a brand new project. "
-                    'Run your first experiment to generate a list of metrics.',
-                    fg='blue')
-        raise click.Abort()
-    comparisons = []
-
-    for e in experiments:
-        metrics_file = os.path.join(models_directory, e, 'metrics.yaml')
-        try:
-            with open(metrics_file, 'r') as file:
-                metrics = yaml.load(file)
-            for k, v in metrics.items():
-                metrics[k] = round(v, 2)
-
-            metrics_list = list(metrics.values())
-
-            meta_file = os.path.join(logs_directory, e, 'meta.yaml')
-            with open(meta_file, 'r') as file:
-                meta = yaml.load(file)
-
-            record = [meta['experiment_uuid'], meta['source'],
-                      str(meta['start_time'].date())] + metrics_list
-            comparisons.append(record)
-        except FileNotFoundError:
-            pass
-
-    # Create visualisation of numeric metrics
-    A = pd.DataFrame(comparisons)
-    meta_data = A[[0, 1, 2]]
-    metrics_data = A.drop([0, 1, 2], axis=1)
-
-    row_max = metrics_data.abs().max(axis=0)
-    scaled_metrics_data = metrics_data.abs().divide(row_max, axis=1)
-    scaled_metrics_data = scaled_metrics_data.fillna(value=0)
-
-    sparklines = np.empty(shape=metrics_data.shape, dtype=object)
-    for row in range(metrics_data.shape[0]):
-        for column in range(metrics_data.shape[1]):
-            value = metrics_data.iloc[row, column]
-            scaled_value = scaled_metrics_data.iloc[row, column]
-            scaled_value = scaled_value
-            spark = (format(value, '.2f') + ': ' +
-                     TICK * int(round(scaled_value*10)))
-            sparklines[row, column] = spark
-
-    result = pd.concat([meta_data, pd.DataFrame(sparklines)], axis=1)
-    result.columns = (['Experiment', 'Source', 'Date'] +
-                      list(metrics.keys()))
-
-    if sort_by is not None:
-        result.sort_values(by=[sort_by], axis=0,
-                           ascending=False, inplace=True)
-
-    header = ['Experiment', 'Source', 'Date'] + list(metrics.keys())
-    click.echo(tabulate.tabulate(result.values, headers=header))
+    subprocess.call([python_bin] + list(script))
