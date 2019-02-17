@@ -206,14 +206,15 @@ def lab_update():
     
 
 @click.command('pull')
-@click.option('--tag', type=str, help='minio host nickname')
-@click.option('--bucket', type=str, default=str(uuid.uuid4()),
+@click.option('--tag', type=str, help='minio host nickname', required=True)
+@click.option('--bucket', type=str, required=True,
               help='minio bucket name')
-@click.option('--project', type=str, default=str(uuid.uuid4()),
+@click.option('--project', type=str, required=True,
               help='Lab Project name')
 def lab_pull(tag, bucket, project):
     """ Pulls Lab Experiment from minio to current directory """
     home_dir = os.path.expanduser('~')
+    
     project_dir = os.path.join(os.getcwd(), project)
     lab_dir = os.path.join(home_dir, '.lab')
 
@@ -298,8 +299,12 @@ def _pull_from_minio(tag, bucket, project_name):
     lab_dir = os.path.join(home_dir, '.lab')
     project_dir = os.path.join(os.getcwd(), project_name)
 
-    with open(os.path.join(lab_dir, 'config.yaml'), 'r') as file:
-        minio_config = yaml.load(file)[tag]
+    try:
+        with open(os.path.join(lab_dir, 'config.yaml'), 'r') as file:
+            minio_config = yaml.load(file)[tag]
+    except:
+        click.secho('Invalid global minio connection tag.', fg='red')
+        raise click.Abort()
     
     hostname = minio_config['minio_endpoint']
     accesskey = minio_config['minio_accesskey']
