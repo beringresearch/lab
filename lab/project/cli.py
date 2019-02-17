@@ -1,5 +1,6 @@
 import click
 import uuid
+import glob
 import os
 import venv as ve
 import sys
@@ -88,6 +89,7 @@ def lab_ls(sort_by=None):
 
     with open(os.path.join('config', 'runtime.yaml'), 'r') as file:
             minio_config = yaml.load(file)
+            push_time = datetime.datetime.fromtimestamp(0)
             try:
                 push_time = datetime.datetime.strptime(minio_config['last_push'], '%Y-%m-%d %H:%M:%S.%f')
                 now_time = datetime.datetime.now()
@@ -95,8 +97,21 @@ def lab_ls(sort_by=None):
                 (days, hours) = (td.days, td.seconds//3600)
             except:
                 (days, hours) = (0, 0)
+    
     click.secho('\nLast push: '+str(days)+'d, ' + str(hours)+'h ago',
                 fg='yellow')
+
+    # Find the latest file and print its timestamp
+    list_of_files = glob.glob(os.path.join(os.getcwd(), '*'))
+    latest_file = max(list_of_files, key=os.path.getctime)
+    latest_file_timestamp = datetime.datetime.fromtimestamp(os.path.getmtime(latest_file))
+
+    recommend = ''
+    if latest_file_timestamp > push_time:
+        recommend = ' | Recommend to run <lab push>'
+    click.secho('Last modified: '+str(latest_file_timestamp)+recommend,
+                fg='yellow')
+
 
 @click.command(name='notebook')
 def lab_notebook():
