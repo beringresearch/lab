@@ -86,6 +86,18 @@ def lab_ls(sort_by=None):
     header = ['Experiment', 'Source', 'Date'] + list(metrics.keys())
     click.echo(tabulate.tabulate(result.values, headers=header))
 
+    with open(os.path.join('config', 'runtime.yaml'), 'r') as file:
+            minio_config = yaml.load(file)
+            try:
+                push_time = datetime.datetime.strptime(minio_config['last_push'], '%Y-%m-%d %H:%M:%S.%f')
+                now_time = datetime.datetime.now()
+                td = now_time-push_time
+                (days, hours) = (td.days, td.seconds//3600)
+            except:
+                (days, hours) = (0, 0)
+    click.secho('\nLast push: '+str(days)+'d, ' + str(hours)+'h ago',
+                fg='yellow')
+
 @click.command(name='notebook')
 def lab_notebook():
     """ Launch a jupyter notebook """
@@ -142,7 +154,37 @@ def lab_update():
         click.secho('requirements.txt file is missing.', fg='red')
         raise click.Abort()
     
-    click.secho('Updating environemnt using requirements.txt', fg='blue')
+    home_dir = os.getcwd()
+    click.secho('Checking global lab version...', fg='blue')
+    # Extract lab version from virtual environment
+    pyversion = '%s.%s' % (sys.version_info[0], sys.version_info[1])
+    venv = '%s/lib/python%s/site-packages/%s' % ('.venv', pyversion, 'lab')
+
+    python_bin = os.path.join(home_dir, '.venv', 'bin/python')
+    call = 'import lab; print(lab.__version__)'
+    venv_lab_version = subprocess.check_output([python_bin, '-c', '%s' % call])
+    venv_lab_version = venv_lab_version.decode('ascii').rstrip()
+
+    import lab
+    global_lab_version = lab.__version__
+
+    if global_lab_version != venv_lab_version:
+        click.secho('It appears that your Lab Project was built using a '
+                    'different Lab version (' + venv_lab_version + ').',
+                    fg='blue')
+        if click.confirm('Do you want to update lab in this project?'):
+            try:
+                pkgobj = __import__('lab')
+            except Exception as e:
+                print(e)
+                sys.exit(1)
+
+            pkgdir = os.path.dirname(pkgobj.__file__)
+            if os.path.exists(venv):
+                shutil.rmtree(venv)
+            shutil.copytree(pkgdir, venv)
+
+    click.secho('Updating environment using requirements.txt', fg='blue')
     venv_dir = os.path.join(os.getcwd(), '.venv')
     subprocess.call([venv_dir + '/bin/pip', 'install',
                     '-r', 'requirements.txt'])
@@ -174,17 +216,17 @@ def lab_pull(tag, bucket, project):
         click.secho('Directory '+project+' already exists.', fg='red')
         raise click.Abort()
     
-
-
 @click.command('push')
-@click.option('--tag', type=str, help='minio host nickname')
+@click.option('--info', is_flag=True)
+@click.option('--tag', type=str, help='minio host nickname', default=None)
 @click.option('--bucket', type=str, default=str(uuid.uuid4()),
               help='minio bucket name')
 @click.argument('path', type=str, default=os.getcwd())
-def lab_push(tag, bucket, path):
-    """ Push Lab Experiment to minio """
+def lab_push(info, tag, bucket, path):
+    """ Push Lab Experiment to minio """    
     models_directory = 'experiments'
     logs_directory = 'logs'
+    config_directory = 'config'
 
     home_dir = os.path.expanduser('~')
     lab_dir = os.path.join(home_dir, '.lab')
@@ -194,13 +236,18 @@ def lab_push(tag, bucket, path):
                     fg='red')
         raise click.Abort()
 
-    if not (os.path.exists(models_directory) & os.path.exists(logs_directory)):
+    if not (os.path.exists(models_directory) & os.path.exists(logs_directory) & os.path.exists(config_directory)):
         click.secho('This directory lacks a valid Lab Project directory '
                     'structure. Run <lab init> to create one.',
                     fg='blue')
         raise click.Abort()
 
-    _push_to_minio(tag, bucket, path)
+    if info:
+        with open(os.path.join(config_directory, 'runtime.yaml'), 'r') as file:
+            minio_config = yaml.load(file)         
+        click.secho('Last push: '+minio_config['last_push'], fg='blue')
+    else:
+        _push_to_minio(tag, bucket, path)
 
 def _create_venv(project_name):
     # Create a virtual environment
@@ -299,6 +346,14 @@ def _push_to_minio(tag, bucket, path):
             minioClient.fput_object(bucket, output_objects[i],
                                     input_objects[i])
             print('Succesfully processed '+input_objects[i])
+        
+        with open(os.path.join('config', 'runtime.yaml'), 'r') as file:
+            minio_config = yaml.load(file)
+        minio_config['last_push'] = str(datetime.datetime.now())
+        
+        with open(os.path.join('config', 'runtime.yaml'), 'w') as file:
+            yaml.safe_dump(minio_config, file, default_flow_style=False)
+
     except ResponseError as err:
         print(err)
 
@@ -332,6 +387,7 @@ def _project_init(project_name):
                'description': None,
                'python': pyversion,
                'timestamp': str(datetime.datetime.now()),
+               'last_push': '',               
                'venv': '.venv'}
 
     with open(os.path.join(project_name,
