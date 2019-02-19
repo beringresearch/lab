@@ -114,7 +114,8 @@ def lab_ls(sort_by=None):
 
 
 @click.command(name='notebook')
-def lab_notebook():
+@click.option('--notebook', is_flag=True)
+def lab_notebook(notebook):
     """ Launch a jupyter notebook """
     if not os.path.isdir('.venv'):
         click.secho("Doesn't looks like this is a valid "
@@ -131,15 +132,18 @@ def lab_notebook():
         config = yaml.load(file)
     project_name = config['name'] + '_' + ''.join(e for e in config['timestamp'] if e.isalnum())
 
-    _launch_lab_notebook(project_name)
+    _launch_lab_notebook(project_name, notebook)
 
-def _launch_lab_notebook(project_name):
+def _launch_lab_notebook(project_name, notebook):
 
     venv_dir = os.path.join(os.getcwd(), '.venv')
     subprocess.call([venv_dir + '/bin/pip', 'install', 'ipykernel'])
     subprocess.call([venv_dir + '/bin/ipython', 'kernel', 'install', '--user', '--name='+project_name])
 
-    subprocess.call([venv_dir + '/bin/jupyter', 'notebook',
+    call='lab'
+    if notebook:
+        call='notebook'
+    subprocess.call([venv_dir + '/bin/jupyter', call,
         '--NotebookApp.notebook_dir=notebooks'])
 
 @click.command(name='init')
