@@ -243,7 +243,7 @@ def lab_pull(tag, bucket, project):
 @click.option('--bucket', type=str, default=str(uuid.uuid4()),
               help='minio bucket name')
 @click.option('--prune', is_flag=True)
-@click.argument('path', type=str, default=os.getcwd())
+@click.argument('path', type=str, default='.')
 def lab_push(info, tag, bucket, path, prune):
     """ Push Lab Experiment to minio """    
     models_directory = 'experiments'
