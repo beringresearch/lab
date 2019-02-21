@@ -242,8 +242,9 @@ def lab_pull(tag, bucket, project):
 @click.option('--tag', type=str, help='minio host nickname', default=None)
 @click.option('--bucket', type=str, default=str(uuid.uuid4()),
               help='minio bucket name')
+@click.option('--prune', is_flag=True)
 @click.argument('path', type=str, default=os.getcwd())
-def lab_push(info, tag, bucket, path):
+def lab_push(info, tag, bucket, path, prune):
     """ Push Lab Experiment to minio """    
     models_directory = 'experiments'
     logs_directory = 'logs'
@@ -268,7 +269,7 @@ def lab_push(info, tag, bucket, path):
             minio_config = yaml.load(file)         
         click.secho('Last push: '+minio_config['last_push'], fg='blue')
     else:
-        _push_to_minio(tag, bucket, path)
+        _push_to_minio(tag, bucket, path, prune)
 
 def _create_venv(project_name):
     # Create a virtual environment
@@ -332,12 +333,16 @@ def _pull_from_minio(tag, bucket, project_name):
     except ResponseError as err:
         print(err)
 
-def _push_to_minio(tag, bucket, path):
+def _push_to_minio(tag, bucket, path, prune):
     home_dir = os.path.expanduser('~')
     lab_dir = os.path.join(home_dir, '.lab')
 
-    with open(os.path.join(lab_dir, 'config.yaml'), 'r') as file:
-        minio_config = yaml.load(file)[tag]
+    try:
+        with open(os.path.join(lab_dir, 'config.yaml'), 'r') as file:
+            minio_config = yaml.load(file)[tag]
+    except KeyError as e:
+        click.secho('Unable to connect to host '+tag, fg='red')
+        raise click.Abort()
 
     with open(os.path.join(path, 'config/runtime.yaml'), 'r') as file:
         config = yaml.load(file)
@@ -362,9 +367,22 @@ def _push_to_minio(tag, bucket, path):
                         access_key=accesskey,
                         secret_key=secretkey,
                         secure=False)
+        
 
     if not minioClient.bucket_exists(bucket):
         minioClient.make_bucket(bucket, location='eu-west-1')
+
+    # Prune remote if needed
+    if prune:
+        if click.confirm('WARNING: pruning will remove all remote files not '
+                         'found in your current project. Do you want to continue?'):
+            try:
+                remote_objects = minioClient.list_objects(bucket, prefix=project_name, recursive=True)
+                remote_objects = [obj.object_name for obj in remote_objects]
+                for del_err in minioClient.remove_objects(bucket, remote_objects):
+                    print("Deletion Error: {}".format(del_err))
+            except ResponseError as err:
+                print(err)
 
     try:
         for i in range(len(input_objects)):
