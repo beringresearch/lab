@@ -375,14 +375,14 @@ def _push_to_minio(tag, bucket, path, prune):
     # Prune remote if needed
     if prune:
         if click.confirm('WARNING: pruning will remove all remote files not '
-                         'found in your current project. Do you want to continue?'):
+                         'found in your current project. Do you want to continue?', abort=True):
             try:
                 remote_objects = minioClient.list_objects(bucket, prefix=project_name, recursive=True)
                 remote_objects = [obj.object_name for obj in remote_objects]
                 for del_err in minioClient.remove_objects(bucket, remote_objects):
                     print("Deletion Error: {}".format(del_err))
             except ResponseError as err:
-                print(err)
+                print(err)        
 
     try:
         for i in range(len(input_objects)):
