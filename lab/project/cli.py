@@ -87,6 +87,7 @@ def lab_ls(sort_by=None):
     header = ['Experiment', 'Source', 'Date'] + list(metrics.keys())
     click.echo(tabulate.tabulate(result.values, headers=header))
 
+    # Check the last time lab project was synced with minio
     with open(os.path.join('config', 'runtime.yaml'), 'r') as file:
             minio_config = yaml.load(file)
             push_time = datetime.datetime.fromtimestamp(0)
@@ -106,7 +107,7 @@ def lab_ls(sort_by=None):
     latest_file = max(list_of_files, key=os.path.getctime)
     latest_file_timestamp = datetime.datetime.fromtimestamp(os.path.getmtime(latest_file))
 
-    recommend = ''
+    recommend = ' | Project is in sync with remote'
     if latest_file_timestamp > push_time:
         recommend = ' | Recommend to run <lab push>'
     click.secho('Last modified: '+str(latest_file_timestamp)+recommend,

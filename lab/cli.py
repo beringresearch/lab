@@ -72,10 +72,10 @@ def lab_info():
     click.echo('Free Memory: '+str(psutil.virtual_memory()[4]))
 
 @click.command('minio')
-@click.option('--tag', type=str, help='helpful minio host tag')
-@click.option('--endpoint', type=str, help='minio endpoint address')
-@click.option('--accesskey', type=str, help='minio access key')
-@click.option('--secretkey', type=str, help='minio secret key')
+@click.option('--tag', type=str, help='helpful minio host tag', required=True)
+@click.option('--endpoint', type=str, help='minio endpoint address', required=True)
+@click.option('--accesskey', type=str, help='minio access key', required=True)
+@click.option('--secretkey', type=str, help='minio secret key', required=True)
 def minio_config(tag, endpoint, accesskey, secretkey):
     """ Setup remote minio host """
     home_dir = os.path.expanduser('~')
