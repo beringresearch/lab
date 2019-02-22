@@ -15,7 +15,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="Logging Experiment Artifacts" href="logging.html" />
+    <link rel="prev" title="Working with Jupyter Notebooks" href="notebook.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -57,6 +57,14 @@ through a convenient tagging system. Each configuration can be set up through CL
 </div>
 <p>Here, <code class="docutils literal notranslate"><span class="pre">--tag</span></code> specifies a nickname of an exisiting minio connection and <code class="docutils literal notranslate"><span class="pre">--bucket</span></code> refers to a unique destination name on minio host, analogous to an S3 bucket.</p>
 </div>
+<div class="section" id="pruning-remote-repository">
+<h2>Pruning remote repository<a class="headerlink" href="#pruning-remote-repository" title="Permalink to this headline">¶</a></h2>
+<p>Sometimes it may be desirable to prune a remote repository. Pruning simply replaces the entire content of a remote repository with local files.
+The user is warned just before proceding, as this operation can have undersirable consequences.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>lab push --tag <span class="o">[</span>MINIO_TAG<span class="o">]</span> --bucket <span class="o">[</span>TEXT<span class="o">]</span> --prune .
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -81,6 +89,7 @@ through a convenient tagging system. Each configuration can be set up through CL
 <li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="concepts.html">Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="logging.html">Logging Experiment Artifacts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebook.html">Working with Jupyter Notebooks</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Minio Interface</a></li>
 </ul>
 
@@ -88,7 +97,7 @@ through a convenient tagging system. Each configuration can be set up through CL
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="logging.html" title="previous chapter">Logging Experiment Artifacts</a></li>
+      <li>Previous: <a href="notebook.html" title="previous chapter">Working with Jupyter Notebooks</a></li>
   </ul></li>
 </ul>
 </div>

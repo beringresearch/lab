@@ -19,14 +19,15 @@ Lab is invoked through a simple Command Line Interface (CLI).
     --help  Show this message and exit.
 
     Commands:
-        config  Global Lab configuration
-        info    Display system-wide information
-        init    Initialise a new Lab Project
-        ls      Compare multiple Lab Experiments
-        pull    Pulls Lab Experiment from minio to current...
-        push    Push Lab Experiment to minio
-        rm      Remove a Lab Experiment
-        run     Run a training script
-        update  Update Lab Environment from Project's...
+        config    Global Lab configuration
+        info      Display system-wide information
+        init      Initialise a new Lab Project
+        ls        Compare multiple Lab Experiments
+        notebook  Launch a jupyter notebook
+        pull      Pulls Lab Experiment from minio to current...
+        push      Push Lab Experiment to minio
+        rm        Remove a Lab Experiment
+        run       Run a training script
+        update    Update Lab Environment from Project's...
 
 Each individual command has a detailed help screen accessible via ``lab command_name --help``.
