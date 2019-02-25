@@ -166,13 +166,18 @@ def lab_init(name):
 @click.command(name='update')
 def lab_update():
     """ Update Lab Environment from Project's requirements.txt """
-    if not os.path.isdir('.venv'):
-        click.secho("Doesn't looks like this is a valid "
-                    'Lab Project as .venv is missing.', fg='red')
-        raise click.Abort()
     if not os.path.isfile('requirements.txt'):
         click.secho('requirements.txt file is missing.', fg='red')
         raise click.Abort()
+
+    if not os.path.isdir('.venv'):
+        click.secho("Couldn't find .venv. Creating one for you. ",
+                    fg='blue')
+        with open(os.path.join(os.getcwd(), 'config/runtime.yaml'), 'r') as file:
+            config = yaml.load(file)
+        project_name = config['name']        
+        _create_venv(project_name)
+    
     
     home_dir = os.getcwd()
     click.secho('Checking global lab version...', fg='blue')
