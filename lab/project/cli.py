@@ -171,12 +171,9 @@ def lab_update():
         raise click.Abort()
 
     if not os.path.isdir('.venv'):
-        click.secho("Couldn't find .venv. Creating one for you. ",
-                    fg='blue')
-        with open(os.path.join(os.getcwd(), 'config/runtime.yaml'), 'r') as file:
-            config = yaml.load(file)
-        project_name = config['name']        
-        _create_venv(project_name)
+        click.secho("Couldn't find .venv. Creating one for you...",
+                    fg='blue') 
+        _create_venv('')
     
     
     home_dir = os.getcwd()
