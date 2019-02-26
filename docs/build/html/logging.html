@@ -15,7 +15,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Minio Interface" href="push.html" />
+    <link rel="next" title="Working with Jupyter Notebooks" href="notebook.html" />
     <link rel="prev" title="Concepts" href="concepts.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -40,6 +40,7 @@ Currently, users can keep track of the following experiment artfacts:</p>
 <li>Hyperparameters</li>
 <li>Performance metrics</li>
 <li>Model files</li>
+<li>Experimental artifacts</li>
 </ul>
 <div class="section" id="feature-names">
 <h2>Feature names<a class="headerlink" href="#feature-names" title="Permalink to this headline">¶</a></h2>
@@ -148,6 +149,42 @@ Let’s expand our example and assess model accuracy and precision.</p>
 </pre></div>
 </div>
 </div>
+<div class="section" id="experiment-artifacts">
+<h2>Experiment Artifacts<a class="headerlink" href="#experiment-artifacts" title="Permalink to this headline">¶</a></h2>
+<p>In certain cases, it may be desirable for a Lab Experiment to write certain artifacts to a temporary folder - e.g.
+ROC curves or Tensorboard log directory. Lab naturally bundles these artifacts within each respective experiment for subsequent exploration.</p>
+<p>Let’s explore an example where Lab logs Tensorboard outputs:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Additional imports would go here</span>
+<span class="kn">from</span> <span class="nn">keras.callbacks</span> <span class="kn">import</span> <span class="n">TensorBoard</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+
+<span class="kn">from</span> <span class="nn">lab.experiment</span> <span class="kn">import</span> <span class="n">Experiment</span>
+
+<span class="n">e</span> <span class="o">=</span> <span class="n">Experiment</span><span class="p">()</span>
+<span class="nd">@e.start_run</span>
+<span class="k">def</span> <span class="nf">train</span><span class="p">():</span>
+<span class="c1"># ... Further training code goes here</span>
+
+<span class="c1"># Create a temporary directory for tensorboard logs</span>
+<span class="n">output_dir</span> <span class="o">=</span> <span class="n">dirpath</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Writing TensorBoard events locally to </span><span class="si">%s</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">output_dir</span><span class="p">)</span>
+
+<span class="n">tensorboard</span> <span class="o">=</span> <span class="n">TensorBoard</span><span class="p">(</span><span class="n">log_dir</span><span class="o">=</span><span class="n">output_dir</span><span class="p">)</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span>
+        <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+        <span class="n">epochs</span><span class="o">=</span><span class="n">epochs</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">validation_data</span><span class="o">=</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">),</span>
+        <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">tensorboard</span><span class="p">])</span>
+
+<span class="c1"># Log tensorboard</span>
+<span class="n">e</span><span class="o">.</span><span class="n">log_artifacts</span><span class="p">(</span><span class="s1">&#39;tensorboard&#39;</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In this example, Tensorboard logs are written to a temporary folder, which can be tracked in real-time. Once the run is complete,
+Lab moves all the directory content into a subdirectory of the current Lab Experiment.</p>
+</div>
 <div class="section" id="model-artifacts">
 <h2>Model Artifacts<a class="headerlink" href="#model-artifacts" title="Permalink to this headline">¶</a></h2>
 <p>Finally, it’s useful to store model objects themselves for future use. Consider our fitted GridSearchCV object <code class="docutils literal notranslate"><span class="pre">clf</span></code> from an earlier example.
@@ -180,6 +217,7 @@ It can now be logged using a simple expression:</p>
 <li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="concepts.html">Concepts</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Logging Experiment Artifacts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebook.html">Working with Jupyter Notebooks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="push.html">Minio Interface</a></li>
 </ul>
 
@@ -188,7 +226,7 @@ It can now be logged using a simple expression:</p>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
       <li>Previous: <a href="concepts.html" title="previous chapter">Concepts</a></li>
-      <li>Next: <a href="push.html" title="next chapter">Minio Interface</a></li>
+      <li>Next: <a href="notebook.html" title="next chapter">Working with Jupyter Notebooks</a></li>
   </ul></li>
 </ul>
 </div>

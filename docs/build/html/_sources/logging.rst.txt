@@ -10,6 +10,7 @@ Currently, users can keep track of the following experiment artfacts:
 - Hyperparameters
 - Performance metrics
 - Model files
+- Experimental artifacts
 
 Feature names
 -------------
@@ -124,6 +125,48 @@ Let's expand our example and assess model accuracy and precision.
 
         e.log_metric('accuracy_score', accuracy)    # Log accuracy    
         e.log_metric('precision_score', precision)  # Log precisions
+
+Experiment Artifacts
+--------------------
+
+In certain cases, it may be desirable for a Lab Experiment to write certain artifacts to a temporary folder - e.g.
+ROC curves or Tensorboard log directory. Lab naturally bundles these artifacts within each respective experiment for subsequent exploration.
+
+Let's explore an example where Lab logs Tensorboard outputs:
+
+.. code-block:: python
+
+    # Additional imports would go here
+    from keras.callbacks import TensorBoard
+    import tempfile
+    
+    from lab.experiment import Experiment
+
+    e = Experiment()
+    @e.start_run
+    def train():
+    # ... Further training code goes here
+
+    # Create a temporary directory for tensorboard logs
+    output_dir = dirpath = tempfile.mkdtemp()
+    print("Writing TensorBoard events locally to %s\n" % output_dir)
+    
+    tensorboard = TensorBoard(log_dir=output_dir)
+
+    model.fit(x_train, y_train,
+            batch_size=batch_size,
+            epochs=epochs,
+            verbose=1,
+            validation_data=(x_test, y_test),
+            callbacks=[tensorboard])
+
+    # Log tensorboard
+    e.log_artifacts('tensorboard', output_dir)
+
+
+In this example, Tensorboard logs are written to a temporary folder, which can be tracked in real-time. Once the run is complete,
+Lab moves all the directory content into a subdirectory of the current Lab Experiment.
+
 
 Model Artifacts
 ---------------
