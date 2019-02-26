@@ -1,9 +1,11 @@
+import tempfile
 import keras
 from keras.datasets import mnist
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
 from keras import backend as K
+from keras.callbacks import TensorBoard
 
 from sklearn.metrics import accuracy_score, precision_score
 
@@ -59,11 +61,19 @@ model.compile(loss=keras.losses.categorical_crossentropy,
 e = Experiment()
 @e.start_run
 def train():
+
+    # Create a temporary directory for tensorboard logs
+    output_dir = dirpath = tempfile.mkdtemp()
+    print("Writing TensorBoard events locally to %s\n" % output_dir)
+    
+    tensorboard = TensorBoard(log_dir=output_dir)
+
     model.fit(x_train, y_train,
             batch_size=batch_size,
             epochs=epochs,
             verbose=1,
-            validation_data=(x_test, y_test))
+            validation_data=(x_test, y_test),
+            callbacks=[tensorboard])
 
     y_prob = model.predict(x_test)
     y_classes = y_prob.argmax(axis=-1)
@@ -72,6 +82,8 @@ def train():
     accuracy = accuracy_score(y_true = actual, y_pred = y_classes)
     precision = precision_score(y_true = actual, y_pred = y_classes, average = 'macro')
 
+    # Log tensorboard
+    e.log_artifacts('tensorboard', output_dir)
     # Log all metrics
     e.log_metric('accuracy_score', accuracy)
     e.log_metric('precision_score', precision)
