@@ -6,6 +6,7 @@ import yaml
 import numpy
 import warnings
 import cloudpickle
+from distutils.dir_util import copy_tree
 
 warnings.filterwarnings(action='ignore', category=DeprecationWarning)
 
@@ -18,7 +19,8 @@ class Experiment():
 
     def create_run(self, run_uuid=None, user_id=None, home_dir=None,
                    timestamp=None, metrics=None, parameters=None,
-                   source=None, feature_names=None, models=dict()):
+                   source=None, feature_names=None, models=dict(),
+                   artifacts=dict()):
         self.uuid = str(uuid.uuid4())[:8]
         self.user_id = _get_user_id()
         self.timestamp = timestamp
@@ -29,7 +31,8 @@ class Experiment():
         self.home_dir = os.path.dirname(
                             os.path.dirname(
                                 os.path.dirname(sys.executable)))
-        self.models = models        
+        self.models = models
+        self.artifacts = artifacts
 
     def start_run(self, fun):
         self.create_run(user_id=_get_user_id(),
@@ -79,6 +82,14 @@ class Experiment():
                 model_file = os.path.join(models_directory, filename+'.pkl')
                 cloudpickle.dump(self.models[filename], open(model_file, 'wb'))
 
+            # Log artifacts
+            for artifact in self.artifacts.keys():
+                destination = os.path.join(models_directory, artifact)
+                copy_tree(self.artifacts[artifact], destination)
+
+    def log_artifacts(self, key, value):
+        self.artifacts[key] = value
+
     def log_features(self, feature_names):
         """ Log feature names
 
@@ -110,17 +121,7 @@ class Experiment():
             self.parameters[key] = value.tolist()
 
     def log_model(self, key, value):
-        self.models[key] = value
-
-    # Experimental feature - API is bound to change!
-    def log_artifact(self, artifact, filename):
-        run_uuid = self.uuid
-        models_directory = os.path.join(self.home_dir, 'experiments', run_uuid)
-
-        destination = os.path.join(models_directory, filename)
-        file_name, file_extension = os.path.splitext(filename)
-        if file_extension == '.png':
-            artifact.savefig(destination)
+        self.models[key] = value    
 
 
 def _get_user_id():
