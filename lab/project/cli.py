@@ -284,6 +284,7 @@ def _create_venv(project_name):
 
     subprocess.call([venv_dir + '/bin/pip', 'install', 'pyyaml'])
     subprocess.call([venv_dir + '/bin/pip', 'install', 'cloudpickle'])
+    subprocess.call([venv_dir + '/bin/pip', 'install', 'numpy'])
     subprocess.call([venv_dir + '/bin/pip', 'install', 'minio'])
     subprocess.call([venv_dir + '/bin/pip', 'install',
                     '-r', 'requirements.txt'])
