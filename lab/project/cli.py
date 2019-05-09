@@ -242,7 +242,7 @@ def lab_pull(tag, bucket, project):
 @click.command('push')
 @click.option('--info', is_flag=True)
 @click.option('--tag', type=str, help='minio host nickname', default=None)
-@click.option('--bucket', type=str, default=str(uuid.uuid4()),
+@click.option('--bucket', type=str, default=None,
               help='minio bucket name')
 @click.option('--prune', is_flag=True)
 @click.argument('path', type=str, default='.')
@@ -270,7 +270,26 @@ def lab_push(info, tag, bucket, path, prune):
         with open(os.path.join(config_directory, 'runtime.yaml'), 'r') as file:
             minio_config = yaml.load(file)         
         click.secho('Last push: '+minio_config['last_push'], fg='blue')
-    else:
+    else:        
+        if (tag is None) & (bucket is None):
+            try:
+                with open(os.path.join(config_directory, 'runtime.yaml'), 'r') as file:
+                    minio_config = yaml.load(file)
+                    tag = minio_config['tag']                
+                    bucket = minio_config['bucket']
+            except KeyError:
+                click.secho('Lab project does not have default tag and bucket configuration. '
+                            'Supply --tag and --bucket options and run lab push again.',
+                            fg='red')
+                raise click.Abort()
+        else:
+            with open(os.path.join(config_directory, 'runtime.yaml'), 'r') as file:
+                minio_config = yaml.load(file)
+                minio_config['tag'] = tag
+                minio_config['bucket'] = bucket
+            with open(os.path.join(config_directory, 'runtime.yaml'), 'w') as file:
+                yaml.safe_dump(minio_config, file, default_flow_style=False)
+
         _push_to_minio(tag, bucket, path, prune)
 
 def _create_venv(project_name):
