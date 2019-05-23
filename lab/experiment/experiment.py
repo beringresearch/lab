@@ -42,50 +42,47 @@ class Experiment():
         logs_directory = os.path.join(self.home_dir, 'logs', run_uuid)
 
 
-        try:
-            fun()            
-        except Exception as e:
-            print(e)
-        else:
-            os.makedirs(models_directory)
-            os.makedirs(logs_directory)
+        fun()
+=
+=       os.makedirs(models_directory)
+        os.makedirs(logs_directory)
 
-            # Log run metadata
-            meta_file = os.path.join(logs_directory, 'meta.yaml')
-            with open(meta_file, 'w') as file:
-                meta = {'artifact_uri': os.path.dirname(
-                                            os.path.abspath(models_directory)),
-                        'source': self.source,
-                        'start_time': self.timestamp,
-                        'end_time': datetime.datetime.now(),
-                        'experiment_uuid': self.uuid,
-                        'user_id': self.user_id}
-                yaml.dump(meta, file, default_flow_style=False)
+        # Log run metadata
+        meta_file = os.path.join(logs_directory, 'meta.yaml')
+        with open(meta_file, 'w') as file:
+            meta = {'artifact_uri': os.path.dirname(
+                                        os.path.abspath(models_directory)),
+                    'source': self.source,
+                    'start_time': self.timestamp,
+                    'end_time': datetime.datetime.now(),
+                    'experiment_uuid': self.uuid,
+                    'user_id': self.user_id}
+            yaml.dump(meta, file, default_flow_style=False)
 
-            # Log metrics
-            metrics_file = os.path.join(models_directory, 'metrics.yaml')
-            with open(metrics_file, 'w') as file:
-                yaml.dump(self.metrics, file, default_flow_style=False)
+        # Log metrics
+        metrics_file = os.path.join(models_directory, 'metrics.yaml')
+        with open(metrics_file, 'w') as file:
+            yaml.dump(self.metrics, file, default_flow_style=False)
 
-            # Log parameters
-            parameters_file = os.path.join(models_directory, 'parameters.yaml')
-            with open(parameters_file, 'w') as file:
-                yaml.dump(self.parameters, file, default_flow_style=False)
+        # Log parameters
+        parameters_file = os.path.join(models_directory, 'parameters.yaml')
+        with open(parameters_file, 'w') as file:
+            yaml.dump(self.parameters, file, default_flow_style=False)
 
-            # Log features
-            feature_file = os.path.join(models_directory, 'features.yaml')
-            with open(feature_file, 'w') as file:
-                yaml.dump(self.feature_names, file, default_flow_style=False)
+        # Log features
+        feature_file = os.path.join(models_directory, 'features.yaml')
+        with open(feature_file, 'w') as file:
+            yaml.dump(self.feature_names, file, default_flow_style=False)
 
-            # Log models
-            for filename in self.models.keys():
-                model_file = os.path.join(models_directory, filename+'.pkl')
-                cloudpickle.dump(self.models[filename], open(model_file, 'wb'))
+        # Log models
+        for filename in self.models.keys():
+            model_file = os.path.join(models_directory, filename+'.pkl')
+            cloudpickle.dump(self.models[filename], open(model_file, 'wb'))
 
-            # Log artifacts
-            for artifact in self.artifacts.keys():
-                destination = os.path.join(models_directory, artifact)
-                copy_tree(self.artifacts[artifact], destination)
+        # Log artifacts
+        for artifact in self.artifacts.keys():
+            destination = os.path.join(models_directory, artifact)
+            copy_tree(self.artifacts[artifact], destination)
 
     def log_artifacts(self, key, value):
         self.artifacts[key] = value
