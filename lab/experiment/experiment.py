@@ -41,10 +41,8 @@ class Experiment():
         models_directory = os.path.join(self.home_dir, 'experiments', run_uuid)
         logs_directory = os.path.join(self.home_dir, 'logs', run_uuid)
 
-
         fun()
-=
-=       os.makedirs(models_directory)
+
         os.makedirs(logs_directory)
 
         # Log run metadata
@@ -118,7 +116,7 @@ class Experiment():
             self.parameters[key] = value.tolist()
 
     def log_model(self, key, value):
-        self.models[key] = value    
+        self.models[key] = value
 
 
 def _get_user_id():
