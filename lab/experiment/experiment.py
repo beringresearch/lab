@@ -44,6 +44,7 @@ class Experiment():
         fun()
 
         os.makedirs(logs_directory)
+        os.makedirs(models_directory)
 
         # Log run metadata
         meta_file = os.path.join(logs_directory, 'meta.yaml')

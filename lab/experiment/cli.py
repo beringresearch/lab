@@ -24,7 +24,6 @@ def lab_rm(experiment_id):
         click.secho('['+experiment_id+'] removed', fg='blue')
 
 
-
 @click.command('run')
 @click.argument('script', required=True, nargs=-1)
 def lab_run(script):

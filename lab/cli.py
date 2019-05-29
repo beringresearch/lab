@@ -21,7 +21,7 @@ def cli():
 Bering's Machine Learning Lab
 
 Copyright 2019 Bering Limited. https://beringresearch.com
-"""    
+"""
 
 
 # Project
@@ -43,6 +43,7 @@ def config():
     """ Global Lab configuration """
     pass
 
+
 @click.command('info')
 def lab_info():
     """ Display system-wide information """
@@ -50,7 +51,9 @@ def lab_info():
     import platform
     import psutil
 
-    system_version = str(sys.version_info[0])+'.'+str(sys.version_info[1])+'.'+str(sys.version_info[2])
+    system_version = str(sys.version_info[0]) + '.' + \
+        str(sys.version_info[1]) + \
+        '.' + str(sys.version_info[2])
     home_dir = os.path.expanduser('~')
     lab_dir = os.path.join(home_dir, '.lab')
 
@@ -71,9 +74,11 @@ def lab_info():
     click.echo('Available Memory: '+str(psutil.virtual_memory()[1]))
     click.echo('Free Memory: '+str(psutil.virtual_memory()[4]))
 
+
 @click.command('minio')
 @click.option('--tag', type=str, help='helpful minio host tag', required=True)
-@click.option('--endpoint', type=str, help='minio endpoint address', required=True)
+@click.option('--endpoint', type=str, help='minio endpoint address',
+              required=True)
 @click.option('--accesskey', type=str, help='minio access key', required=True)
 @click.option('--secretkey', type=str, help='minio secret key', required=True)
 def minio_config(tag, endpoint, accesskey, secretkey):
