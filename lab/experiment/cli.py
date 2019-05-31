@@ -34,6 +34,14 @@ def lab_run(script):
                                'config', 'runtime.yaml'), 'r') as file:
             config = yaml.load(file)
             home_dir = config['path']
+
+            # Update project directory if it hasn't been updated
+            if home_dir != os.getcwd():
+                config['path'] = os.getcwd()
+                with open(os.path.join(os.getcwd(),
+                                       'config', 'runtime.yaml'), 'w') as file:
+                    yaml.dump(config, file, default_flow_style=False)
+
     except FileNotFoundError:
         click.secho('Having trouble parsing configuration file for this '
                     "project. It's likely that this is either not a "
@@ -41,18 +49,12 @@ def lab_run(script):
                     'version of Lab.\n',
                     fg='red')
         raise click.Abort()
+
     except KeyError:
         click.secho('Looks like this Project was configured with an earlier '
                     'version of Lab. Check that config/runtime.yaml file '
                     'has a valid path key and value.', fg='red')
         raise click.Abort()
-    else:
-        # Update project directory if it hasn't been updated
-        if home_dir != os.getcwd():
-            config['path'] = os.getcwd()
-            with open(os.path.join(os.getcwd(),
-                      'config', 'runtime.yaml'), 'w') as file:
-                yaml.dump(config, file, default_flow_style=False)
 
     if not os.path.exists(os.path.join(home_dir, '.venv')):
         click.secho('Virtual environment not found. '

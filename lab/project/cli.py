@@ -15,6 +15,7 @@ import tabulate
 import pandas as pd
 import numpy as np
 
+
 @click.command('ls')
 @click.argument('sort_by', required=False)
 def lab_ls(sort_by=None):
@@ -92,20 +93,25 @@ def lab_ls(sort_by=None):
             minio_config = yaml.load(file)
             push_time = datetime.datetime.fromtimestamp(0)
             try:
-                push_time = datetime.datetime.strptime(minio_config['last_push'], '%Y-%m-%d %H:%M:%S.%f')
+                push_time = \
+                    datetime.datetime.strptime(
+                        minio_config['last_push'],
+                        '%Y-%m-%d %H:%M:%S.%f')
+
                 now_time = datetime.datetime.now()
                 td = now_time-push_time
                 (days, hours) = (td.days, td.seconds//3600)
             except:
                 (days, hours) = (0, 0)
-    
+
     click.secho('\nLast push: '+str(days)+'d, ' + str(hours)+'h ago',
                 fg='yellow')
 
     # Find the latest file and print its timestamp
     list_of_files = glob.glob(os.path.join(os.getcwd(), '*'))
     latest_file = max(list_of_files, key=os.path.getctime)
-    latest_file_timestamp = datetime.datetime.fromtimestamp(os.path.getmtime(latest_file))
+    latest_file_timestamp = \
+        datetime.datetime.fromtimestamp(os.path.getmtime(latest_file))
 
     recommend = ' | Project is in sync with remote'
     if latest_file_timestamp > push_time:
@@ -127,25 +133,29 @@ def lab_notebook(notebook):
         click.secho("Doesn't looks like this is a valid "
                     'Lab Project as config is missing.', fg='red')
         raise click.Abort()
-    
+
     with open(os.path.join(os.getcwd(),
               'config', 'runtime.yaml'), 'r') as file:
         config = yaml.load(file)
-    project_name = config['name'] + '_' + ''.join(e for e in config['timestamp'] if e.isalnum())
+    project_name = config['name'] + '_' +\
+        ''.join(e for e in config['timestamp'] if e.isalnum())
 
     _launch_lab_notebook(project_name, notebook)
+
 
 def _launch_lab_notebook(project_name, notebook):
 
     venv_dir = os.path.join(os.getcwd(), '.venv')
     subprocess.call([venv_dir + '/bin/pip', 'install', 'ipykernel'])
-    subprocess.call([venv_dir + '/bin/ipython', 'kernel', 'install', '--user', '--name='+project_name])
+    subprocess.call([venv_dir + '/bin/ipython', 'kernel', 'install',
+                     '--user', '--name='+project_name])
 
-    call='lab'
+    call = 'lab'
     if notebook:
-        call='notebook'
+        call = 'notebook'
     subprocess.call([venv_dir + '/bin/jupyter', call,
-        '--NotebookApp.notebook_dir=notebooks'])
+                     '--NotebookApp.notebook_dir=notebooks'])
+
 
 @click.command(name='init')
 @click.option('--name', type=str, default=str(uuid.uuid4()),
@@ -163,6 +173,7 @@ def lab_init(name):
     else:
         _project_init(name)
 
+
 @click.command(name='update')
 def lab_update():
     """ Update Lab Environment from Project's requirements.txt """
@@ -170,12 +181,31 @@ def lab_update():
         click.secho('requirements.txt file is missing.', fg='red')
         raise click.Abort()
 
+    # Update project directory if it hasn't been updated
+    try:
+        with open(os.path.join(os.getcwd(),
+                               'config', 'runtime.yaml'), 'r') as file:
+            config = yaml.load(file)
+            home_dir = config['path']
+
+            if home_dir != os.getcwd():
+                config['path'] = os.getcwd()
+                with open(os.path.join(os.getcwd(),
+                                       'config', 'runtime.yaml'), 'w') as file:
+                    yaml.dump(config, file, default_flow_style=False)
+    except FileNotFoundError:
+        click.secho('Having trouble parsing configuration file for this '
+                    "project. It's likely that this is either not a "
+                    'Lab Project or the Project was created with an older '
+                    'version of Lab.\n',
+                    fg='red')
+        raise click.Abort()
+
     if not os.path.isdir('.venv'):
         click.secho("Couldn't find .venv. Creating one for you...",
-                    fg='blue') 
+                    fg='blue')
         _create_venv('')
-    
-    
+
     home_dir = os.getcwd()
     click.secho('Checking global lab version...', fg='blue')
     # Extract lab version from virtual environment
@@ -210,7 +240,7 @@ def lab_update():
     venv_dir = os.path.join(os.getcwd(), '.venv')
     subprocess.call([venv_dir + '/bin/pip', 'install',
                     '-r', 'requirements.txt'])
-    
+
 
 @click.command('pull')
 @click.option('--tag', type=str, help='minio host nickname', required=True)
@@ -221,7 +251,7 @@ def lab_update():
 def lab_pull(tag, bucket, project):
     """ Pulls Lab Experiment from minio to current directory """
     home_dir = os.path.expanduser('~')
-    
+
     project_dir = os.path.join(os.getcwd(), project)
     lab_dir = os.path.join(home_dir, '.lab')
 
@@ -231,14 +261,14 @@ def lab_pull(tag, bucket, project):
                     fg='red')
         raise click.Abort()
 
-
     if not os.path.exists(project_dir):
         os.makedirs(project_dir)
         _pull_from_minio(tag, bucket, project)
     else:
         click.secho('Directory '+project+' already exists.', fg='red')
         raise click.Abort()
-    
+
+
 @click.command('push')
 @click.option('--info', is_flag=True)
 @click.option('--tag', type=str, help='minio host nickname', default=None)
@@ -247,7 +277,7 @@ def lab_pull(tag, bucket, project):
 @click.option('--prune', is_flag=True)
 @click.argument('path', type=str, default='.')
 def lab_push(info, tag, bucket, path, prune):
-    """ Push Lab Experiment to minio """    
+    """ Push Lab Experiment to minio """
     models_directory = 'experiments'
     logs_directory = 'logs'
     config_directory = 'config'
@@ -260,7 +290,8 @@ def lab_push(info, tag, bucket, path, prune):
                     fg='red')
         raise click.Abort()
 
-    if not (os.path.exists(models_directory) & os.path.exists(logs_directory) & os.path.exists(config_directory)):
+    if not (os.path.exists(models_directory) &
+            os.path.exists(logs_directory) & os.path.exists(config_directory)):
         click.secho('This directory lacks a valid Lab Project directory '
                     'structure. Run <lab init> to create one.',
                     fg='blue')
@@ -268,14 +299,15 @@ def lab_push(info, tag, bucket, path, prune):
 
     if info:
         with open(os.path.join(config_directory, 'runtime.yaml'), 'r') as file:
-            minio_config = yaml.load(file)         
+            minio_config = yaml.load(file)
         click.secho('Last push: '+minio_config['last_push'], fg='blue')
-    else:        
+    else:
         if (tag is None) & (bucket is None):
             try:
-                with open(os.path.join(config_directory, 'runtime.yaml'), 'r') as file:
+                with open(os.path.join(config_directory, 'runtime.yaml'),
+                          'r') as file:
                     minio_config = yaml.load(file)
-                    tag = minio_config['tag']                
+                    tag = minio_config['tag']
                     bucket = minio_config['bucket']
             except KeyError:
                 click.secho('Lab project does not have default tag and bucket configuration. '
@@ -283,14 +315,17 @@ def lab_push(info, tag, bucket, path, prune):
                             fg='red')
                 raise click.Abort()
         else:
-            with open(os.path.join(config_directory, 'runtime.yaml'), 'r') as file:
+            with open(os.path.join(config_directory, 'runtime.yaml'),
+                      'r') as file:
                 minio_config = yaml.load(file)
                 minio_config['tag'] = tag
                 minio_config['bucket'] = bucket
-            with open(os.path.join(config_directory, 'runtime.yaml'), 'w') as file:
+            with open(os.path.join(config_directory, 'runtime.yaml'),
+                      'w') as file:
                 yaml.safe_dump(minio_config, file, default_flow_style=False)
 
         _push_to_minio(tag, bucket, path, prune)
+
 
 def _create_venv(project_name):
     # Create a virtual environment
@@ -322,10 +357,10 @@ def _create_venv(project_name):
     dst = '%s/lib/python%s/site-packages/%s' % (venv_dir, pyversion, pkgname)
     shutil.copytree(pkgdir, dst)
 
+
 def _pull_from_minio(tag, bucket, project_name):
     home_dir = os.path.expanduser('~')
     lab_dir = os.path.join(home_dir, '.lab')
-    project_dir = os.path.join(os.getcwd(), project_name)
 
     try:
         with open(os.path.join(lab_dir, 'config.yaml'), 'r') as file:
@@ -333,7 +368,7 @@ def _pull_from_minio(tag, bucket, project_name):
     except:
         click.secho('Invalid global minio connection tag.', fg='red')
         raise click.Abort()
-    
+
     hostname = minio_config['minio_endpoint']
     accesskey = minio_config['minio_accesskey']
     secretkey = minio_config['minio_secretkey']
@@ -344,16 +379,19 @@ def _pull_from_minio(tag, bucket, project_name):
                         secure=False)
 
     if not minioClient.bucket_exists(bucket):
-        click.secho('Bucket '+bucket+ ' is not found on remote', fg='red')
+        click.secho('Bucket '+ bucket + ' is not found on remote', fg='red')
         raise click.Abort()
     try:
-        objects = minioClient.list_objects(bucket, prefix=project_name, recursive=True)
+        objects = minioClient.list_objects(bucket, prefix=project_name,
+                                           recursive=True)
         for obj in objects:
             object_name = obj.object_name
             print('Downloading '+object_name)
-            minioClient.fget_object(bucket, object_name, os.path.join(os.getcwd(), object_name))
+            minioClient.fget_object(bucket, object_name,
+                                    os.path.join(os.getcwd(), object_name))
     except ResponseError as err:
         print(err)
+
 
 def _push_to_minio(tag, bucket, path, prune):
     home_dir = os.path.expanduser('~')
@@ -389,7 +427,6 @@ def _push_to_minio(tag, bucket, path, prune):
                         access_key=accesskey,
                         secret_key=secretkey,
                         secure=False)
-        
 
     if not minioClient.bucket_exists(bucket):
         minioClient.make_bucket(bucket, location='eu-west-1')
@@ -397,25 +434,29 @@ def _push_to_minio(tag, bucket, path, prune):
     # Prune remote if needed
     if prune:
         if click.confirm('WARNING: pruning will remove all remote files not '
-                         'found in your current project. Do you want to continue?', abort=True):
+                         'found in your current project. Do you want to continue?',
+                         abort=True):
             try:
-                remote_objects = minioClient.list_objects(bucket, prefix=project_name, recursive=True)
+                remote_objects = minioClient.list_objects(bucket,
+                                                          prefix=project_name,
+                                                          recursive=True)
                 remote_objects = [obj.object_name for obj in remote_objects]
-                for del_err in minioClient.remove_objects(bucket, remote_objects):
+                for del_err in minioClient.remove_objects(bucket,
+                                                          remote_objects):
                     print("Deletion Error: {}".format(del_err))
             except ResponseError as err:
-                print(err)        
+                print(err)
 
     try:
         for i in range(len(input_objects)):
             minioClient.fput_object(bucket, output_objects[i],
                                     input_objects[i])
             print('Succesfully processed '+input_objects[i])
-        
+
         with open(os.path.join('config', 'runtime.yaml'), 'r') as file:
             minio_config = yaml.load(file)
         minio_config['last_push'] = str(datetime.datetime.now())
-        
+
         with open(os.path.join('config', 'runtime.yaml'), 'w') as file:
             yaml.safe_dump(minio_config, file, default_flow_style=False)
 
@@ -452,7 +493,7 @@ def _project_init(project_name):
                'description': None,
                'python': pyversion,
                'timestamp': str(datetime.datetime.now()),
-               'last_push': '',               
+               'last_push': '',
                'venv': '.venv'}
 
     with open(os.path.join(project_name,
