@@ -35,6 +35,7 @@ cli.add_command(lab_project.lab_notebook)
 # Experiment
 cli.add_command(lab_experiment.lab_run)
 cli.add_command(lab_experiment.lab_rm)
+cli.add_command(lab_experiment.lab_show)
 
 
 # Lab configuration

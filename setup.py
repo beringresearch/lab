@@ -14,9 +14,9 @@ setup(
         'minio',
         'numpy',
         'pandas',
-        'pyyaml',        
+        'pyyaml',
         'tabulate',
-        'cloudpickle'
+        'graphviz'
         ],
     entry_points='''
     [console_scripts]
@@ -26,7 +26,7 @@ setup(
     description='Lab: a command line interface for the management of arbitrary machine learning tasks.',
     license='Apache License 2.0',
     classifiers=[
-        'Intended Audience :: Developers',        
+        'Intended Audience :: Developers',
         'Programming Language :: Python :: 3.6',
     ],
     keywords='ml ai',

@@ -5,7 +5,7 @@ from sklearn.metrics import accuracy_score, precision_score
 from lab.experiment import Experiment
 
 if __name__ == "__main__":
-    e = Experiment()
+    e = Experiment('iris_50')
 
     @e.start_run
     def train():
@@ -15,10 +15,13 @@ if __name__ == "__main__":
         X = iris.data
         y = iris.target
 
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.24, random_state=42)
-        
-        e.log_features(['Sepal Length', 'Sepal Width', 'Petal Length', 'Petal Width'])
-        
+        X_train, X_test, y_train, y_test = train_test_split(X, y,
+                                                            test_size=0.5,
+                                                            random_state=42)
+
+        e.log_features(['Sepal Length', 'Sepal Width',
+                        'Petal Length', 'Petal Width'])
+
         clf = svm.SVC(C, 'rbf', gamma=gamma, probability=True)
         clf.fit(X_train, y_train)
 

@@ -5,7 +5,8 @@ import sys
 import yaml
 import numpy
 import warnings
-import cloudpickle
+import joblib
+import graphviz
 from distutils.dir_util import copy_tree
 
 warnings.filterwarnings(action='ignore', category=DeprecationWarning)
@@ -14,8 +15,8 @@ _DEFAULT_USER_ID = 'unknown'
 
 
 class Experiment():
-    def __init__(self):
-        pass
+    def __init__(self, dataset=None):
+        self.dataset = dataset
 
     def create_run(self, run_uuid=None, user_id=None, home_dir=None,
                    timestamp=None, metrics=None, parameters=None,
@@ -55,6 +56,7 @@ class Experiment():
                     'start_time': self.timestamp,
                     'end_time': datetime.datetime.now(),
                     'experiment_uuid': self.uuid,
+                    'dataset': self.dataset,
                     'user_id': self.user_id}
             yaml.dump(meta, file, default_flow_style=False)
 
@@ -75,8 +77,8 @@ class Experiment():
 
         # Log models
         for filename in self.models.keys():
-            model_file = os.path.join(models_directory, filename+'.pkl')
-            cloudpickle.dump(self.models[filename], open(model_file, 'wb'))
+            model_file = os.path.join(models_directory, filename+'.joblib')
+            joblib.dump(self.models[filename], model_file)
 
         # Log artifacts
         for artifact in self.artifacts.keys():
@@ -119,6 +121,67 @@ class Experiment():
     def log_model(self, key, value):
         self.models[key] = value
 
+    def view(self):
+        return show_experiment(self.uuid)
+
+
+def show_experiment(experiment_id):
+    try:
+        logs = yaml.load(open(os.path.join('logs', experiment_id,
+                                           'meta.yaml'), 'r'))
+        if logs['dataset'] is None:
+            logs['dataset'] = 'N/A'
+    except FileNotFoundError:
+        print('Not a valid lab experiment')
+
+    col = _get_graphvix_colour()
+
+    try:
+        metrics = yaml.load(open(os.path.join('experiments', experiment_id,
+                                              'metrics.yaml'), 'r'))
+    except FileNotFoundError:
+        metrics = {'Metrics': 'None'}
+
+    try:
+        parameters = yaml.load(open(os.path.join('experiments', experiment_id,
+                                                 'parameters.yaml'), 'r'))
+    except FileNotFoundError:
+        parameters = {'Parameter': 'None'}
+
+    dot = graphviz.Digraph(format='png',
+                           name=logs['experiment_uuid'],
+                           node_attr={'shape': 'record'})
+
+    dot.attr('node', color=col)
+    dot.attr('edge', color=col)
+
+    source_id = experiment_id+'_'+logs['source']
+    dataset_id = logs['dataset']
+    parameters_id = experiment_id+'_parameters'
+    metrics_id = experiment_id+'_metrics'
+
+    dot.node(experiment_id, logs['experiment_uuid'], shape='Mdiamond')
+    dot.node(source_id, logs['source'], shape='oval')
+    dot.node(dataset_id, logs['dataset'], shape='Msquare')
+    dot.edge(experiment_id, dataset_id)
+    dot.edge(experiment_id, source_id)
+
+    dot.node(parameters_id, 'Model Parameters')
+    for (k, v) in parameters.items():
+        dot.node(experiment_id+'_'+k, k+'='+str(round(v, 2)), shape='oval')
+        dot.edge(parameters_id, experiment_id+'_'+k)
+
+    dot.node(metrics_id, 'Performance Metrics')
+    for (k, v) in metrics.items():
+        dot.node(experiment_id+'_'+k,
+                 k+'='+str(round(v, 2)), shape='rectangle')
+        dot.edge(metrics_id, experiment_id+'_'+k)
+
+    dot.edge(dataset_id, parameters_id)
+    dot.edge(dataset_id, metrics_id)
+
+    return dot
+
 
 def _get_user_id():
     """Get the ID of the user for the current run."""
@@ -128,3 +191,19 @@ def _get_user_id():
         return pwd.getpwuid(os.getuid())[0]
     except ImportError:
         return _DEFAULT_USER_ID
+
+
+def _get_graphvix_colour():
+    import random
+    colour_list = ['antiquewhite4', 'aquamarine4', 'azure4', 'bisque4',
+                   'black', 'blue', 'blueviolet', 'brown', 'burlywood',
+                   'cadetblue', 'chartreuse3', 'chartreuse4', 'chocolate4',
+                   'coral', 'coral3', 'cornflowerblue', 'cornsilk4',
+                   'crimson', 'cyan', 'darkgreen', 'darkorange1', 'deeppink1',
+                   'deepskyblue1', 'dodgerblue', 'firebrick', 'forestgreen',
+                   'goldenrod', 'goldenrod4', 'hotpink', 'indigo',
+                   'khaki4', 'lightcoral', 'lightslateblue', 'lightsteelblue4',
+                   'maroon', 'midnightblue', 'orangered4', 'palevioletred',
+                   'sienna3', 'tomato', 'violetred1']
+    choice = random.choice(seq=list(range(len(colour_list))))
+    return colour_list[choice]
