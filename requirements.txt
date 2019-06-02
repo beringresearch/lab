@@ -3,5 +3,5 @@ click
 pyyaml
 pandas
 numpy
-cloudpickle
+graphviz
 tabulate
