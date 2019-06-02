@@ -134,7 +134,7 @@ def show_experiment(experiment_id):
     except FileNotFoundError:
         print('Not a valid lab experiment')
 
-    col = _get_graphvix_colour()
+    col = _get_graphviz_colour()
 
     try:
         metrics = yaml.load(open(os.path.join('experiments', experiment_id,
@@ -146,7 +146,12 @@ def show_experiment(experiment_id):
         parameters = yaml.load(open(os.path.join('experiments', experiment_id,
                                                  'parameters.yaml'), 'r'))
     except FileNotFoundError:
-        parameters = {'Parameter': 'None'}
+        parameters = {'Parameter': 0.0}
+
+    # Set defaults for empty values
+    if parameters is None:
+        parameters = {'Parameter': 0.0}
+
 
     dot = graphviz.Digraph(format='png',
                            name=logs['experiment_uuid'],
@@ -193,7 +198,7 @@ def _get_user_id():
         return _DEFAULT_USER_ID
 
 
-def _get_graphvix_colour():
+def _get_graphviz_colour():
     import random
     colour_list = ['antiquewhite4', 'aquamarine4', 'azure4', 'bisque4',
                    'black', 'blue', 'blueviolet', 'brown', 'burlywood',
