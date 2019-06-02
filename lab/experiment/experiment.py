@@ -163,7 +163,7 @@ def show_experiment(experiment_id):
     dataset_id = logs['dataset']
     source_id = experiment_id+'_'+logs['source']
     parameters_id = experiment_id+'_parameters'
-    metrics_id = experiment_id+'_metrics'
+    metrics_id = experiment_id+'_performance'
 
     dot.node(experiment_id, logs['experiment_uuid'], shape='Mdiamond')
     dot.node(dataset_id, logs['dataset'], shape='Msquare')
@@ -172,19 +172,24 @@ def show_experiment(experiment_id):
     dot.edge(experiment_id, dataset_id)
     dot.edge(dataset_id, source_id)
 
-    dot.node(parameters_id, 'Hyperparameters', shape = 'hexagon')
-    for (k, v) in parameters.items():
-        dot.node(experiment_id+'_'+k, k+'='+str(round(v, 2)), shape='oval')
-        dot.edge(parameters_id, experiment_id+'_'+k)
+    with dot.subgraph(name='cluster_hyperparameters_'+experiment_id) as c:
+        for (k, v) in parameters.items():
+            c.node(experiment_id+'_'+k, k+'='+str(round(v, 2)),
+                   color=col)
+            c.edge(parameters_id, experiment_id+'_'+k)
+        c.attr(color=col)
+        c.attr(label='Hyperparameters')
 
-    dot.node(metrics_id, 'Performance', shape = 'hexagon')
-    for (k, v) in metrics.items():
-        dot.node(experiment_id+'_'+k,
-                 k+'='+str(round(v, 2)), shape='rectangle')
-        dot.edge(metrics_id, experiment_id+'_'+k)
+    with dot.subgraph(name='cluster_performance_'+experiment_id) as c:
+        for (k, v) in metrics.items():
+            c.node(experiment_id+'_'+k,
+                     k+'='+str(round(v, 2)), color='transparent')
+            c.edge(metrics_id, experiment_id+'_'+k)
+        c.attr(color=col)
+        c.attr(label='Performance')
 
     dot.edge(source_id, parameters_id)
-    dot.edge(source_id, metrics_id)
+    dot.edge(parameters_id, metrics_id)
 
     return dot
 
