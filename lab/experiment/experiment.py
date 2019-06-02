@@ -160,30 +160,31 @@ def show_experiment(experiment_id):
     dot.attr('node', color=col)
     dot.attr('edge', color=col)
 
-    source_id = experiment_id+'_'+logs['source']
     dataset_id = logs['dataset']
+    source_id = experiment_id+'_'+logs['source']
     parameters_id = experiment_id+'_parameters'
     metrics_id = experiment_id+'_metrics'
 
     dot.node(experiment_id, logs['experiment_uuid'], shape='Mdiamond')
-    dot.node(source_id, logs['source'], shape='oval')
     dot.node(dataset_id, logs['dataset'], shape='Msquare')
-    dot.edge(experiment_id, dataset_id)
-    dot.edge(experiment_id, source_id)
+    dot.node(source_id, logs['source'], shape='oval')
 
-    dot.node(parameters_id, 'Model Parameters')
+    dot.edge(experiment_id, dataset_id)
+    dot.edge(dataset_id, source_id)
+
+    dot.node(parameters_id, 'Hyperparameters', shape = 'hexagon')
     for (k, v) in parameters.items():
         dot.node(experiment_id+'_'+k, k+'='+str(round(v, 2)), shape='oval')
         dot.edge(parameters_id, experiment_id+'_'+k)
 
-    dot.node(metrics_id, 'Performance Metrics')
+    dot.node(metrics_id, 'Performance', shape = 'hexagon')
     for (k, v) in metrics.items():
         dot.node(experiment_id+'_'+k,
                  k+'='+str(round(v, 2)), shape='rectangle')
         dot.edge(metrics_id, experiment_id+'_'+k)
 
-    dot.edge(dataset_id, parameters_id)
-    dot.edge(dataset_id, metrics_id)
+    dot.edge(source_id, parameters_id)
+    dot.edge(source_id, metrics_id)
 
     return dot
 
