@@ -173,21 +173,23 @@ def show_experiment(experiment_id):
     dot.edge(dataset_id, source_id)
 
     with dot.subgraph(name='cluster_hyperparameters_'+experiment_id) as c:
+        c.node(parameters_id, 'Hyperparameters')
         for (k, v) in parameters.items():
             c.node(experiment_id+'_'+k, k+'='+str(round(v, 2)),
-                   color=col)
+                   color='transparent')
             c.edge(parameters_id, experiment_id+'_'+k)
         c.attr(color=col)
-        c.attr(label='Hyperparameters')
 
     with dot.subgraph(name='cluster_performance_'+experiment_id) as c:
+        c.node(metrics_id, 'Performance')
         for (k, v) in metrics.items():
             c.node(experiment_id+'_'+k,
-                     k+'='+str(round(v, 2)), color='transparent')
+                   k+'='+str(round(v, 2)), color='transparent')
             c.edge(metrics_id, experiment_id+'_'+k)
         c.attr(color=col)
-        c.attr(label='Performance')
 
+    #dot.edge('cluster_hyperparameters_'+experiment_id,
+    #         'cluster_performance_'+experiment_id)
     dot.edge(source_id, parameters_id)
     dot.edge(parameters_id, metrics_id)
 
