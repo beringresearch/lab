@@ -52,6 +52,11 @@ def lab_ls(sort_by=None):
             with open(meta_file, 'r') as file:
                 meta = yaml.load(file)
 
+            # Truncate source name if too long
+            source_name = meta['source']
+            meta['source'] = (source_name[:25] +
+                              '..') if len(source_name) > 25 else source_name
+
             record = [meta['experiment_uuid'], meta['source'],
                       str(meta['start_time'].date())] + metrics_list
             comparisons.append(record)
