@@ -54,11 +54,12 @@ def lab_ls(sort_by=None):
 
             # Truncate source name if too long
             source_name = meta['source']
-            meta['source'] = (source_name[:25] +
-                              '..') if len(source_name) > 25 else source_name
+            meta['source'] = (source_name[:15] +
+                              '..') if len(source_name) > 15 else source_name
 
             record = [meta['experiment_uuid'], meta['source'],
-                      str(meta['start_time'].date())] + metrics_list
+                      meta['start_time'].strftime("%m/%d/%Y, %H:%M:%S")] + \
+                metrics_list
             comparisons.append(record)
         except FileNotFoundError:
             pass
