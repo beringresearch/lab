@@ -65,8 +65,12 @@ def lab_show(experiment_id=None):
     p.render()
 
 
-@click.command('run')
-@click.argument('script', required=True, nargs=-1)
+@click.command('run', context_settings=dict(
+    ignore_unknown_options=True,
+))
+#@click.argument('script', required=True)
+@click.argument('script', required=False,
+                nargs=-1, type=click.UNPROCESSED)
 def lab_run(script):
     """ Run a training script """
 

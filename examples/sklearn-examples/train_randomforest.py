@@ -1,9 +1,20 @@
+import argparse
 from sklearn import datasets
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, precision_score
 
 from lab.experiment import Experiment
+
+parser = argparse.ArgumentParser('Test arguments')
+
+parser.add_argument('--n_estimators', type=int, dest='n_estimators')
+args = parser.parse_args()
+
+n_estimators=args.n_estimators
+
+if n_estimators is None:
+    n_estimators=100
 
 if __name__ == "__main__":
     e = Experiment(dataset='iris_75')
@@ -17,7 +28,7 @@ if __name__ == "__main__":
         X_train, X_test, y_train, y_test = train_test_split(X, y,
                                                             test_size=0.25,
                                                             random_state=42)
-        n_estimators = 25
+        #n_estimators = 25
 
         e.log_features(['Sepal Length', 'Sepal Width', 'Petal Length',
                         'Petal Width'])
