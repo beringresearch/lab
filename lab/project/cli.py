@@ -54,8 +54,8 @@ def lab_ls(sort_by=None):
 
             # Truncate source name if too long
             source_name = meta['source']
-            meta['source'] = (source_name[:15] +
-                              '..') if len(source_name) > 15 else source_name
+            meta['source'] = (source_name[:20] +
+                              '..') if len(source_name) > 20 else source_name
 
             record = [meta['experiment_uuid'], meta['source'],
                       meta['start_time'].strftime("%m/%d/%Y, %H:%M:%S")] + \
@@ -86,6 +86,9 @@ def lab_ls(sort_by=None):
     result = pd.concat([meta_data, pd.DataFrame(sparklines)], axis=1)
     result.columns = (['Experiment', 'Source', 'Date'] +
                       list(metrics.keys()))
+
+    result.sort_values(by=['Date'], axis=0, ascending=False,
+                       inplace=True)
 
     if sort_by is not None:
         result.sort_values(by=[sort_by], axis=0,
