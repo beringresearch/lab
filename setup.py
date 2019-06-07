@@ -16,7 +16,8 @@ setup(
         'pandas',
         'pyyaml',
         'tabulate',
-        'graphviz'
+        'graphviz',
+        'joblib'
         ],
     entry_points='''
     [console_scripts]
