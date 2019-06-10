@@ -1,7 +1,0 @@
-artifact_uri: /Users/ignat/Documents/Bering/Projects/lab/examples/sklearn-examples/experiments
-dataset: iris_75
-end_time: 2019-06-10 19:12:20.241514
-experiment_uuid: 0953e767
-source: train_randomforest.py
-start_time: 2019-06-10 19:12:20.150819
-user_id: ignat
