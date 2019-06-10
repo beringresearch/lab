@@ -7,6 +7,7 @@ import numpy
 import warnings
 import joblib
 import graphviz
+import json
 from distutils.dir_util import copy_tree
 
 warnings.filterwarnings(action='ignore', category=DeprecationWarning)
@@ -152,7 +153,6 @@ def show_experiment(experiment_id):
     if parameters is None:
         parameters = {'Parameter': 0.0}
 
-
     dot = graphviz.Digraph(format='png',
                            name=logs['experiment_uuid'],
                            node_attr={'shape': 'record'})
@@ -162,7 +162,7 @@ def show_experiment(experiment_id):
 
     dataset_id = logs['dataset']
     source_id = experiment_id+'_'+logs['source']
-    parameters_id = experiment_id+'_parameters'
+    parameters_id = 'struct_'+experiment_id+'_parameters'
     metrics_id = experiment_id+'_performance'
 
     dot.node(experiment_id, logs['experiment_uuid'], shape='Mdiamond')
@@ -173,23 +173,21 @@ def show_experiment(experiment_id):
     dot.edge(dataset_id, source_id)
 
     with dot.subgraph(name='cluster_hyperparameters_'+experiment_id) as c:
-        c.node(parameters_id, 'Hyperparameters')
-        for (k, v) in parameters.items():
-            c.node(experiment_id+'_'+k, k+'='+str(round(v, 2)),
-                   color='transparent')
-            c.edge(parameters_id, experiment_id+'_'+k)
-        c.attr(color=col)
+        c.attr(label='Hyperparameters')
+        c.attr('node', shape='Mrecord')
+        c.attr(color='transparent')
+        text = '{'+json.dumps(parameters).replace(',', '|')+'}'
+        text = text.replace('"', '')
+        c.node(parameters_id, text)
 
     with dot.subgraph(name='cluster_performance_'+experiment_id) as c:
-        c.node(metrics_id, 'Performance')
-        for (k, v) in metrics.items():
-            c.node(experiment_id+'_'+k,
-                   k+'='+str(round(v, 2)), color='transparent')
-            c.edge(metrics_id, experiment_id+'_'+k)
-        c.attr(color=col)
+        c.attr(label='Metrics')
+        c.attr('node', shape='Mrecord')
+        c.attr(color='transparent')
+        text = '{'+json.dumps(metrics).replace(',', '|')+'}'
+        text = text.replace('"', '')
+        c.node(metrics_id, text)
 
-    #dot.edge('cluster_hyperparameters_'+experiment_id,
-    #         'cluster_performance_'+experiment_id)
     dot.edge(source_id, parameters_id)
     dot.edge(parameters_id, metrics_id)
 
@@ -207,7 +205,6 @@ def _get_user_id():
 
 
 def _get_graphviz_colour():
-    import random
     colour_list = ['antiquewhite4', 'aquamarine4', 'azure4', 'bisque4',
                    'black', 'blue', 'blueviolet', 'brown', 'burlywood',
                    'cadetblue', 'chartreuse3', 'chartreuse4', 'chocolate4',
@@ -218,5 +215,6 @@ def _get_graphviz_colour():
                    'khaki4', 'lightcoral', 'lightslateblue', 'lightsteelblue4',
                    'maroon', 'midnightblue', 'orangered4', 'palevioletred',
                    'sienna3', 'tomato', 'violetred1']
-    choice = random.choice(seq=list(range(len(colour_list))))
+    choice = numpy.random.choice(list(range(len(colour_list))),
+                                 replace=False)
     return colour_list[choice]

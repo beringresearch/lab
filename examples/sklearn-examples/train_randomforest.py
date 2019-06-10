@@ -15,6 +15,7 @@ n_estimators=args.n_estimators
 
 if n_estimators is None:
     n_estimators=100
+    max_depth=2
 
 if __name__ == "__main__":
     e = Experiment(dataset='iris_75')
@@ -28,11 +29,11 @@ if __name__ == "__main__":
         X_train, X_test, y_train, y_test = train_test_split(X, y,
                                                             test_size=0.25,
                                                             random_state=42)
-        #n_estimators = 25
 
         e.log_features(['Sepal Length', 'Sepal Width', 'Petal Length',
                         'Petal Width'])
-        clf = RandomForestClassifier(n_estimators = n_estimators)
+        clf = RandomForestClassifier(n_estimators=n_estimators)
+
         clf.fit(X_train, y_train)
 
         y_pred = clf.predict(X_test)
@@ -43,5 +44,6 @@ if __name__ == "__main__":
         e.log_metric('precision_score', precision)
 
         e.log_parameter('n_estimators', n_estimators)
+        e.log_parameter('max_depth', max_depth)
 
         e.log_model('randomforest', clf)

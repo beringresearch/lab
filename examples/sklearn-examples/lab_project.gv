@@ -1,0 +1,75 @@
+digraph lab_project {
+	graph [rankdir=LR]
+	subgraph "0953e767" {
+		node [shape=record]
+		node [color=crimson]
+		edge [color=crimson]
+		"0953e767" [label="0953e767" shape=Mdiamond]
+		iris_75 [label=iris_75 shape=Msquare]
+		"0953e767_train_randomforest.py" [label="train_randomforest.py" shape=oval]
+		"0953e767" -> iris_75
+		iris_75 -> "0953e767_train_randomforest.py"
+		subgraph cluster_hyperparameters_0953e767 {
+			label=Hyperparameters
+			node [shape=Mrecord]
+			color=transparent
+			struct_0953e767_parameters [label="{{max_depth: 2| n_estimators: 100}}"]
+		}
+		subgraph cluster_performance_0953e767 {
+			label=Metrics
+			node [shape=Mrecord]
+			color=transparent
+			"0953e767_performance" [label="{{accuracy_score: 1.0| precision_score: 1.0}}"]
+		}
+		"0953e767_train_randomforest.py" -> struct_0953e767_parameters
+		struct_0953e767_parameters -> "0953e767_performance"
+	}
+	subgraph "8720c65d" {
+		node [shape=record]
+		node [color=azure4]
+		edge [color=azure4]
+		"8720c65d" [label="8720c65d" shape=Mdiamond]
+		iris_75 [label=iris_75 shape=Msquare]
+		"8720c65d_train_randomforest.py" [label="train_randomforest.py" shape=oval]
+		"8720c65d" -> iris_75
+		iris_75 -> "8720c65d_train_randomforest.py"
+		subgraph cluster_hyperparameters_8720c65d {
+			label=Hyperparameters
+			node [shape=Mrecord]
+			color=transparent
+			struct_8720c65d_parameters [label="{{n_estimators: 100}}"]
+		}
+		subgraph cluster_performance_8720c65d {
+			label=Metrics
+			node [shape=Mrecord]
+			color=transparent
+			"8720c65d_performance" [label="{{accuracy_score: 1.0| precision_score: 1.0}}"]
+		}
+		"8720c65d_train_randomforest.py" -> struct_8720c65d_parameters
+		struct_8720c65d_parameters -> "8720c65d_performance"
+	}
+	subgraph "3c3606e7" {
+		node [shape=record]
+		node [color=deeppink1]
+		edge [color=deeppink1]
+		"3c3606e7" [label="3c3606e7" shape=Mdiamond]
+		iris_75 [label=iris_75 shape=Msquare]
+		"3c3606e7_train_randomforest.py" [label="train_randomforest.py" shape=oval]
+		"3c3606e7" -> iris_75
+		iris_75 -> "3c3606e7_train_randomforest.py"
+		subgraph cluster_hyperparameters_3c3606e7 {
+			label=Hyperparameters
+			node [shape=Mrecord]
+			color=transparent
+			struct_3c3606e7_parameters [label="{{n_estimators: 100}}"]
+		}
+		subgraph cluster_performance_3c3606e7 {
+			label=Metrics
+			node [shape=Mrecord]
+			color=transparent
+			"3c3606e7_performance" [label="{{accuracy_score: 1.0| precision_score: 1.0}}"]
+		}
+		"3c3606e7_train_randomforest.py" -> struct_3c3606e7_parameters
+		struct_3c3606e7_parameters -> "3c3606e7_performance"
+	}
+}
