@@ -353,6 +353,7 @@ def _create_venv(project_name):
     subprocess.call([venv_dir + '/bin/pip', 'install', 'pyyaml'])
     subprocess.call([venv_dir + '/bin/pip', 'install', 'graphviz'])
     subprocess.call([venv_dir + '/bin/pip', 'install', 'numpy'])
+    subprocess.call([venv_dir + '/bin/pip', 'install', 'joblib'])
     subprocess.call([venv_dir + '/bin/pip', 'install', 'minio'])
     subprocess.call([venv_dir + '/bin/pip', 'install',
                     '-r', 'requirements.txt'])
@@ -393,7 +394,7 @@ def _pull_from_minio(tag, bucket, project_name):
                         secure=False)
 
     if not minioClient.bucket_exists(bucket):
-        click.secho('Bucket '+ bucket + ' is not found on remote', fg='red')
+        click.secho('Bucket ' + bucket + ' is not found on remote', fg='red')
         raise click.Abort()
     try:
         objects = minioClient.list_objects(bucket, prefix=project_name,
