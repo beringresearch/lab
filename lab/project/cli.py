@@ -180,7 +180,12 @@ def lab_init(name):
         click.secho('Project '+name+' already exists.', fg='red')
         raise click.Abort()
     else:
-        _project_init(name)
+        try:
+            _project_init(name)
+        except:
+            click.secho('Errors encountered during project initialisation.'
+                        'Rolling back..', fg='red')
+            raise click.Abort()
 
 
 @click.command(name='update')
