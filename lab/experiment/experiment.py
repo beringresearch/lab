@@ -153,6 +153,9 @@ def show_experiment(experiment_id):
     if parameters is None:
         parameters = {'Parameter': 0.0}
 
+    # Extract only the source file name without arguments
+    source = logs['source'].split(' ')[0]
+
     dot = graphviz.Digraph(format='png',
                            name=logs['experiment_uuid'],
                            node_attr={'shape': 'record'})
@@ -167,7 +170,7 @@ def show_experiment(experiment_id):
 
     dot.node(experiment_id, logs['experiment_uuid'], shape='Mdiamond')
     dot.node(dataset_id, logs['dataset'], shape='Msquare')
-    dot.node(source_id, logs['source'], shape='oval')
+    dot.node(source_id, source, shape='rectangle')
 
     dot.edge(experiment_id, dataset_id)
     dot.edge(dataset_id, source_id)
