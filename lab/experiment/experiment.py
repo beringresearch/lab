@@ -17,12 +17,20 @@ _DEFAULT_USER_ID = 'unknown'
 
 class Experiment():
     def __init__(self, dataset=None):
+        """ Fundamental Lab class for managing a machine learning experiment.
+
+        :param str dataset: description or tag of a dataset used for training.
+        """
+
         self.dataset = dataset
 
     def create_run(self, run_uuid=None, user_id=None, home_dir=None,
                    timestamp=None, metrics=None, parameters=None,
                    source=None, feature_names=None, models=dict(),
                    artifacts=dict()):
+        """ Initialise a Lab experiment run
+        """
+
         self.uuid = str(uuid.uuid4())[:8]
         self.user_id = _get_user_id()
         self.timestamp = timestamp
@@ -37,6 +45,8 @@ class Experiment():
         self.artifacts = artifacts
 
     def start_run(self, fun):
+        """ Start run and log experiment data as it becomes available.
+        """
         self.create_run(user_id=_get_user_id(),
                         timestamp=datetime.datetime.now())
         run_uuid = self.uuid
@@ -87,19 +97,18 @@ class Experiment():
             copy_tree(self.artifacts[artifact], destination)
 
     def log_artifacts(self, key, value):
+        """ Log model artifacts
+        """
         self.artifacts[key] = value
 
     def log_features(self, feature_names):
         """ Log feature names
-
-            Parameters
-            ----------
-            feature_names: array
-                Feature names or indices to be logged
         """
         self.feature_names = list(feature_names)
 
     def log_metric(self, key, value):
+        """ Log performance metrics
+        """
         value = numpy.array(value)
         logged_metric = {}
         logged_metric[key] = value.tolist()
@@ -110,6 +119,8 @@ class Experiment():
             self.metrics[key] = value.tolist()
 
     def log_parameter(self, key, value):
+        """ Log model hyperparameters
+        """
         value = numpy.array(value)
         logged_parameter = {}
         logged_parameter[key] = value.tolist()
@@ -120,9 +131,13 @@ class Experiment():
             self.parameters[key] = value.tolist()
 
     def log_model(self, key, value):
+        """Serialize the model
+        """
         self.models[key] = value
 
     def view(self):
+        """ View lab project as a graphviz graph.
+        """
         return show_experiment(self.uuid)
 
 

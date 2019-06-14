@@ -1,0 +1,3 @@
+sphinx
+sphinx_materialdesign_theme
+sphinx_gallery

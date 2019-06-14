@@ -28,7 +28,7 @@ Lab was designed to benchmark multiple predictive models and hyperparameters. To
 Model Persistence
 -----------------
 
-Models are logged using the ``pickle`` module. This applies to both ``sklearn`` and ``keras`` experiments. This simple structure allows for a quick
+Models are logged using the ``joblib`` module. This applies to both ``sklearn`` and ``keras`` experiments. This simple structure allows for a quick
 performance assessment and deployment of a model of choice into production.
 
 Example Use Cases

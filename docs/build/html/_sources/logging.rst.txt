@@ -38,12 +38,15 @@ We can log these features by adding a few lines of code:
     from lab.experiment import Experiment #import lab Experiment
     
     e = Experiment()
-    e.start_run()                         # Initiate an experiment
+
+    # Initialize Lab Experiment
+    e.start_run() 
     def train():
         iris = datasets.load_iris()
         feature_names = iris['feature_names']
-
-        e.log_features(feature_names)     # Log features
+        
+        # Log features
+        e.log_features(feature_names)
 
 Hyperparameters
 ---------------
@@ -58,22 +61,29 @@ Let's carry on with the Iris dataset and consider a Random Forest Classifier wit
     from lab.experiment import Experiment #import lab Experiment
     
     e = Experiment()
-    e.start_run()                         # Initiate an experiment
+
+    # Initialize Lab Experiment
+    e.start_run()
     def train():
         iris = datasets.load_iris()
 
         feature_names = iris['feature_names']
-        e.log_features(feature_names)     # Log features
+
+        # Log features
+        e.log_features(feature_names)
         
         parameters = {'n_estimators': [10, 50, 100],
                       'max_depth': [2, 4]}
         
         rfc = RandomForestClassifier()
+
+        # Run a grid search
         clf = GridSearchCV(rfc, parameters)
         clf.fit(iris.data, iris.target)
 
         best_parameters = clf.best_estimator_.get_params()
 
+        # Log parameters
         e.log_parameter('n_estimators', best_parameters['n_estimators'])
         e.log_parameter('max_depth', best_parameters['max_depth'])
 
@@ -90,25 +100,31 @@ Let's expand our example and assess model accuracy and precision.
     from sklearn.model_selection import GridSearchCV
     from sklearn.model_selection import train_test_split
     from sklearn.metrics import accuracy_score, precision_score
-    from lab.experiment import Experiment #import lab Experiment
+    from lab.experiment import Experiment 
     
     e = Experiment()
-    e.start_run()                         # Initiate an experiment
+
+    # Initialize Lab Experiment
+    e.start_run() 
     def train():
         iris = datasets.load_iris()
 
         feature_names = iris['feature_names']
-        e.log_features(feature_names)     # Log features
+
+        # Log features
+        e.log_features(feature_names) 
         
         parameters = {'n_estimators': [10, 50, 100],
                       'max_depth': [2, 4]}
         
+        # Run a grid search 
         rfc = RandomForestClassifier()
         clf = GridSearchCV(rfc, parameters)
         clf.fit(iris.data, iris.target)
 
         best_parameters = clf.best_estimator_.get_params()
 
+        # Log parameters
         e.log_parameter('n_estimators', best_parameters['n_estimators'])
         e.log_parameter('max_depth', best_parameters['max_depth'])
 
@@ -119,12 +135,14 @@ Let's expand our example and assess model accuracy and precision.
                                     max_depth = best_parameters['max_depth'])
         rfc.fit(X_train, y_train)
 
+        # Generate predictions
         y_pred = rfc.predict(X_test)
         accuracy = accuracy_score(y_test, y_pred)                           
         precision = precision_score(y_test, y_pred, average = 'macro')      
 
-        e.log_metric('accuracy_score', accuracy)    # Log accuracy    
-        e.log_metric('precision_score', precision)  # Log precisions
+        # Log performance metrics
+        e.log_metric('accuracy_score', accuracy)
+        e.log_metric('precision_score', precision) 
 
 Experiment Artifacts
 --------------------
@@ -168,8 +186,8 @@ In this example, Tensorboard logs are written to a temporary folder, which can b
 Lab moves all the directory content into a subdirectory of the current Lab Experiment.
 
 
-Model Artifacts
----------------
+Model Persistence
+-----------------
 
 Finally, it's useful to store model objects themselves for future use. Consider our fitted GridSearchCV object ``clf`` from an earlier example.
 It can now be logged using a simple expression:

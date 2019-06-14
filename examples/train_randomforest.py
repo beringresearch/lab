@@ -1,3 +1,17 @@
+"""
+Getting started with Lab and scikit-learn
+=========================================
+
+This example illustrates how Lab can be used to create and run a simple
+classifier on the iris dataset.
+
+Begin by creating a new Lab Project:
+
+    >>> echo "scikit-learn" > requirements.txt
+    >>> lab init --name simple-iris
+
+"""
+
 import argparse
 from sklearn import datasets
 from sklearn.ensemble import RandomForestClassifier
@@ -47,3 +61,9 @@ if __name__ == "__main__":
         e.log_parameter('max_depth', max_depth)
 
         e.log_model('randomforest', clf)
+
+##############################################################
+# After execute training script through the `lab run` command.
+#
+# >>> lab run train.py
+# >>> lab ls
