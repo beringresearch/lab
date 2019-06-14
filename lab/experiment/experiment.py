@@ -164,16 +164,17 @@ def show_experiment(experiment_id):
     dot.attr('edge', color=col)
 
     dataset_id = logs['dataset']
-    source_id = experiment_id+'_'+logs['source']
+    #source_id = experiment_id+'_'+logs['source']
+    source_id= source
     parameters_id = 'struct_'+experiment_id+'_parameters'
     metrics_id = experiment_id+'_performance'
 
     dot.node(experiment_id, logs['experiment_uuid'], shape='Mdiamond')
     dot.node(dataset_id, logs['dataset'], shape='Msquare')
-    dot.node(source, source, shape='rectangle')
+    dot.node(source_id, source, shape='rectangle')
 
     dot.edge(experiment_id, dataset_id)
-    dot.edge(dataset_id, source)
+    dot.edge(dataset_id, source_id)
 
     with dot.subgraph(name='cluster_hyperparameters_'+experiment_id) as c:
         c.attr(label='Hyperparameters')
