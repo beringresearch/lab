@@ -95,6 +95,7 @@ def lab_ls(sort_by=None):
                            ascending=False, inplace=True)
 
     header = ['Experiment', 'Source', 'Date'] + list(metrics.keys())
+    click.echo('')
     click.echo(tabulate.tabulate(result.values, headers=header))
 
     # Check the last time lab project was synced with minio

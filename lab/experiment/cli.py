@@ -53,14 +53,14 @@ def lab_show(experiment_id=None):
         for e in experiments:
             p.subgraph(show_experiment(e))
     else:
-         experiment_dir = os.path.join('experiments', experiment_id)
-         if not os.path.exists(experiment_dir):
-             click.secho("Can't find experiment ["+experiment_id+'] in the current '
-                         'directory.\nEnsure that you are in Lab Project root',
-                         fg='red')
-             click.Abort()
-         else:
-             p = show_experiment(experiment_id)
+        experiment_dir = os.path.join('experiments', experiment_id)
+        if not os.path.exists(experiment_dir):
+            click.secho("Can't find experiment ["+experiment_id+'] in the current '
+                        'directory.\nEnsure that you are in Lab Project root',
+                        fg='red')
+            click.Abort()
+        else:
+            p = show_experiment(experiment_id)
 
     p.render()
 
@@ -68,7 +68,6 @@ def lab_show(experiment_id=None):
 @click.command('run', context_settings=dict(
     ignore_unknown_options=True,
 ))
-#@click.argument('script', required=True)
 @click.argument('script', required=False,
                 nargs=-1, type=click.UNPROCESSED)
 def lab_run(script):
@@ -108,6 +107,7 @@ def lab_run(script):
         _create_venv(home_dir)
 
     # Extract lab version from virtual environment
+    click.secho('Intializing', fg='cyan')
     pyversion = '%s.%s' % (sys.version_info[0], sys.version_info[1])
     venv = '%s/lib/python%s/site-packages/%s' % ('.venv', pyversion, 'lab')
 
@@ -136,4 +136,7 @@ def lab_run(script):
             shutil.copytree(pkgdir, venv)
 
     python_bin = os.path.join(home_dir, '.venv', 'bin/python')
+
+    click.secho('Running '+str(script), fg='green')
     subprocess.call([python_bin] + list(script))
+    click.secho('Finished!', fg='green')
