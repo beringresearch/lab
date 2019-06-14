@@ -2,7 +2,7 @@ Machine Learning Lab
 ====================
 
 .. image:: _static/lab_screenshot.jpeg
-  :height: 350 px
+  :height: 400 px
   :width: 800 px
   :scale: 100 %
 

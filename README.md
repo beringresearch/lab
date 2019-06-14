@@ -8,7 +8,7 @@ Documentation is available at: <https://bering-ml-lab.readthedocs.io/en/latest/>
 
 NOTE: Lab is in active development - expect a bumpy ride!
 
-![alt text](https://github.com/beringresearch/lab/blob/master/docs/source/_static/lab-uml.png "Bering's Lab")
+![alt text](https://github.com/beringresearch/lab/blob/master/docs/source/_static/lab_screenshot.jpeg "Bering's Lab")
 
 ## Installation
 

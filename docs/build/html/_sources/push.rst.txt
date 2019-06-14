@@ -5,6 +5,12 @@ Model Repository
 
 Lab uses minio to store Projects. `Minio <https://minio.io>`_ is a high performance distributed object storage server, designed for large-scale private cloud infrastructure. This makes it a great fit as a storage environment for multiple Lab Projects and Experiments. Lab makes it trivial to back up completed Projects and share them across teams.
 
+.. image:: _static/lab-uml.png
+  :height: 500 px
+  :width: 800 px
+  :scale: 100 %
+
+
 Configuring minio server
 ------------------------
 
