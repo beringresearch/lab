@@ -24,12 +24,13 @@ wheels/
 *.egg
 MANIFEST
 
+_build
+
 __pycache__/
 *.egg
 .DS_Store
 *.swp
 .ipynb_checkpoints
-docs/build
 
 # PyInstaller
 #  Usually these files are written by a python script from a template

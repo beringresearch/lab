@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    
+    <title>lab.Experiment &#8212; lab  documentation</title>
+
+    <link rel="stylesheet" href="_static/material-icons.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery.css" />
+    <link rel="stylesheet" href="_static/notosanscjkjp.css" type="text/css" />
+    <link rel="stylesheet" href="_static/roboto.css" type="text/css" />
+    <link rel="stylesheet" href="_static/material-design-lite-1.3.0/material.indigo-pink.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/sphinx_materialdesign_theme.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script type="text/javascript" src="_static/sphinx_materialdesign_theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Getting started with Lab and scikit-learn" href="auto_examples/train_randomforest.html" /> 
+  </head>
+<body>
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header mdl-layout--fixed-drawer"><header class="mdl-layout__header mdl-layout__header--waterfall ">
+    <div class="mdl-layout__header-row">
+        
+        <nav class="mdl-navigation breadcrumb">
+            <a class="mdl-navigation__link is-active">lab.Experiment</a>
+        </nav>
+        <div class="mdl-layout-spacer"></div>
+        <nav class="mdl-navigation">
+        
+<form class="form-inline pull-sm-right" action="search.html" method="get">
+      <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable mdl-textfield--floating-label mdl-textfield--align-right">
+        <label id="quick-search-icon" class="mdl-button mdl-js-button mdl-button--icon"  for="waterfall-exp">
+            <i class="material-icons">search</i>
+        </label>
+        <div class="mdl-textfield__expandable-holder">
+          <input class="mdl-textfield__input" type="text" name="q"  id="waterfall-exp" placeholder="Search" />
+          <input type="hidden" name="check_keywords" value="yes" />
+          <input type="hidden" name="area" value="default" />
+        </div>
+      </div>
+      <div class="mdl-tooltip" data-mdl-for="quick-search-icon">
+      Quick search
+      </div>
+</form>
+        
+<a id="button-show-source"
+    class="mdl-button mdl-js-button mdl-button--icon"
+    href="_sources/api.rst.txt" rel="nofollow">
+<i class="material-icons">code</i>
+</a>
+<div class="mdl-tooltip" data-mdl-for="button-show-source">
+Show Source
+</div>
+        </nav>
+    </div>
+    <div class="mdl-layout__header-row header-links">
+      <div class="mdl-layout-spacer"></div>
+      <nav class="mdl-navigation">
+          <a  class="mdl-navigation__link" href="index.html">
+                  <i class="material-icons navigation-link-icon">home</i>
+                  Home
+              </a>
+          
+              <a  class="mdl-navigation__link" href="https://github.com/beringresearch/lab">
+                  <i class="material-icons navigation-link-icon">link</i>
+                  GitHub
+              </a>
+          
+              <a  class="mdl-navigation__link" href="http://beringresearch.com">
+                  <i class="material-icons navigation-link-icon">launch</i>
+                  Bering
+              </a>
+      </nav>
+    </div>
+</header><header class="mdl-layout__drawer">
+    
+          <!-- Title -->
+      <span class="mdl-layout-title">
+          <a class="title" href="index.html">
+              <span class="title-text">
+                  lab
+              </span>
+          </a>
+      </span>
+    
+    
+      <div class="globaltoc">
+        <span class="mdl-layout-title toc">Table Of Contents</span>
+        
+        
+            
+            <nav class="mdl-navigation">
+                <p class="caption"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Functionality:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">Core concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebook.html">Working with Jupyter Notebooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="push.html">Model repository</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Applications:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="auto_examples/index.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="auto_examples/train_randomforest.html">Getting started with Lab and scikit-learn</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API Guide</a></li>
+</ul>
+
+            </nav>
+        
+        </div>
+    
+</header>
+        <main class="mdl-layout__content" tabIndex="0">
+<header class="mdl-layout__drawer">
+    
+          <!-- Title -->
+      <span class="mdl-layout-title">
+          <a class="title" href="index.html">
+              <span class="title-text">
+                  lab
+              </span>
+          </a>
+      </span>
+    
+    
+      <div class="globaltoc">
+        <span class="mdl-layout-title toc">Table Of Contents</span>
+        
+        
+            
+            <nav class="mdl-navigation">
+                <p class="caption"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Functionality:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">Core concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebook.html">Working with Jupyter Notebooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="push.html">Model repository</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Applications:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="auto_examples/index.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="auto_examples/train_randomforest.html">Getting started with Lab and scikit-learn</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API Guide</a></li>
+</ul>
+
+            </nav>
+        
+        </div>
+    
+</header>
+
+    <div class="document">
+        <div class="page-content">
+        
+  <div class="section" id="lab-experiment">
+<span id="api"></span><h1>lab.Experiment<a class="headerlink" href="#lab-experiment" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="lab.experiment.Experiment">
+<em class="property">class </em><code class="sig-prename descclassname">lab.experiment.</code><code class="sig-name descname">Experiment</code><span class="sig-paren">(</span><em class="sig-param">dataset=None</em><span class="sig-paren">)</span><a class="headerlink" href="#lab.experiment.Experiment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="lab.experiment.Experiment.create_run">
+<code class="sig-name descname">create_run</code><span class="sig-paren">(</span><em class="sig-param">run_uuid=None</em>, <em class="sig-param">user_id=None</em>, <em class="sig-param">home_dir=None</em>, <em class="sig-param">timestamp=None</em>, <em class="sig-param">metrics=None</em>, <em class="sig-param">parameters=None</em>, <em class="sig-param">source=None</em>, <em class="sig-param">feature_names=None</em>, <em class="sig-param">models={}</em>, <em class="sig-param">artifacts={}</em><span class="sig-paren">)</span><a class="headerlink" href="#lab.experiment.Experiment.create_run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialise a Lab experiment run</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lab.experiment.Experiment.log_artifacts">
+<code class="sig-name descname">log_artifacts</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">value</em><span class="sig-paren">)</span><a class="headerlink" href="#lab.experiment.Experiment.log_artifacts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log model artifacts</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lab.experiment.Experiment.log_features">
+<code class="sig-name descname">log_features</code><span class="sig-paren">(</span><em class="sig-param">feature_names</em><span class="sig-paren">)</span><a class="headerlink" href="#lab.experiment.Experiment.log_features" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log feature names</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lab.experiment.Experiment.log_metric">
+<code class="sig-name descname">log_metric</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">value</em><span class="sig-paren">)</span><a class="headerlink" href="#lab.experiment.Experiment.log_metric" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log performance metrics</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lab.experiment.Experiment.log_model">
+<code class="sig-name descname">log_model</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">value</em><span class="sig-paren">)</span><a class="headerlink" href="#lab.experiment.Experiment.log_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Serialize the model</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lab.experiment.Experiment.log_parameter">
+<code class="sig-name descname">log_parameter</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">value</em><span class="sig-paren">)</span><a class="headerlink" href="#lab.experiment.Experiment.log_parameter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log model hyperparameters</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lab.experiment.Experiment.start_run">
+<code class="sig-name descname">start_run</code><span class="sig-paren">(</span><em class="sig-param">fun</em><span class="sig-paren">)</span><a class="headerlink" href="#lab.experiment.Experiment.start_run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start run and log experiment data as it becomes available.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lab.experiment.Experiment.view">
+<code class="sig-name descname">view</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#lab.experiment.Experiment.view" title="Permalink to this definition">¶</a></dt>
+<dd><p>View lab project as a graphviz graph.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+        </div>
+        <div class="side-doc-outline">
+            <div class="side-doc-outline--content"> 
+            </div>
+        </div>
+
+      <div class="clearer"></div>
+    </div><div class="pagenation">
+     <a id="button-prev" href="auto_examples/train_randomforest.html" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored" role="botton" accesskey="P">
+         <i class="pagenation-arrow-L material-icons">arrow_back</i>
+         <div class="pagenation-text">
+            <span class="pagenation-direction">Previous</span>
+            <div>Getting started with Lab and scikit-learn</div>
+         </div>
+     </a>
+  </div>
+        <footer class="mdl-mini-footer">
+    <div class="mdl-mini-footer__left-section">
+      <div class="mdl-logo">lab</div>
+      <div>
+        
+        <p class="caption"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Functionality:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">Core concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebook.html">Working with Jupyter Notebooks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="push.html">Model repository</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Applications:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="auto_examples/index.html">Examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API Guide</a></li>
+</ul>
+
+      </div>
+    </div>
+
+    <div class="mdl-mini-footer__right-section">
+        <div>&copy; Copyright 2019, Bering Limited.</div>
+      <div>Generated by <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.1 using <a href="https://github.com/myyasuda/sphinx_materialdesign_theme">sphinx_materialdesign_theme</a>.</div>
+    </div>
+</footer>
+        </main>
+    </div>
+  </body>
+</html>
