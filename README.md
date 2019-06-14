@@ -1,3 +1,5 @@
+[![Documentation Status](https://readthedocs.org/projects/bering-ml-lab/badge/?version=latest)](https://bering-ml-lab.readthedocs.io/en/latest/?badge=latest)
+
 # Machine Learning Lab
 
 A lightweight command line interface for the management of arbitrary machine learning tasks.
