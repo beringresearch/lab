@@ -28,7 +28,7 @@ Let's create a simple environment that imports sklearn:
 
 .. code-block:: bash
 
-    echo "sklearn" >> requirements.txt
+    echo "scikit-learn" >> requirements.txt
     lab init --name test
 
 Lab will run through project initialisation and create a new **test** project with its own virtual environment.
@@ -54,7 +54,10 @@ Training scripts can be placed directly into the *test/* directory. Here's an ex
         X = iris.data
         y = iris.target
 
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.24, random_state=42)
+        X_train, X_test, \
+          y_train, y_test = train_test_split(X, y,
+                                             test_size=0.24,
+                                             random_state=42)
         
         n_estimators = 100
 

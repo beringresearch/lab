@@ -13,23 +13,23 @@ Lab is an open source platform for managing machine learning pipelines. It addre
     Lab is in active development and the current version of Lab is a beta release. This means that APIs and storage formats are subject to breaking change.
 
 .. toctree::
-  :maxdepth: 2
+  :maxdepth: 1
   :caption: User Guide:
 
   Quickstart <quickstart>
+  Core concepts <concepts>
   Command Line Interface <cli>
-  Logging <logging>
+  Tracking API <logging>
 
 .. toctree::
-  :maxdepth: 2
+  :maxdepth: 1
   :caption: Functionality:
-
-  Core concepts <concepts>
+ 
   Working with Jupyter Notebooks <notebook>
   Model repository <push>
 
 .. toctree::
-  :maxdepth: 2
+  :maxdepth: 1
   :caption: Applications:
   
   Examples <auto_examples/index>

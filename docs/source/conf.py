@@ -42,6 +42,7 @@ html_theme_options = {
         ('Home', 'index', False, 'home'),
         ('GitHub', 'https://github.com/beringresearch/lab', True, 'link'),
         ('Bering', 'http://beringresearch.com', True, 'launch')],
+    'show_drawer_title': True,
 }
 
 # Add any paths that contain templates here, relative to this directory.

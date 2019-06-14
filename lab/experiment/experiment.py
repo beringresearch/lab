@@ -96,7 +96,7 @@ class Experiment():
             destination = os.path.join(models_directory, artifact)
             copy_tree(self.artifacts[artifact], destination)
 
-    def log_artifacts(self, key, value):
+    def log_artifact(self, key, value):
         """ Log model artifacts
         """
         self.artifacts[key] = value

@@ -46,6 +46,10 @@ Pruning remote repository
 Sometimes it may be desirable to prune a remote repository. Pruning simply replaces the entire content of a remote repository with local files.
 The user is warned just before proceding, as this operation can have undersirable consequences.
 
+.. code-block:: bash
+
+    lab push --tag [MINIO_TAG] --bucket [TEXT] --prune .
+
 Pulling from a remote repository
 --------------------------------
 
@@ -56,6 +60,4 @@ To retrieve a Lab Project from a minio host, run a simple command from folder in
   lab pull --tag [MINIO_TAG] --bucket [TEXT] --project [TEXT].
 
 
-.. code-block:: bash
 
-    lab push --tag [MINIO_TAG] --bucket [TEXT] --prune .
