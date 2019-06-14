@@ -29,6 +29,8 @@ author = 'Bering Limited'
 # ones.
 extensions = ['sphinx_gallery.gen_gallery']
 
+master_doc = 'index'
+
 sphinx_gallery_conf = {
             'examples_dirs': '../../examples',
             'gallery_dirs': 'auto_examples',
