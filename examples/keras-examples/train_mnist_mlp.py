@@ -3,6 +3,9 @@ from keras.datasets import mnist
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
 from keras.optimizers import RMSprop
+from keras.callbacks import TensorBoard
+
+import tempfile
 
 from sklearn.metrics import accuracy_score, precision_score
 
@@ -10,7 +13,7 @@ from lab.experiment import Experiment
 
 batch_size = 128
 num_classes = 10
-epochs = 1
+epochs = 20
 
 # the data, split between train and test sets
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
@@ -40,20 +43,33 @@ model.compile(loss='categorical_crossentropy',
               metrics=['accuracy'])
 
 e = Experiment()
+
+
 @e.start_run
 def train():
+
+    # Create a temporary directory for tensorboard logs
+    output_dir = tempfile.mkdtemp()
+    print("Writing TensorBoard events locally to %s\n" % output_dir)
+    tensorboard = TensorBoard(log_dir=output_dir)
+
     model.fit(x_train, y_train,
-                    batch_size=batch_size,
-                    epochs=epochs,
-                    verbose=1,
-                    validation_data=(x_test, y_test))
+              batch_size=batch_size,
+              epochs=epochs,
+              verbose=1,
+              validation_data=(x_test, y_test),
+              callbacks=[tensorboard])
 
     y_prob = model.predict(x_test)
     y_classes = y_prob.argmax(axis=-1)
     actual = y_test.argmax(axis=-1)
 
-    accuracy = accuracy_score(y_true = actual, y_pred = y_classes)
-    precision = precision_score(y_true = actual, y_pred = y_classes, average = 'macro')
+    accuracy = accuracy_score(y_true=actual, y_pred=y_classes)
+    precision = precision_score(y_true=actual, y_pred=y_classes,
+                                average='macro')
+
+    # Log tensorboard
+    e.log_artifacts('tensorboard', output_dir)
 
     # Log all metrics
     e.log_metric('accuracy_score', accuracy)
