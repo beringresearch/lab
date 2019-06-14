@@ -25,6 +25,7 @@ wheels/
 MANIFEST
 
 _build
+docs/build/
 
 __pycache__/
 *.egg
