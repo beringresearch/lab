@@ -170,7 +170,7 @@ def show_experiment(experiment_id):
 
     dot.node(experiment_id, logs['experiment_uuid'], shape='Mdiamond')
     dot.node(dataset_id, logs['dataset'], shape='Msquare')
-    dot.node(source_id, source, shape='rectangle')
+    dot.node(source, source, shape='rectangle')
 
     dot.edge(experiment_id, dataset_id)
     dot.edge(dataset_id, source_id)
