@@ -33,10 +33,3 @@ Lab is an open source platform for managing machine learning pipelines. It addre
   :caption: Applications:
   
   Examples <auto_examples/index>
-
-.. toctree::
-  :maxdepth: 2
-  :caption: API Reference:
-
-  API Guide <api>
-
