@@ -173,7 +173,7 @@ def show_experiment(experiment_id):
     dot.node(source, source, shape='rectangle')
 
     dot.edge(experiment_id, dataset_id)
-    dot.edge(dataset_id, source_id)
+    dot.edge(dataset_id, source)
 
     with dot.subgraph(name='cluster_hyperparameters_'+experiment_id) as c:
         c.attr(label='Hyperparameters')
