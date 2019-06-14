@@ -27,9 +27,7 @@ author = 'Bering Limited'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.autodoc',
-              'sphinx.ext.autosummary',
-              'sphinx_gallery.gen_gallery']
+extensions = ['sphinx_gallery.gen_gallery']
 
 sphinx_gallery_conf = {
             'examples_dirs': '../../examples',
