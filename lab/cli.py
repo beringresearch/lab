@@ -50,7 +50,6 @@ def lab_info():
     """ Display system-wide information """
     import multiprocessing
     import platform
-    import psutil
 
     system_version = str(sys.version_info[0]) + '.' + \
         str(sys.version_info[1]) + \
@@ -71,9 +70,6 @@ def lab_info():
     click.echo('Operating System: '+platform.system())
     click.echo('Python version: '+system_version)
     click.echo('CPUs: '+str(multiprocessing.cpu_count()))
-    click.echo('Total Memory: '+str(psutil.virtual_memory()[0]))
-    click.echo('Available Memory: '+str(psutil.virtual_memory()[1]))
-    click.echo('Free Memory: '+str(psutil.virtual_memory()[4]))
 
 
 @click.command('minio')
