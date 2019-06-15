@@ -40,7 +40,7 @@ We can log these features by adding a few lines of code:
     e = Experiment()
 
     # Initialize Lab Experiment
-    @e.start_run() 
+    @e.start_run
     def train():
         iris = datasets.load_iris()
         feature_names = iris['feature_names']
@@ -63,7 +63,7 @@ Let's carry on with the Iris dataset and consider a Random Forest Classifier wit
     e = Experiment()
 
     # Initialize Lab Experiment
-    @e.start_run()
+    @e.start_run
     def train():
         iris = datasets.load_iris()
 
@@ -105,7 +105,7 @@ Let's expand our example and assess model accuracy and precision.
     e = Experiment()
 
     # Initialize Lab Experiment
-    @e.start_run() 
+    @e.start_run
     def train():
         iris = datasets.load_iris()
 

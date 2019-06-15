@@ -1,10 +1,10 @@
 .. note::
     :class: sphx-glr-download-link-note
 
-    Click :ref:`here <sphx_glr_download_auto_examples_train_randomforest.py>` to download the full example code
+    Click :ref:`here <sphx_glr_download_auto_examples_sklearn_randomforest.py>` to download the full example code
 .. rst-class:: sphx-glr-example-title
 
-.. _sphx_glr_auto_examples_train_randomforest.py:
+.. _sphx_glr_auto_examples_sklearn_randomforest.py:
 
 
 Getting started with Lab and scikit-learn
@@ -83,7 +83,7 @@ After execute training script through the `lab run` command.
    **Total running time of the script:** ( 0 minutes  0.000 seconds)
 
 
-.. _sphx_glr_download_auto_examples_train_randomforest.py:
+.. _sphx_glr_download_auto_examples_sklearn_randomforest.py:
 
 
 .. only :: html
@@ -95,13 +95,13 @@ After execute training script through the `lab run` command.
 
   .. container:: sphx-glr-download
 
-     :download:`Download Python source code: train_randomforest.py <train_randomforest.py>`
+     :download:`Download Python source code: sklearn_randomforest.py <sklearn_randomforest.py>`
 
 
 
   .. container:: sphx-glr-download
 
-     :download:`Download Jupyter notebook: train_randomforest.ipynb <train_randomforest.ipynb>`
+     :download:`Download Jupyter notebook: sklearn_randomforest.ipynb <sklearn_randomforest.ipynb>`
 
 
 .. only:: html

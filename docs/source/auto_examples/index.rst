@@ -17,9 +17,9 @@ Several examples of how Lab can be used in common machine learning projects.
 
 .. only:: html
 
-    .. figure:: /auto_examples/images/thumb/sphx_glr_train_randomforest_thumb.png
+    .. figure:: /auto_examples/images/thumb/sphx_glr_sklearn_randomforest_thumb.png
 
-        :ref:`sphx_glr_auto_examples_train_randomforest.py`
+        :ref:`sphx_glr_auto_examples_sklearn_randomforest.py`
 
 .. raw:: html
 
@@ -29,7 +29,27 @@ Several examples of how Lab can be used in common machine learning projects.
 .. toctree::
    :hidden:
 
-   /auto_examples/train_randomforest
+   /auto_examples/sklearn_randomforest
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Lab integrates into a typical keras workflow.">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_keras_mnist_mlp_thumb.png
+
+        :ref:`sphx_glr_auto_examples_keras_mnist_mlp.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/keras_mnist_mlp
 .. raw:: html
 
     <div style='clear:both'></div>
