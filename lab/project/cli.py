@@ -2,7 +2,6 @@ import click
 import uuid
 import glob
 import os
-import venv as ve
 import sys
 import datetime
 import yaml
@@ -15,6 +14,7 @@ import tabulate
 import pandas as pd
 import numpy as np
 
+from lab import is_empty_project, is_lab_project, create_venv
 
 @click.command('ls')
 @click.argument('sort_by', required=False)
@@ -24,18 +24,10 @@ def lab_ls(sort_by=None):
     logs_directory = 'logs'
     TICK = '█'
 
-    if not os.path.exists(models_directory):
-        click.secho('This directory does not appear to have a valid '
-                    'Lab Project structure.\nRun <lab init> to create one.',
-                    fg='red')
-        raise click.Abort()
+    is_lab_project()
+    is_empty_project()
 
     experiments = next(os.walk(models_directory))[1]
-    if len(experiments) == 0:
-        click.secho("It looks like you've started a brand new project. "
-                    'Run your first experiment to generate a list of metrics.',
-                    fg='blue')
-        raise click.Abort()
     comparisons = []
 
     for e in experiments:
@@ -139,10 +131,7 @@ def lab_notebook(notebook):
                     'Lab Project as .venv is missing.', fg='red')
         raise click.Abort()
 
-    if not os.path.isdir('config'):
-        click.secho("Doesn't looks like this is a valid "
-                    'Lab Project as config is missing.', fg='red')
-        raise click.Abort()
+    is_lab_project()
 
     with open(os.path.join(os.getcwd(),
               'config', 'runtime.yaml'), 'r') as file:
@@ -219,40 +208,12 @@ def lab_update():
     if not os.path.isdir('.venv'):
         click.secho("Couldn't find .venv. Creating one for you...",
                     fg='blue')
-        _create_venv('')
+        create_venv('')
 
     home_dir = os.getcwd()
-    click.secho('Checking global lab version...', fg='blue')
-    # Extract lab version from virtual environment
-    pyversion = '%s.%s' % (sys.version_info[0], sys.version_info[1])
-    venv = '%s/lib/python%s/site-packages/%s' % ('.venv', pyversion, 'lab')
-
-    python_bin = os.path.join(home_dir, '.venv', 'bin/python')
-    call = 'import lab; print(lab.__version__)'
-    venv_lab_version = subprocess.check_output([python_bin, '-c', '%s' % call])
-    venv_lab_version = venv_lab_version.decode('ascii').rstrip()
-
-    import lab
-    global_lab_version = lab.__version__
-
-    if global_lab_version != venv_lab_version:
-        click.secho('It appears that your Lab Project was built using a '
-                    'different Lab version (' + venv_lab_version + ').',
-                    fg='blue')
-        if click.confirm('Do you want to update lab in this project?'):
-            try:
-                pkgobj = __import__('lab')
-            except Exception as e:
-                print(e)
-                sys.exit(1)
-
-            pkgdir = os.path.dirname(pkgobj.__file__)
-            if os.path.exists(venv):
-                shutil.rmtree(venv)
-            shutil.copytree(pkgdir, venv)
 
     click.secho('Updating environment using requirements.txt', fg='blue')
-    venv_dir = os.path.join(os.getcwd(), '.venv')
+    venv_dir = os.path.join(home_dir, '.venv')
     subprocess.call([venv_dir + '/bin/pip', 'install',
                     '-r', 'requirements.txt'])
 
@@ -340,38 +301,6 @@ def lab_push(info, tag, bucket, path, prune):
                 yaml.safe_dump(minio_config, file, default_flow_style=False)
 
         _push_to_minio(tag, bucket, path, prune)
-
-
-def _create_venv(project_name):
-    # Create a virtual environment
-    venv_dir = os.path.join(project_name, '.venv')
-
-    environment = ve.EnvBuilder(symlinks=True, with_pip=True)
-    environment.create(venv_dir)
-
-    subprocess.call([venv_dir + '/bin/pip', 'install', '--upgrade', 'pip'])
-
-    subprocess.call([venv_dir + '/bin/pip', 'install', 'pyyaml'])
-    subprocess.call([venv_dir + '/bin/pip', 'install', 'graphviz'])
-    subprocess.call([venv_dir + '/bin/pip', 'install', 'numpy'])
-    subprocess.call([venv_dir + '/bin/pip', 'install', 'joblib'])
-    subprocess.call([venv_dir + '/bin/pip', 'install', 'minio'])
-    subprocess.call([venv_dir + '/bin/pip', 'install',
-                    '-r', 'requirements.txt'])
-
-    # Move lab into the virtual environment
-    pkgname = 'lab'
-    pyversion = '%s.%s' % (sys.version_info[0], sys.version_info[1])
-
-    try:
-        pkgobj = __import__(pkgname)
-    except Exception as e:
-        print(e)
-        sys.exit(1)
-
-    pkgdir = os.path.dirname(pkgobj.__file__)
-    dst = '%s/lib/python%s/site-packages/%s' % (venv_dir, pyversion, pkgname)
-    shutil.copytree(pkgdir, dst)
 
 
 def _pull_from_minio(tag, bucket, project_name):
@@ -501,7 +430,7 @@ def _project_init(project_name):
     shutil.copyfile('requirements.txt', project_name+'/requirements.txt')
 
     # Create a virtual environment
-    _create_venv(project_name)
+    create_venv(project_name)
 
     # Create runtime configuration
     runtime = {'name': project_name,

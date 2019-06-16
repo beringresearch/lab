@@ -16,7 +16,7 @@ _DEFAULT_USER_ID = 'unknown'
 
 
 class Experiment():
-    def __init__(self, dataset=None):
+    def __init__(self, dataset='<data>'):
         """ Fundamental Lab class for managing a machine learning experiment.
 
         :param str dataset: description or tag of a dataset used for training.
@@ -40,7 +40,7 @@ class Experiment():
         self.source = ' '.join(sys.argv)
         self.home_dir = os.path.dirname(
                             os.path.dirname(
-                                os.path.dirname(sys.executable)))
+                                os.path.dirname(sys.argv[0])))
         self.models = models
         self.artifacts = artifacts
 
@@ -50,11 +50,13 @@ class Experiment():
         self.create_run(user_id=_get_user_id(),
                         timestamp=datetime.datetime.now())
         run_uuid = self.uuid
+
         models_directory = os.path.join(self.home_dir, 'experiments', run_uuid)
         logs_directory = os.path.join(self.home_dir, 'logs', run_uuid)
 
         fun()
 
+        print(models_directory)
         os.makedirs(logs_directory)
         os.makedirs(models_directory)
 
