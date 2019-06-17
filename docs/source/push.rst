@@ -40,6 +40,15 @@ Lab Projects can be pushed to a specific minio host by running a simple command 
 
 Here, ``--tag`` specifies a nickname of an exisiting minio connection and ``--bucket`` refers to a unique destination name on minio host, analogous to an S3 bucket.
 
+Each project contains a `.labignore` file that specifies intentionally untracked files to ignore during a push. A default `.labignore` will omit the virtual environment directory `.venv`. Further omitions can be specified on each line:
+
+.. code::
+
+  .venv
+  data
+  experiments/abcdefgh/model.joblib
+
+
 Pruning remote repository
 -------------------------
 
