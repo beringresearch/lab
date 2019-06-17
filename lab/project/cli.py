@@ -398,6 +398,12 @@ def _push_to_minio(tag, bucket, path, force):
     lab_dir = os.path.join(home_dir, '.lab')
 
     try:
+        with open('.labignore') as f:
+            exclude = set(f.read().splitlines())
+    except Exception:
+        exclude = set(set['.venv'])
+
+    try:
         with open(os.path.join(lab_dir, 'config.yaml'), 'r') as file:
             minio_config = yaml.load(file)[tag]
     except KeyError as e:
@@ -416,7 +422,7 @@ def _push_to_minio(tag, bucket, path, force):
 
     input_objects = []
     output_objects = []
-    exclude = set(['.venv'])
+
     for root, d_names, f_names in os.walk(path, topdown=True):
         d_names[:] = [d for d in d_names if d not in exclude]
         for f in f_names:
@@ -481,6 +487,10 @@ def _project_init(project_name):
     open(os.path.join(project_name, 'notebooks', 'README.md'), 'a').close()
 
     file = open(os.path.join(project_name, '.gitignore'), 'w')
+    file.write('.venv/')
+    file.close()
+
+    file = open(os.path.join(project_name, '.labignore'), 'w')
     file.write('.venv/')
     file.close()
 
