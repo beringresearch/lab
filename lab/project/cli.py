@@ -210,9 +210,14 @@ def lab_update():
         create_venv('')
 
     home_dir = os.getcwd()
-
-    click.secho('Updating environment using requirements.txt', fg='blue')
     venv_dir = os.path.join(home_dir, '.venv')
+
+    click.secho('Updating lab', fg='cyan')
+    subprocess.call([venv_dir + '/bin/pip',
+                     'install', '-e',
+                     'git+https://github.com/beringresearch/lab#egg=lab'])
+
+    click.secho('Updating environment using requirements.txt', fg='cyan')
     subprocess.call([venv_dir + '/bin/pip', 'install',
                     '-r', 'requirements.txt'])
 
