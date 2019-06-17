@@ -14,7 +14,7 @@ Lab integrates into a typical keras workflow.
 
 WARNING: model persistence in Keras can be complicated, especially when
 working with complext models. It is recommended to checkpoint each training
-epoch independently from Lab's ``log_model`` API.abs
+epoch independently from Lab's ``log_model`` API.
 
 Bering by creating a new Lab Project:
 

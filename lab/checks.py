@@ -1,4 +1,5 @@
 import os
+import yaml
 import click
 import shutil
 import subprocess
@@ -8,7 +9,22 @@ lab_project = ['experiments', 'data', 'logs', 'notebooks', 'config']
 
 
 # Project
+def check_minio_config(minio_tag):
+    """Check that minio configuration exists"""
+    home_dir = os.path.expanduser('~')
+    lab_dir = os.path.join(home_dir, '.lab')
+
+    try:
+        with open(os.path.join(lab_dir, 'config.yaml'), 'r') as file:
+            yaml.load(file)[minio_tag]
+    except Exception as e:
+        print(str(e))
+        click.secho('Invalid global minio connection tag.', fg='red')
+        raise click.Abort()
+
+
 def is_venv(home_dir):
+    """Check that virtual environment exists"""
     if not os.path.exists(os.path.join(home_dir, '.venv')):
         click.secho('Virtual environment not found. '
                     'Creating one for this project',
@@ -17,6 +33,7 @@ def is_venv(home_dir):
 
 
 def is_empty_project():
+    """Check if there are any experiments in the project"""
     experiments = next(os.walk('experiments'))[1]
     if len(experiments) == 0:
         click.secho("It looks like you've started a brand new project. "
@@ -26,6 +43,7 @@ def is_empty_project():
 
 
 def is_lab_project():
+    """Check if the current directory is a lab project"""
     _exists = [f for f in lab_project if os.path.exists(f)]
 
     if len(_exists) != len(lab_project):
@@ -36,6 +54,7 @@ def is_lab_project():
 
 
 def create_venv(project_name):
+    """Create a lab virtual environment"""
     # Create a virtual environment
     venv_dir = os.path.join(project_name, '.venv')
 
@@ -48,7 +67,7 @@ def create_venv(project_name):
                          '--upgrade', 'pip'])
 
         subprocess.call([venv_dir + '/bin/pip',
-                         'install','-e',
+                         'install', '-e',
                          'git+https://github.com/beringresearch/lab#egg=lab'])
 
         subprocess.call([venv_dir + '/bin/pip', 'install',

@@ -48,7 +48,7 @@ The user is warned just before proceding, as this operation can have undersirabl
 
 .. code-block:: bash
 
-    lab push --tag [MINIO_TAG] --bucket [TEXT] --prune .
+    lab push --tag [MINIO_TAG] --bucket [TEXT] --force .
 
 Pulling from a remote repository
 --------------------------------
@@ -60,4 +60,4 @@ To retrieve a Lab Project from a minio host, run a simple command from folder in
   lab pull --tag [MINIO_TAG] --bucket [TEXT] --project [TEXT].
 
 
-
+In cases where connection with minio has already been establish, a project can be pushed/pulled directly from the project directory via ``lab push`` or ``lab pull`` without further options.

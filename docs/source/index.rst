@@ -27,6 +27,7 @@ Lab is an open source platform for managing machine learning pipelines. It addre
  
   Working with Jupyter Notebooks <notebook>
   Model repository <push>
+  FAQ <faq>
 
 .. toctree::
   :maxdepth: 1

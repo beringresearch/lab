@@ -56,7 +56,6 @@ class Experiment():
 
         fun()
 
-        print(models_directory)
         os.makedirs(logs_directory)
         os.makedirs(models_directory)
 

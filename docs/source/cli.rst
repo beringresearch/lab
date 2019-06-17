@@ -152,7 +152,7 @@ Push Lab Project to a configured minio repository.
 
 .. code::
   
-  lab push --tag [MINIO_TAG] --bucket [TEXT] .
+  lab push --tag [MINIO_TAG] --bucket [TEXT] --force.
 
 
 ``pull``
@@ -162,4 +162,4 @@ Pull a Lab Project from a configured minio repository.
 
 .. code::
 
-  lab pull --tag [MINIO_TAG] --bucket [TEXT] --project [TEXT].
+  lab pull --tag [MINIO_TAG] --bucket [TEXT] --project [TEXT] --force.
