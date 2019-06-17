@@ -3,16 +3,12 @@
 Working with Jupyter Notebooks
 ==============================
 
-Lab makes it easy to launch a jupyter notebook directly inside the lab Project:
+Lab makes it easy to work with Jupyter notebooks by creating a kernel directly from a lab project 
 
 .. code-block:: bash
 
     lab notebook
 
-The operation launches Jupyter Lab and creates a project-specific kernel, tying it directly to the Lab virtual environment.
+Once the kernel is created, you can select it from any Jupyter session.
 
-To switch from Jupyter Lab to Jupyter Notebook, simply pass a --notebook flag:
-
-.. code-block:: bash
-
-    lab notebook --notebook
+Lab also provides a `notebooks` directory to organise and maintain all notebooks associated with a Lab Project.
