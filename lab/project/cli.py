@@ -14,7 +14,9 @@ import tabulate
 import pandas as pd
 import numpy as np
 
-from lab import is_empty_project, is_lab_project, create_venv
+from lab import is_empty_project, is_lab_project, create_venv,\
+    check_minio_config
+
 
 @click.command('ls')
 @click.argument('sort_by', required=False)
@@ -103,7 +105,7 @@ def lab_ls(sort_by=None):
                 now_time = datetime.datetime.now()
                 td = now_time-push_time
                 (days, hours) = (td.days, td.seconds//3600)
-            except:
+            except Exception:
                 (days, hours) = (0, 0)
 
     click.secho('\nLast push: '+str(days)+'d, ' + str(hours)+'h ago',
@@ -172,7 +174,8 @@ def lab_init(name):
     else:
         try:
             _project_init(name)
-        except:
+        except Exception as e:
+            print(e)
             click.secho('Errors encountered during project initialisation.'
                         'Rolling back..', fg='red')
             raise click.Abort()
@@ -219,16 +222,17 @@ def lab_update():
 
 
 @click.command('pull')
-@click.option('--tag', type=str, help='minio host nickname', required=True)
-@click.option('--bucket', type=str, required=True,
+@click.option('--tag', type=str,
+              help='minio host nickname', required=False, default=None)
+@click.option('--bucket', type=str, required=False, default=None,
               help='minio bucket name')
-@click.option('--project', type=str, required=True,
+@click.option('--project', type=str, required=False, default=None,
               help='Lab Project name')
-def lab_pull(tag, bucket, project):
+@click.option('--force', is_flag=True)
+def lab_pull(tag, bucket, project, force):
     """ Pulls Lab Experiment from minio to current directory """
     home_dir = os.path.expanduser('~')
 
-    project_dir = os.path.join(os.getcwd(), project)
     lab_dir = os.path.join(home_dir, '.lab')
 
     if not os.path.exists(lab_dir):
@@ -237,12 +241,12 @@ def lab_pull(tag, bucket, project):
                     fg='red')
         raise click.Abort()
 
-    if not os.path.exists(project_dir):
-        os.makedirs(project_dir)
-        _pull_from_minio(tag, bucket, project)
-    else:
-        click.secho('Directory '+project+' already exists.', fg='red')
-        raise click.Abort()
+    if project is not None:
+        if os.path.exists(project):
+            click.secho('Directory '+project+' already exists.', fg='red')
+            raise click.Abort()
+
+    _pull_from_minio(tag, bucket, project, force)
 
 
 @click.command('push')
@@ -250,9 +254,9 @@ def lab_pull(tag, bucket, project):
 @click.option('--tag', type=str, help='minio host nickname', default=None)
 @click.option('--bucket', type=str, default=None,
               help='minio bucket name')
-@click.option('--prune', is_flag=True)
+@click.option('--force', is_flag=True)
 @click.argument('path', type=str, default='.')
-def lab_push(info, tag, bucket, path, prune):
+def lab_push(info, tag, bucket, path, force):
     """ Push Lab Experiment to minio """
     models_directory = 'experiments'
     logs_directory = 'logs'
@@ -286,9 +290,10 @@ def lab_push(info, tag, bucket, path, prune):
                     tag = minio_config['tag']
                     bucket = minio_config['bucket']
             except KeyError:
-                click.secho('Lab project does not have default tag and bucket configuration. '
-                            'Supply --tag and --bucket options and run lab push again.',
-                            fg='red')
+                click.secho(
+                    'Lab project does not have default tag and bucket configuration. '
+                    'Supply --tag and --bucket options and run lab push again.',
+                        fg='red')
                 raise click.Abort()
         else:
             with open(os.path.join(config_directory, 'runtime.yaml'),
@@ -300,19 +305,34 @@ def lab_push(info, tag, bucket, path, prune):
                       'w') as file:
                 yaml.safe_dump(minio_config, file, default_flow_style=False)
 
-        _push_to_minio(tag, bucket, path, prune)
+        _push_to_minio(tag, bucket, path, force)
 
 
-def _pull_from_minio(tag, bucket, project_name):
+def _pull_from_minio(tag, bucket, project_name, force):
+    click.secho('Looking up remote..', fg='cyan')
+
     home_dir = os.path.expanduser('~')
     lab_dir = os.path.join(home_dir, '.lab')
+    project_dir = os.getcwd()
 
-    try:
-        with open(os.path.join(lab_dir, 'config.yaml'), 'r') as file:
-            minio_config = yaml.load(file)[tag]
-    except:
-        click.secho('Invalid global minio connection tag.', fg='red')
-        raise click.Abort()
+    _clone = True
+
+    # Extract bucket name and project name from config if they are present
+    if (tag is None) & (bucket is None) & (project_name is None):
+        _clone = False
+
+        with open(os.path.join(project_dir,
+                               'config', 'runtime.yaml'), 'r') as file:
+            project_config = yaml.load(file)
+            bucket = project_config['bucket']
+            project_name = project_config['name']
+            tag = project_config['tag']
+
+    check_minio_config(tag)
+
+    # Extract minio configuration
+    with open(os.path.join(lab_dir, 'config.yaml'), 'r') as file:
+        minio_config = yaml.load(file)[tag]
 
     hostname = minio_config['minio_endpoint']
     accesskey = minio_config['minio_accesskey']
@@ -327,18 +347,53 @@ def _pull_from_minio(tag, bucket, project_name):
         click.secho('Bucket ' + bucket + ' is not found on remote', fg='red')
         raise click.Abort()
     try:
-        objects = minioClient.list_objects(bucket, prefix=project_name,
+        objects = minioClient.list_objects(bucket, prefix=project_name+'/',
                                            recursive=True)
-        for obj in objects:
-            object_name = obj.object_name
-            print('Downloading '+object_name)
-            minioClient.fget_object(bucket, object_name,
+
+        remote_objects = [o.object_name for o in objects]
+
+        if _clone is False:
+            if force:
+                local_objects = []
+            else:
+                local_objects = _list_dir('.')
+
+                local_objects = [l.replace('./', project_name+'/')
+                                 for l in local_objects]
+
+            remote_objects = list(set(remote_objects) - set(local_objects))
+
+        if len(remote_objects) == 0:
+            click.secho('Project is in sync with remote. '
+                        'Use <lab pull --force> to do a hard pull.',
+                        fg='yellow')
+            raise click.Abort()
+
+        click.secho('Fetching '+str(len(remote_objects))+' remote objects.',
+                    fg='cyan')
+
+        for obj in remote_objects:
+            if _clone:
+                object_name = obj
+            else:
+                object_name = ''.join(obj.split(project_name + '/')[1:])
+            print('Downloading ' + object_name)
+            minioClient.fget_object(bucket, obj,
                                     os.path.join(os.getcwd(), object_name))
     except ResponseError as err:
         print(err)
 
 
-def _push_to_minio(tag, bucket, path, prune):
+def _list_dir(path):
+    files = []
+    # r=root, d=directories, f = files
+    for r, d, f in os.walk(path):
+        for file in f:
+            files.append(os.path.join(r, file))
+    return(files)
+
+
+def _push_to_minio(tag, bucket, path, force):
     home_dir = os.path.expanduser('~')
     lab_dir = os.path.join(home_dir, '.lab')
 
@@ -346,6 +401,7 @@ def _push_to_minio(tag, bucket, path, prune):
         with open(os.path.join(lab_dir, 'config.yaml'), 'r') as file:
             minio_config = yaml.load(file)[tag]
     except KeyError as e:
+        print(str(e))
         click.secho('Unable to connect to host '+tag, fg='red')
         raise click.Abort()
 
@@ -377,10 +433,11 @@ def _push_to_minio(tag, bucket, path, prune):
         minioClient.make_bucket(bucket, location='eu-west-1')
 
     # Prune remote if needed
-    if prune:
-        if click.confirm('WARNING: pruning will remove all remote files not '
-                         'found in your current project. Do you want to continue?',
-                         abort=True):
+    if force:
+        if click.confirm(
+            'WARNING: force push will remove all remote files not '
+            'found in your current project. Do you want to continue?',
+                abort=True):
             try:
                 remote_objects = minioClient.list_objects(bucket,
                                                           prefix=project_name,
@@ -421,6 +478,7 @@ def _project_init(project_name):
     os.mkdir(os.path.join(project_name, 'config'))
 
     open(os.path.join(project_name, 'README.md'), 'a').close()
+    open(os.path.join(project_name, 'notebooks', 'README.md'), 'a').close()
 
     file = open(os.path.join(project_name, '.gitignore'), 'w')
     file.write('.venv/')
