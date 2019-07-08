@@ -214,8 +214,7 @@ def lab_update():
 
     click.secho('Updating lab', fg='cyan')
     subprocess.call([venv_dir + '/bin/pip',
-                     'install', '-e',
-                     'git+https://github.com/beringresearch/lab#egg=lab'])
+                     'install', 'lab-ml'])
 
     click.secho('Updating environment using requirements.txt', fg='cyan')
     subprocess.call([venv_dir + '/bin/pip', 'install',
