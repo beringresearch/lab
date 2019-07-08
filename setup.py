@@ -1,14 +1,14 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 with open('README.md', encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
     name='lab-ml',
-    version='0.81.83.dev',
+    version='0.81.85.dev',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    packages=['lab'],
+    packages=find_packages(),
     py_modules=['lab'],
     install_requires=[
         'click>=6.7',
