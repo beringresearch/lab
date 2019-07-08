@@ -67,8 +67,7 @@ def create_venv(project_name):
                          '--upgrade', 'pip'])
 
         subprocess.call([venv_dir + '/bin/pip',
-                         'install', '-e',
-                         'git+https://github.com/beringresearch/lab#egg=lab'])
+                         'install', '--upgrade', 'lab-ml'])
 
         subprocess.call([venv_dir + '/bin/pip', 'install',
                          '-r', 'requirements.txt'])

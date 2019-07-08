@@ -7,7 +7,6 @@ import sys
 from minio import Minio
 from urllib3.exceptions import MaxRetryError
 
-import lab
 from lab.project import cli as lab_project
 from lab.experiment import cli as lab_experiment
 
@@ -65,7 +64,6 @@ def lab_info():
             minio_config = yaml.safe_load(file)
         n_minio_hosts = len(minio_config.keys())
 
-    click.secho('Lab version: '+lab.__version__, fg='yellow')
     click.echo('Minio hosts: '+str(n_minio_hosts)+'\n')
     click.echo('Operating System: '+platform.system())
     click.echo('Python version: '+system_version)

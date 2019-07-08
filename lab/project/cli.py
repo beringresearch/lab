@@ -214,7 +214,7 @@ def lab_update():
 
     click.secho('Updating lab', fg='cyan')
     subprocess.call([venv_dir + '/bin/pip',
-                     'install', 'lab-ml'])
+                     'install', '--upgrade', 'lab-ml'])
 
     click.secho('Updating environment using requirements.txt', fg='cyan')
     subprocess.call([venv_dir + '/bin/pip', 'install',
