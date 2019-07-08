@@ -12,6 +12,14 @@ NOTE: Lab is in active development - expect a bumpy ride!
 
 ## Installation
 
+The latest stable version can be installed directly from PyPi:
+
+```bash
+pip install lab-ml
+```
+
+Development version can be installed from github.
+
 ```bash
 git clone https://github.com/beringresearch/lab
 cd lab

@@ -1,18 +1,14 @@
-import os
-import imp
 from setuptools import setup
-
-version = imp.load_source(
-    'lab.version', os.path.join('lab', 'version.py')).VERSION
 
 with open('README.md', encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
     name='lab-ml',
-    version=version,
+    version='0.81.83.dev',
     long_description=long_description,
     long_description_content_type='text/markdown',
+    packages=['lab'],
     py_modules=['lab'],
     install_requires=[
         'click>=6.7',
@@ -38,5 +34,5 @@ setup(
         'Operating System :: OS Independent',
     ],
     keywords='ml ai',
-    url='https://beringresearch.com'
+    url='https://github.com/beringresearch/lab'
     )
