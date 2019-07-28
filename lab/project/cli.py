@@ -490,6 +490,12 @@ def _project_init(project_name):
     file.write('.venv')
     file.close()
 
+    # ignore these files when pushing lab repo to minio
+    file = open(os.path.join(project_name, '.labignore'), 'w')
+    file.write('.venv')
+    file.write('.ipynb_checkpoints')
+    file.close()
+
     # Copy requirements.txt file
     shutil.copyfile('requirements.txt', project_name+'/requirements.txt')
 
