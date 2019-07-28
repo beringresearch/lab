@@ -487,11 +487,7 @@ def _project_init(project_name):
     open(os.path.join(project_name, 'notebooks', 'README.md'), 'a').close()
 
     file = open(os.path.join(project_name, '.gitignore'), 'w')
-    file.write('.venv/')
-    file.close()
-
-    file = open(os.path.join(project_name, '.labignore'), 'w')
-    file.write('.venv/')
+    file.write('.venv')
     file.close()
 
     # Copy requirements.txt file
