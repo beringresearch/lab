@@ -3,6 +3,7 @@ import os
 import warnings
 import yaml
 import sys
+import pkg_resources
 
 from minio import Minio
 from urllib3.exceptions import MaxRetryError
@@ -50,6 +51,8 @@ def lab_info():
     import multiprocessing
     import platform
 
+    lab_version = pkg_resources.require('ivis')[0].version
+
     system_version = str(sys.version_info[0]) + '.' + \
         str(sys.version_info[1]) + \
         '.' + str(sys.version_info[2])
@@ -64,6 +67,7 @@ def lab_info():
             minio_config = yaml.safe_load(file)
         n_minio_hosts = len(minio_config.keys())
 
+    click.echo('😎Lab version: '+str(lab_version))
     click.echo('Minio hosts: '+str(n_minio_hosts)+'\n')
     click.echo('Operating System: '+platform.system())
     click.echo('Python version: '+system_version)

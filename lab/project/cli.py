@@ -117,7 +117,7 @@ def lab_ls(sort_by=None):
     latest_file_timestamp = \
         datetime.datetime.fromtimestamp(os.path.getmtime(latest_file))
 
-    recommend = ' | Project is in sync with remote'
+    recommend = '😎 Project is in sync with remote'
     if latest_file_timestamp > push_time:
         recommend = ' | Recommend to run <lab push>'
     click.secho('Last modified: '+str(latest_file_timestamp)+recommend,
@@ -401,7 +401,7 @@ def _push_to_minio(tag, bucket, path, force):
         with open('.labignore') as f:
             exclude = set(f.read().splitlines())
     except Exception:
-        exclude = set(set['.venv'])
+        exclude = set(['.venv'])
 
     try:
         with open(os.path.join(lab_dir, 'config.yaml'), 'r') as file:
