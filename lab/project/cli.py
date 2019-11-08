@@ -117,7 +117,7 @@ def lab_ls(sort_by=None):
     latest_file_timestamp = \
         datetime.datetime.fromtimestamp(os.path.getmtime(latest_file))
 
-    recommend = '😎 Project is in sync with remote'
+    recommend = '| Project is in sync with remote'
     if latest_file_timestamp > push_time:
         recommend = ' | Recommend to run <lab push>'
     click.secho('Last modified: '+str(latest_file_timestamp)+recommend,
