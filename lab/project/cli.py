@@ -492,7 +492,7 @@ def _project_init(project_name):
 
     # ignore these files when pushing lab repo to minio
     file = open(os.path.join(project_name, '.labignore'), 'w')
-    file.write('.venv')
+    file.write('.venv\n')
     file.write('.ipynb_checkpoints')
     file.close()
 
