@@ -85,9 +85,12 @@ def lab_run(script):
             # Update project directory if it hasn't been updated
             if home_dir != os.getcwd():
                 config['path'] = os.getcwd()
+                home_dir = config['path']
+
                 with open(os.path.join(os.getcwd(),
                                        'config', 'runtime.yaml'), 'w') as file:
                     yaml.dump(config, file, default_flow_style=False)
+                    
     except KeyError:
         click.secho('Looks like this Project was configured with an earlier '
                     'version of Lab. Check that config/runtime.yaml file '
