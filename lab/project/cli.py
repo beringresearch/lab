@@ -32,6 +32,18 @@ def lab_ls(sort_by=None):
     experiments = next(os.walk(models_directory))[1]
     comparisons = []
 
+    # Get unique metric names
+    metrics_names = []
+    for e in experiments:
+        metrics_file = os.path.join(models_directory, e, 'metrics.yaml')
+        with open(metrics_file, 'r') as file:
+            metrics = yaml.load(file)
+            metrics_names.append(list(metrics.keys()))
+
+    metrics_names = list(set(metrics_names[0]).intersection(*metrics_names))
+
+
+    # Get all experiments
     for e in experiments:
         metrics_file = os.path.join(models_directory, e, 'metrics.yaml')
         try:
@@ -40,7 +52,8 @@ def lab_ls(sort_by=None):
             for k, v in metrics.items():
                 metrics[k] = round(v, 2)
 
-            metrics_list = list(metrics.values())
+            metrics = {k: metrics[k] for k in metrics_names}
+            metrics_list = list(metrics.values())       
 
             meta_file = os.path.join(logs_directory, e, 'meta.yaml')
             with open(meta_file, 'r') as file:
