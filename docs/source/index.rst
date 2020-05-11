@@ -25,7 +25,7 @@ Lab is an open source platform for managing machine learning pipelines. It addre
   :maxdepth: 1
   :caption: Functionality:
  
-  Managing Deep Learning Experiment <dlexperiments>
+  Managing Deep Learning Experiments <dlexperiments>
   Working with Jupyter Notebooks <notebook>
   Model repository <push>
   FAQ <faq>

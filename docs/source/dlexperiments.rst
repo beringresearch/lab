@@ -110,4 +110,4 @@ When training on distributed systems with Horovod, `model.fit` element can be ab
 		'--batch-size', BATCH,
 		'--epochs', EPOCHS]
 
-Note that you need to eable your Horovod script to accept some basic model hyperparameters that you wish to log downstream.
+Note that you need to enable your Horovod script to accept some basic model hyperparameters that you wish to log downstream.
