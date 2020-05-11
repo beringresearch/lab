@@ -138,4 +138,4 @@ To push a local lab experiment to minio:
 lab push --tag my-minio --bucket [BUCKETNAME] .
 ```
 
-Copyright 2019, Bering Limited
+Copyright 2020, Bering Limited

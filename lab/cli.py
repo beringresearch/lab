@@ -20,7 +20,7 @@ def cli():
     """
 Bering's Machine Learning Lab
 
-Copyright 2019 Bering Limited. https://beringresearch.com
+Copyright 2020 Bering Limited. https://beringresearch.com
 """
 
 
