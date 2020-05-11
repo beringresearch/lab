@@ -18,7 +18,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'lab'
-copyright = '2019, Bering Limited'
+copyright = '2020, Bering Limited'
 author = 'Bering Limited'
 
 

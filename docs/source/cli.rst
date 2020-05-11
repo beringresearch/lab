@@ -14,7 +14,7 @@ Lab is invoked through a simple Command Line Interface (CLI).
 
     Bering's Machine Learning Lab
 
-    Copyright 2019 Bering Limited. https://beringresearch.com
+    Copyright 2020 Bering Limited. https://beringresearch.com
 
     Options:
     --help  Show this message and exit.
