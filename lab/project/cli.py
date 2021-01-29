@@ -8,7 +8,7 @@ import yaml
 import subprocess
 import shutil
 from minio import Minio
-from minio.error import ResponseError
+from minio.error import S3Error
 
 import tabulate
 import pandas as pd
@@ -393,7 +393,7 @@ def _pull_from_minio(tag, bucket, project_name, force):
             print('Downloading ' + object_name)
             minioClient.fget_object(bucket, obj,
                                     os.path.join(os.getcwd(), object_name))
-    except ResponseError as err:
+    except S3Error as err:
         print(err)
 
 
@@ -465,7 +465,7 @@ def _push_to_minio(tag, bucket, path, force):
                 for del_err in minioClient.remove_objects(bucket,
                                                           remote_objects):
                     print("Deletion Error: {}".format(del_err))
-            except ResponseError as err:
+            except S3Error as err:
                 print(err)
 
     try:
@@ -481,7 +481,7 @@ def _push_to_minio(tag, bucket, path, force):
         with open(os.path.join('config', 'runtime.yaml'), 'w') as file:
             yaml.safe_dump(minio_config, file, default_flow_style=False)
 
-    except ResponseError as err:
+    except S3Error as err:
         print(err)
 
 
