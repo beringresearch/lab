@@ -5,7 +5,7 @@ with open('README.md', encoding='utf-8') as f:
 
 setup(
     name='lab-ml',
-    version='0.82',
+    version='0.83',
     long_description=long_description,
     long_description_content_type='text/markdown',
     packages=find_packages(),
